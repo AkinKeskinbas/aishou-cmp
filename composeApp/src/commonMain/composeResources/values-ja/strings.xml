@@ -1,0 +1,17 @@
+<resources>
+    //Paywall
+    <string name="weekly_premium_paywall">ウィークリーブースト</string>
+    <string name="monthly_premium_paywall">コズミックVIP</string>
+    <string name="monthly_premium_per_month">月額</string>
+    <string name="monthly_premium_per_week">週額</string>
+    <string name="paywall_go_premium">プレミアムにする</string>
+    <string name="paywall_weekly_features_daily_horoscope">デイリー占い</string>
+    <string name="paywall_weekly_features_daily_love_compatibility">恋愛相性</string>
+    <string name="paywall_weekly_features_daily_personality_insights">性格診断</string>
+    <string name="paywall_popular">人気！</string>
+    <string name="paywall_join_discover">参加して運命を見つけよう！</string>
+    <string name="paywall_cancel_anytime">いつでも解約OK・追加料金なし・即アクセス</string>
+    //Home
+    <string name="hey_text_home">HEY, %s!</string>
+
+</resources>

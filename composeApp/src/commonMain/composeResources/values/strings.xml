@@ -1,0 +1,37 @@
+<resources>
+    //Paywall
+    <string name="weekly_premium_paywall">WEEKLY BOOST</string>
+    <string name="monthly_premium_paywall">COSMIC VIP</string>
+    <string name="monthly_premium_per_month">per month</string>
+    <string name="monthly_premium_per_week">per week</string>
+    <string name="paywall_go_premium">GO PREMIUM</string>
+    <string name="paywall_weekly_features_daily_horoscope">Daily Horoscope</string>
+    <string name="paywall_weekly_features_daily_love_compatibility">Love Compatibility</string>
+    <string name="paywall_weekly_features_daily_personality_insights">Personality Insights</string>
+    <string name="paywall_popular">Popular!</string>
+    <string name="paywall_join_discover">Join and Discover Your Destiny!</string>
+    <string name="paywall_cancel_anytime">Cancel anytime No hidden fees  Instant Access</string>
+    <string name="paywall_unlock_your_cosmic_personality">Unlock Your Cosmic Personality!</string>
+    <string name="paywall_choose_your_sign">Choose Your Sign</string>
+
+    //Home
+    <string name="cosmic_match_home">COSMIC MATCH</string>
+    <string name="mbti_zodiac_home">MBTI x ZODIAC</string>
+    <string name="your_cosmic_profile_home">YOUR COSMIC PROFILE</string>
+    <string name="personality_type_home">PERSONALITY TYPE</string>
+    <string name="zodiac_sign_profile_home">ZODIAC SIGN</string>
+    <string name="hey_text_home">HEY, </string>
+    <string name="quick_actions_home">QUICK ACTIONS</string>
+    <string name="new_test_home">New Test</string>
+    <string name="view_all_home">View All</string>
+    <string name="quick_quiz_home">Quick Quiz</string>
+
+    <string name="recent_tests_home">RECENT TESTS</string>
+    <string name="your_stats_home">YOUR STATS</string>
+    <string name="view_all_tests_home">VIEW ALL TESTS</string>
+    <string name="love_tests_home">Love Tests</string>
+    <string name="friends_tests_home">Friends Tests</string>
+    <string name="best_matches_home">Best Match</string>
+    <string name="avg_score_home">Avg Score</string>
+
+</resources>
