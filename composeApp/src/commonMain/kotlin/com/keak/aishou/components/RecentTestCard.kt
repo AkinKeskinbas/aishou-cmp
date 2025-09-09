@@ -6,6 +6,7 @@ import aishou.composeapp.generated.resources.hearth_desc
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,7 +34,8 @@ fun RecentTestCard(
     testResult: String,
     modifier: Modifier = Modifier,
     testerType: TesterType,
-    bgColor: Color
+    bgColor: Color,
+    clickAction:()-> Unit
 
 ) {
     val cardImage =
@@ -41,7 +43,9 @@ fun RecentTestCard(
     val cardBgColor = if (testerType == TesterType.PARTNER) Color(0xFFEC407A) else Color(0xFF4DD0E1)
     NeoBrutalistCardViewWithFlexSize(
         backgroundColor = Color.White,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable(){
+            clickAction.invoke()
+        }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically

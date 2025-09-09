@@ -20,6 +20,10 @@ class RouterImpl(
         navigate(Routes.AllResults)
     }
 
+    override fun goToTestResultScreen(testID: String) {
+        navigateArg(Routes.TestResult.passTestID(testID))
+    }
+
     override fun goToSplash() {
         navigate(Routes.Splash, removeFromHistory = true, singleTop = true)
     }

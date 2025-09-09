@@ -67,7 +67,8 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
             testResult = "94",
             testerType = TesterType.PARTNER,
             testerUserId = "1",
-            resultBg = Color(0xFF66BB6A)
+            resultBg = Color(0xFF66BB6A),
+            testID = "1"
         ),
         RecentTestsData(
             testerName = "Sam",
@@ -75,7 +76,8 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
             testResult = "78",
             testerType = TesterType.FRIEND,
             testerUserId = "2",
-            resultBg = Color(0xFFFFA726)
+            resultBg = Color(0xFFFFA726),
+            testID = "1"
         ),
         RecentTestsData(
             testerName = "Jordan",
@@ -83,7 +85,8 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
             testResult = "86",
             testerType = TesterType.PARTNER,
             testerUserId = "3",
-            resultBg = Color(0xFFFFEB3B)
+            resultBg = Color(0xFFFFEB3B),
+            testID = "1"
         )
     )
     LazyColumn(
@@ -122,7 +125,10 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
                 testResult = recentTestsData.testResult,
                 testerMbti = recentTestsData.testerMbti,
                 testerType = recentTestsData.testerType,
-                bgColor = recentTestsData.resultBg
+                bgColor = recentTestsData.resultBg,
+                clickAction = {
+                    router.goToTestResultScreen(recentTestsData.testID)
+                }
             )
             Spacer(Modifier.height(8.dp))
         }

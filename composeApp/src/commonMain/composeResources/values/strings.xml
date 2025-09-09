@@ -37,6 +37,10 @@
     //AllResults
     <string name="screen_name_all_results">All Results</string>
 
+    //ResultScreen
+    <string name="match_results">MATCH RESULTS!</string>
+
+
 
 
 </resources>

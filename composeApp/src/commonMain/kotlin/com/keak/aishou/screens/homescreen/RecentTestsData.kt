@@ -8,5 +8,6 @@ data class RecentTestsData(
     val testResult: String,
     val testerUserId: String,
     val testerType: TesterType,
-    val resultBg: Color
+    val resultBg: Color,
+    val testID: String
 )
