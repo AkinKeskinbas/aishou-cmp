@@ -34,4 +34,8 @@
     <string name="best_matches_home">Best Match</string>
     <string name="avg_score_home">Avg Score</string>
 
+    //AllResults
+    <string name="screen_name_all_results">All Results</string>
+
+
 </resources>
