@@ -48,7 +48,7 @@ fun AllResultsScreen(
             testerMbti = "ENTP",
             testResult = "86",
             testerType = TesterType.PARTNER,
-            testerUserId = "3",
+            testerUserId = "4",
             resultBg = Color(0xFFFFEB3B)
         )
     )
