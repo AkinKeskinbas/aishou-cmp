@@ -16,6 +16,10 @@ class RouterImpl(
         navigate(Routes.Home, removeFromHistory = true, singleTop = true)
     }
 
+    override fun goToAllResultScreen() {
+        navigate(Routes.AllResults)
+    }
+
     override fun goToSplash() {
         navigate(Routes.Splash, removeFromHistory = true, singleTop = true)
     }

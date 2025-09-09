@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.keak.aishou.screens.allresults.AllResultsScreen
 import com.keak.aishou.screens.paywall.PaywallScreen
 import com.keak.aishou.screens.homescreen.HomeScreen
 import com.keak.aishou.screens.homescreen.HomeViewModel
@@ -48,5 +49,10 @@ fun NavGraphBuilder.mainRoute(
     ) {
         val homeViewModel: HomeViewModel = koinViewModel()
         HomeScreen(router = router, homeViewModel)
+    }
+    composable(
+        route = Routes.AllResults.route
+    ) {
+        AllResultsScreen(router = router)
     }
 }
