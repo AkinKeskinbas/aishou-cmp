@@ -27,4 +27,17 @@ object BackGroundBrush {
             Color(0xFFE91E63), // pink-500
         )
     )
+    val resultScreenBrush = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFFFF176),
+            Color(0xFFF06292),
+            Color(0xFFA78BFA), // purple-400
+        )
+    )
+    val resultScreenHeaderBrush = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFFFEE58),
+            Color(0xFFA78BFA), // purple-400
+        )
+    )
 }

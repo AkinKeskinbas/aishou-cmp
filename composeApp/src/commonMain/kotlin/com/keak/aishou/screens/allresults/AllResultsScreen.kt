@@ -3,10 +3,8 @@ package com.keak.aishou.screens.allresults
 import aishou.composeapp.generated.resources.Res
 import aishou.composeapp.generated.resources.screen_name_all_results
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,7 +31,8 @@ fun AllResultsScreen(
             testResult = "94",
             testerType = TesterType.PARTNER,
             testerUserId = "1",
-            resultBg = Color(0xFF66BB6A)
+            resultBg = Color(0xFF66BB6A),
+            testID = "12",
         ),
         RecentTestsData(
             testerName = "Sam",
@@ -41,7 +40,8 @@ fun AllResultsScreen(
             testResult = "78",
             testerType = TesterType.FRIEND,
             testerUserId = "2",
-            resultBg = Color(0xFFFFA726)
+            resultBg = Color(0xFFFFA726),
+            testID = "12",
         ),
         RecentTestsData(
             testerName = "Jordan",
@@ -49,7 +49,8 @@ fun AllResultsScreen(
             testResult = "86",
             testerType = TesterType.PARTNER,
             testerUserId = "3",
-            resultBg = Color(0xFFFFEB3B)
+            resultBg = Color(0xFFFFEB3B),
+            testID = "12",
         )
     )
     LazyColumn(
@@ -73,7 +74,10 @@ fun AllResultsScreen(
                 testResult = recentTestsData.testResult,
                 testerMbti = recentTestsData.testerMbti,
                 testerType = recentTestsData.testerType,
-                bgColor = recentTestsData.resultBg
+                bgColor = recentTestsData.resultBg,
+                clickAction = {
+                    router.goToTestResultScreen(recentTestsData.testID)
+                }
             )
             Spacer(Modifier.height(8.dp))
         }

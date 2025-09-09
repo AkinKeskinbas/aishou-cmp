@@ -4,9 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.keak.aishou.screens.allresults.AllResultsScreen
+import com.keak.aishou.screens.allresults.TestResultScreen
 import com.keak.aishou.screens.paywall.PaywallScreen
 import com.keak.aishou.screens.homescreen.HomeScreen
 import com.keak.aishou.screens.homescreen.HomeViewModel
@@ -54,5 +57,14 @@ fun NavGraphBuilder.mainRoute(
         route = Routes.AllResults.route
     ) {
         AllResultsScreen(router = router)
+    }
+    composable(
+        route = Routes.TestResult.route,
+        arguments = listOf(
+            navArgument("testID") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val testID: String = backStackEntry.savedStateHandle.get<String>("testID") ?: ""
+        TestResultScreen(router = router, testID = testID)
     }
 }
