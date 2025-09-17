@@ -324,7 +324,7 @@ fun PaywallScreen(router: Router) {
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = stringResource(Res.string.paywall_join_discover),
-                            fontSize = 18.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
                             modifier = Modifier,
                             color = Color.White
@@ -341,7 +341,9 @@ fun PaywallScreen(router: Router) {
                 }
                 Spacer(Modifier.height(16.dp))
                 NeoBrutalistCardViewWithFlexSize(
-                    modifier = Modifier.fillMaxWidth().rotate(-2f),
+                    modifier = Modifier.fillMaxWidth().rotate(-2f).clickable(){
+                        router.goToHome()
+                    },
                     backgroundColor = Color(0xFFFFFFFF),
 
                     ) {

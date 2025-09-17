@@ -22,7 +22,7 @@ fun SplashScreen(router: Router) {
                 color = Color.Black,
                 fontSize = 24.sp,
                 modifier = Modifier.clickable {
-                    router.goToHome()
+                    router.goToPaywall()
                 })
         }
     }

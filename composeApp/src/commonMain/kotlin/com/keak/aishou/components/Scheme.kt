@@ -19,7 +19,7 @@ import kotlin.math.roundToInt
 
 // ============== 1) Senin panelin (aynen) ==============
 @Composable
-private fun NeoBrutalistPanel(
+fun NeoBrutalistPanel(
     modifier: Modifier = Modifier,
     background: Color = Color.White,
     borderWidth: Dp = 6.dp,

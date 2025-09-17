@@ -109,7 +109,19 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
             Spacer(Modifier.height(16.dp))
         }
         item {
-            UserActions()
+            UserActions(
+                onClickAction = { actionName->
+                    when(actionName){
+                        "New Test"->{
+                            router.goToQuickTestScreen()
+                        }
+                        else -> {
+
+                        }
+                    }
+
+                }
+            )
             Spacer(Modifier.height(16.dp))
         }
         item {
@@ -158,7 +170,9 @@ enum class TesterType {
 }
 
 @Composable
-private fun UserActions() {
+private fun UserActions(
+    onClickAction: (String) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.Center
@@ -168,32 +182,42 @@ private fun UserActions() {
             image = Res.drawable.hearth_desc,
             actionText = stringResource(Res.string.new_test_home),
             textColor = Color.White,
-            imageColor = Color.White
-        )
-        Spacer(Modifier.width(8.dp))
-        QuickActionsCard(
-            backgroundColor = Color(0xFF4DD0E1),
-            image = Res.drawable.profile_home,
-            actionText = stringResource(Res.string.view_all_home)
-        )
-    }
-    Spacer(Modifier.height(8.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        QuickActionsCard(
-            backgroundColor = Color(0xFFFFEE58),
-            image = Res.drawable.star_dec,
-            actionText = stringResource(Res.string.best_matches_home),
+            imageColor = Color.White,
+            onClickAction = onClickAction
         )
         Spacer(Modifier.width(8.dp))
         QuickActionsCard(
             backgroundColor = Color(0xFF66BB6A),
             image = Res.drawable.star,
-            actionText = stringResource(Res.string.quick_quiz_home)
+            actionText = stringResource(Res.string.quick_quiz_home),
+            onClickAction=onClickAction
         )
+//        QuickActionsCard(
+//            backgroundColor = Color(0xFF4DD0E1),
+//            image = Res.drawable.profile_home,
+//            actionText = stringResource(Res.string.view_all_home),
+//            onClickAction = onClickAction
+//        )
     }
+    Spacer(Modifier.height(8.dp))
+//    Row(
+//        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+//        horizontalArrangement = Arrangement.Center
+//    ) {
+//        QuickActionsCard(
+//            backgroundColor = Color(0xFFFFEE58),
+//            image = Res.drawable.star_dec,
+//            actionText = stringResource(Res.string.best_matches_home),
+//            onClickAction = onClickAction
+//        )
+//        Spacer(Modifier.width(8.dp))
+//        QuickActionsCard(
+//            backgroundColor = Color(0xFF66BB6A),
+//            image = Res.drawable.star,
+//            actionText = stringResource(Res.string.quick_quiz_home),
+//            onClickAction=onClickAction
+//        )
+//    }
 }
 
 @Composable
@@ -228,12 +252,15 @@ private fun QuickActionsCard(
     actionText: String,
     textColor: Color = Color.Black,
     imageColor: Color = Color.Black,
+    onClickAction:(actionId: String)-> Unit
 ) {
     val screenSize = screenSize()
     val cardWidth = screenSize.width / 2.2
     NeoBrutalistCardViewWithFlexSize(
         backgroundColor = backgroundColor,
-        modifier = Modifier.width(cardWidth.dp)
+        modifier = Modifier.width(cardWidth.dp).clickable(){
+            onClickAction.invoke(actionText)
+        }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
