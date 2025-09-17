@@ -13,6 +13,9 @@ import com.keak.aishou.screens.allresults.TestResultScreen
 import com.keak.aishou.screens.paywall.PaywallScreen
 import com.keak.aishou.screens.homescreen.HomeScreen
 import com.keak.aishou.screens.homescreen.HomeViewModel
+import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreen
+import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
+import com.keak.aishou.screens.quicktestscreen.QuizScreen
 import com.keak.aishou.screens.splashscreen.SplashScreen
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -59,6 +62,12 @@ fun NavGraphBuilder.mainRoute(
         AllResultsScreen(router = router)
     }
     composable(
+        route = Routes.QuicTests.route
+    ) {
+        val quickTestHomeScreenViewModel: QuickTestHomeScreenViewModel = koinViewModel()
+        QuickTestHomeScreen(router = router, viewModel = quickTestHomeScreenViewModel)
+    }
+    composable(
         route = Routes.TestResult.route,
         arguments = listOf(
             navArgument("testID") { type = NavType.StringType }
@@ -66,5 +75,14 @@ fun NavGraphBuilder.mainRoute(
     ) { backStackEntry ->
         val testID: String = backStackEntry.savedStateHandle.get<String>("testID") ?: ""
         TestResultScreen(router = router, testID = testID)
+    }
+    composable(
+        route = Routes.QuizScreen.route,
+        arguments = listOf(
+            navArgument("quizID") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val quizID: String = backStackEntry.savedStateHandle.get<String>("quizID") ?: ""
+        QuizScreen(router,quizID)
     }
 }

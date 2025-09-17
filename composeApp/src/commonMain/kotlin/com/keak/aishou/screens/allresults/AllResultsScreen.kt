@@ -5,6 +5,7 @@ import aishou.composeapp.generated.resources.screen_name_all_results
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -61,6 +62,7 @@ fun AllResultsScreen(
 
         stickyHeader {
             ScreenHeader(
+                modifier = Modifier.fillMaxWidth(),
                 screenName = stringResource(Res.string.screen_name_all_results),
                 backAction = {
                     router.goBack()

@@ -66,6 +66,9 @@ fun NeoBrutalistCardViewWithFlexSize(
     badgeRotation: Float = 12f,         // rotate-12
     badgeOffsetX: Dp = (16).dp,        // -right-4 ≈ -16dp
     badgeOffsetY: Dp = (-16).dp,        // -top-4  ≈ -16dp
+    badgeTextSize: Int = 18,        // -top-4  ≈ -16dp
+    badgeHorizontal: Int = 16,        // -top-4  ≈ -16dp
+    badgeVertical: Int = 8,        // -top-4  ≈ -16dp
     content: @Composable BoxScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(cornerRadius)
@@ -109,12 +112,12 @@ fun NeoBrutalistCardViewWithFlexSize(
                     .graphicsLayer { rotationZ = badgeRotation }
                     .background(badgeBg, badgeShape)
                     .border(badgeBorderWidth, Color.Black, badgeShape)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = badgeHorizontal.dp, vertical = badgeVertical.dp)
             ) {
                 Text(
                     text = badgeText,
                     color = badgeTextColor,
-                    fontSize = 18.sp,           // ~ text-xl
+                    fontSize = badgeTextSize.sp,           // ~ text-xl
                     fontWeight = FontWeight.Black
                 )
             }

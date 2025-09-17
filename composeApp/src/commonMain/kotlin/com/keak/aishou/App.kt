@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.keak.aishou.di.dataModules
+import com.keak.aishou.di.domainModule
 import com.keak.aishou.di.viewModelModule
 import com.keak.aishou.navigation.AishouNavGraph
 import com.keak.aishou.navigation.Router
@@ -33,7 +34,7 @@ import org.koin.dsl.KoinConfiguration
 fun App() {
     KoinMultiplatformApplication(
         config = KoinConfiguration {
-            modules(viewModelModule, dataModules)
+            modules(viewModelModule, dataModules, domainModule)
         }
     ) {
         val navController: NavHostController = rememberNavController()

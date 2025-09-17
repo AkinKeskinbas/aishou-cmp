@@ -1,6 +1,6 @@
 <resources>
     //Paywall
-    <string name="weekly_premium_paywall">WEEKLY BOOST</string>
+    <string name="weekly_premium_paywall">WEEKLY</string>
     <string name="monthly_premium_paywall">COSMIC VIP</string>
     <string name="monthly_premium_per_month">per month</string>
     <string name="monthly_premium_per_week">per week</string>
@@ -10,7 +10,7 @@
     <string name="paywall_weekly_features_daily_personality_insights">Personality Insights</string>
     <string name="paywall_popular">Popular!</string>
     <string name="paywall_join_discover">Join and Discover Your Destiny!</string>
-    <string name="paywall_cancel_anytime">Cancel anytime No hidden fees  Instant Access</string>
+    <string name="paywall_cancel_anytime">Cancel anytime No hidden fees</string>
     <string name="paywall_unlock_your_cosmic_personality">Unlock Your Cosmic Personality!</string>
     <string name="paywall_choose_your_sign">Choose Your Sign</string>
 
@@ -39,6 +39,19 @@
 
     //ResultScreen
     <string name="match_results">MATCH RESULTS!</string>
+
+    //QuicTestScreen
+    <string name="quick_tests_screen_title">Quick Tests</string>
+    <string name="quick_tests_get_premium_for_all_tests">GET PREMIUM FOR ALL TESTS</string>
+    <string name="quick_tests_discover_your_true_self">DISCOVER YOUR TRUE SELF WITH ZERO MERCY</string>
+    <string name="quick_tests_personality_test">Personality Test</string>
+    <string name="quick_tests_brutal">BRUTAL</string>
+
+    //QuizScreen
+    <string name="quiz_screen_title">BACK TO TESTS</string>
+    <string name="quiz_screen_finish_test">Finish the Test</string>
+
+
 
 
 

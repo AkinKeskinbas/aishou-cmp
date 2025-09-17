@@ -20,6 +20,14 @@ class RouterImpl(
         navigate(Routes.AllResults)
     }
 
+    override fun goToQuickTestScreen() {
+        navigate(Routes.QuicTests)
+    }
+
+    override fun goToQuizScreen(quizID: String) {
+        navigateArg(Routes.QuizScreen.passQuizID(quizID))
+    }
+
     override fun goToTestResultScreen(testID: String) {
         navigateArg(Routes.TestResult.passTestID(testID))
     }
