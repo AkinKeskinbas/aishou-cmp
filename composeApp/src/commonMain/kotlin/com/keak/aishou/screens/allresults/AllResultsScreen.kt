@@ -19,6 +19,7 @@ import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.screens.homescreen.RecentTestsData
 import com.keak.aishou.screens.homescreen.TesterType
+import com.keak.aishou.screens.quicktestscreen.QuizType
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -34,6 +35,7 @@ fun AllResultsScreen(
             testerUserId = "1",
             resultBg = Color(0xFF66BB6A),
             testID = "12",
+            testType = QuizType.Single
         ),
         RecentTestsData(
             testerName = "Sam",
@@ -43,6 +45,7 @@ fun AllResultsScreen(
             testerUserId = "2",
             resultBg = Color(0xFFFFA726),
             testID = "12",
+            testType = QuizType.Single
         ),
         RecentTestsData(
             testerName = "Jordan",
@@ -52,6 +55,7 @@ fun AllResultsScreen(
             testerUserId = "3",
             resultBg = Color(0xFFFFEB3B),
             testID = "12",
+            testType = QuizType.Compat
         )
     )
     LazyColumn(

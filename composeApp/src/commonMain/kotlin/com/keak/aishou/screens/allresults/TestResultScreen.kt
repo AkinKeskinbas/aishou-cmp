@@ -4,6 +4,8 @@ import BouncingHeartSmooth
 import MatchProgressCard
 import aishou.composeapp.generated.resources.Res
 import aishou.composeapp.generated.resources.match_results
+import aishou.composeapp.generated.resources.quick_tests_mbti_match
+import aishou.composeapp.generated.resources.quick_tests_zodiac_match
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -129,7 +131,10 @@ fun TestResultScreen(router: Router, testID: String) {
 }
 
 @Composable
-private fun Explanation() {
+fun Explanation(
+    mbtiTitle: String = stringResource(Res.string.quick_tests_mbti_match),
+    zodiacTitle: String = stringResource(Res.string.quick_tests_zodiac_match)
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         NeoBrutalistCardViewWithFlexSize(
             backgroundColor = null,
@@ -143,7 +148,7 @@ private fun Explanation() {
         ) {
             Column {
                 Text(
-                    text = "MBTI MATCH",
+                    text = mbtiTitle,
                     modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.Black,
                     color = Color.White,
@@ -189,7 +194,7 @@ private fun Explanation() {
         ) {
             Column {
                 Text(
-                    text = "Zodiac MATCH",
+                    text = zodiacTitle,
                     modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.Black,
                     color = Color.White,
@@ -225,7 +230,7 @@ private fun Explanation() {
 }
 
 @Composable
-private fun UserCardOne(
+fun UserCardOne(
     desireWidth: Float,
     modifier: Modifier,
     userName: String,
@@ -314,7 +319,7 @@ private fun UserCardOne(
 }
 
 @Composable
-private fun HeaderMatchResult() {
+fun HeaderMatchResult() {
     NeoBrutalistCardViewWithFlexSize(
         backgroundColor = null,
         backgroundBrush = resultScreenHeaderBrush

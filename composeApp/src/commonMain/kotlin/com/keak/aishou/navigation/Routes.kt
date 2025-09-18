@@ -5,6 +5,7 @@ sealed class Routes(val route: String = "") {
     data object Home : Routes("Home")
     data object AllResults : Routes("AllResults")
     data object QuicTests : Routes("QuicTests")
+    data object PersonelResult : Routes("PersonelResult")
     data object TestResult : Routes("TestResults/{testID}") {
         fun passTestID(testID: String): String {
             return "TestResults/$testID}"
