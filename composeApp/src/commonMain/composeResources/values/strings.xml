@@ -46,10 +46,17 @@
     <string name="quick_tests_discover_your_true_self">DISCOVER YOUR TRUE SELF WITH ZERO MERCY</string>
     <string name="quick_tests_personality_test">Personality Test</string>
     <string name="quick_tests_brutal">BRUTAL</string>
+    <string name="quick_tests_mbti_match">MBTI MATCH</string>
+    <string name="quick_tests_mbti">MBTI</string>
+    <string name="quick_tests_zodiac_match">Zodiac MATCH</string>
+    <string name="quick_tests_zodiac">Zodiac</string>
 
     //QuizScreen
     <string name="quiz_screen_title">BACK TO TESTS</string>
     <string name="quiz_screen_finish_test">Finish the Test</string>
+
+    //PersonalTest
+    <string name="personal_screen_send_to_friend">Send to Friend</string>
 
 
 

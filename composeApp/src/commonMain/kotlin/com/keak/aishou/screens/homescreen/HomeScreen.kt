@@ -53,6 +53,7 @@ import com.keak.aishou.components.RecentTestCard
 import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.screenSize
+import com.keak.aishou.screens.quicktestscreen.QuizType
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -62,22 +63,24 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
     vm.test()
     val testResultList = listOf(
         RecentTestsData(
-            testerName = "Alex",
+            testerName = "Me",
             testerMbti = "ENFP",
             testResult = "94",
-            testerType = TesterType.PARTNER,
+            testerType = TesterType.MYSELF,
             testerUserId = "1",
             resultBg = Color(0xFF66BB6A),
-            testID = "1"
+            testID = "1",
+            testType = QuizType.Single
         ),
         RecentTestsData(
-            testerName = "Sam",
-            testerMbti = "ISTJ",
+            testerName = "Me",
+            testerMbti = "ENFP",
             testResult = "78",
-            testerType = TesterType.FRIEND,
+            testerType = TesterType.MYSELF,
             testerUserId = "2",
             resultBg = Color(0xFFFFA726),
-            testID = "1"
+            testID = "1",
+            testType = QuizType.Single
         ),
         RecentTestsData(
             testerName = "Jordan",
@@ -86,7 +89,8 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
             testerType = TesterType.PARTNER,
             testerUserId = "3",
             resultBg = Color(0xFFFFEB3B),
-            testID = "1"
+            testID = "1",
+            testType = QuizType.Compat
         )
     )
     LazyColumn(
@@ -139,7 +143,12 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
                 testerType = recentTestsData.testerType,
                 bgColor = recentTestsData.resultBg,
                 clickAction = {
-                    router.goToTestResultScreen(recentTestsData.testID)
+                    if (recentTestsData.testType == QuizType.Single){
+                        router.goToPersonelResultScreen()
+                    }else{
+                        router.goToTestResultScreen(recentTestsData.testID)
+                    }
+
                 }
             )
             Spacer(Modifier.height(8.dp))
@@ -166,7 +175,7 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
 
 
 enum class TesterType {
-    FRIEND, PARTNER, COWORKER, FAMILY
+    FRIEND, PARTNER, COWORKER, FAMILY, MYSELF
 }
 
 @Composable

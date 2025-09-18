@@ -39,7 +39,7 @@ fun ScreenHeader(
         ) {
             Image(
                 painter = painterResource(Res.drawable.back),
-                modifier = Modifier.size(30.dp).clickable() {
+                modifier = Modifier.size(20.dp).clickable() {
                     backAction.invoke()
                 },
                 contentDescription = null
