@@ -1,5 +1,8 @@
 package com.keak.aishou.di
 
+import com.keak.aishou.data.DataStoreFactory
+import com.keak.aishou.data.DataStoreManager
+import com.keak.aishou.data.UserSessionManager
 import com.keak.aishou.domain.mapper.QuickTestHomeMapper
 import com.keak.aishou.domain.repository.QuicTestScreenRepository
 import com.keak.aishou.domain.repositoryimpl.QuickTestRepositoryImpl
@@ -13,6 +16,7 @@ import com.keak.aishou.purchase.RevenueCatPremiumRepository
 import com.keak.aishou.purchase.RevenueCatProductsRepository
 import com.keak.aishou.screens.homescreen.HomeViewModel
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
+import com.keak.aishou.screens.splashscreen.SplashViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,6 +25,10 @@ import org.koin.dsl.module
 
 val dataModules = module {
     single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
+
+    single { DataStoreFactory.createDataStore() }
+    single { DataStoreManager(get()) }
+    single { UserSessionManager.getInstance(get(), get()) }
 
     single<AishouApiService> { AishouApiImpl() }
     single<PremiumRepository> { RevenueCatPremiumRepository() }
@@ -36,5 +44,6 @@ val domainModule = module {
 }
 val viewModelModule = module {
     viewModelOf(::HomeViewModel)
-    viewModelOf(::QuickTestHomeScreenViewModel)// Koin 4.x DSL
+    viewModelOf(::QuickTestHomeScreenViewModel)
+    viewModelOf(::SplashViewModel)
 }

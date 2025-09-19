@@ -14,10 +14,15 @@ import com.keak.aishou.screens.allresults.TestResultScreen
 import com.keak.aishou.screens.paywall.PaywallScreen
 import com.keak.aishou.screens.homescreen.HomeScreen
 import com.keak.aishou.screens.homescreen.HomeViewModel
+import com.keak.aishou.screens.onboarding.OnBoardingScreenFourth
+import com.keak.aishou.screens.onboarding.OnBoardingScreenThird
+import com.keak.aishou.screens.onboarding.OnboardingScreen
+import com.keak.aishou.screens.onboarding.OnboardingScreenSecond
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreen
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
 import com.keak.aishou.screens.quicktestscreen.QuizScreen
 import com.keak.aishou.screens.splashscreen.SplashScreen
+import com.keak.aishou.screens.splashscreen.SplashViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -44,7 +49,28 @@ fun NavGraphBuilder.mainRoute(
     composable(
         route = Routes.Splash.route
     ) {
-        SplashScreen(router = router)
+        val splashViewModel: SplashViewModel = koinViewModel()
+        SplashScreen(router = router, viewModel = splashViewModel)
+    }
+    composable(
+        route = Routes.OnBoarding.route
+    ) {
+        OnboardingScreen(router = router)
+    }
+    composable(
+        route = Routes.OnBoardingSecond.route
+    ) {
+        OnboardingScreenSecond(router = router)
+    }
+    composable(
+        route = Routes.OnBoardingThird.route
+    ) {
+        OnBoardingScreenThird(router = router)
+    }
+    composable(
+        route = Routes.OnBoardingFourth.route
+    ) {
+        OnBoardingScreenFourth(router = router)
     }
     composable(
         route = Routes.Paywall.route

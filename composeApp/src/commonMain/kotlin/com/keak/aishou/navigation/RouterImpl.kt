@@ -24,7 +24,7 @@ class RouterImpl(
         navigate(Routes.QuicTests)
     }
 
-    override fun goToPersonelResultScreen() {
+    override fun goToPersonalResultScreen() {
         navigate(Routes.PersonelResult)
     }
 
@@ -42,6 +42,26 @@ class RouterImpl(
 
     override fun goToPaywall() {
         navigate(Routes.Paywall)
+    }
+
+    override fun goToOnBoarding() {
+        navigate(Routes.OnBoarding)
+    }
+
+    override fun goToOnBoardingSecond() {
+        navigate(Routes.OnBoardingSecond)
+    }
+
+    override fun goToOnBoardingThird() {
+        navigate(Routes.OnBoardingThird)
+    }
+
+    override fun goToOnBoardingFourth() {
+        navigate(Routes.OnBoardingFourth)
+    }
+
+    override fun goToQuickTest() {
+        navigate(Routes.QuicTests)
     }
 
     private fun navigate(

@@ -1,10 +1,8 @@
 package com.keak.aishou.screens.homescreen
 
 import aishou.composeapp.generated.resources.Res
-import aishou.composeapp.generated.resources.best_matches_home
 import aishou.composeapp.generated.resources.cosmic_match_home
 import aishou.composeapp.generated.resources.hearth_desc
-import aishou.composeapp.generated.resources.hey_text_home
 import aishou.composeapp.generated.resources.lightining_home
 import aishou.composeapp.generated.resources.mbti_zodiac_home
 import aishou.composeapp.generated.resources.new_test_home
@@ -16,9 +14,7 @@ import aishou.composeapp.generated.resources.recent_tests_home
 import aishou.composeapp.generated.resources.settings_home
 import aishou.composeapp.generated.resources.star
 import aishou.composeapp.generated.resources.star_dec
-import aishou.composeapp.generated.resources.view_all_home
 import aishou.composeapp.generated.resources.view_all_tests_home
-import aishou.composeapp.generated.resources.your_cosmic_profile_home
 import aishou.composeapp.generated.resources.zodiac_sign_profile_home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,16 +25,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -50,17 +51,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.components.RecentTestCard
+import com.keak.aishou.data.UserState
 import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.screenSize
 import com.keak.aishou.screens.quicktestscreen.QuizType
+import com.keak.aishou.util.FormatUtils
+import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun HomeScreen(router: Router, vm: HomeViewModel) {
-    vm.test()
+fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
+    val userState by vm.userState.collectAsStateWithLifecycle()
     val testResultList = listOf(
         RecentTestsData(
             testerName = "Me",
@@ -94,15 +98,16 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
         )
     )
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(
-            brush = BackGroundBrush.homNeoBrush
-        )
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .background(brush = BackGroundBrush.homNeoBrush)
     ) {
         stickyHeader {
             HomeHeader()
         }
         item {
-            UserCard()
+            UserCard(userState = userState)
             Spacer(Modifier.height(16.dp))
         }
         item {
@@ -144,7 +149,7 @@ fun HomeScreen(router: Router, vm: HomeViewModel) {
                 bgColor = recentTestsData.resultBg,
                 clickAction = {
                     if (recentTestsData.testType == QuizType.Single){
-                        router.goToPersonelResultScreen()
+                        router.goToPersonalResultScreen()
                     }else{
                         router.goToTestResultScreen(recentTestsData.testID)
                     }
@@ -295,7 +300,7 @@ private fun QuickActionsCard(
 }
 
 @Composable
-private fun UserCard() {
+private fun UserCard(userState: UserState) {
     val phoneScreenSize = screenSize()
     val screenWidth = phoneScreenSize.width / 2.2
     NeoBrutalistCardViewWithFlexSize(
@@ -312,16 +317,28 @@ private fun UserCard() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = stringResource(Res.string.hey_text_home),
+                text = if (userState.isFirstTimeUser) "Welcome to Aishou! ✨" else "Welcome back! 👋",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 modifier = Modifier
             )
             Text(
-                text = stringResource(Res.string.your_cosmic_profile_home),
+                text = if (userState.isFirstTimeUser) {
+                    "Let's discover your cosmic personality!"
+                } else {
+                    val days = userState.daysSinceFirstLaunch ?: 0
+                    val formattedLaunchCount = FormatUtils.formatLaunchCount(userState.appLaunchCount)
+                    if (days > 0) {
+                        val formattedDays = FormatUtils.formatDaysActive(days)
+                        "Launch #$formattedLaunchCount • $formattedDays active"
+                    } else {
+                        "Launch #$formattedLaunchCount"
+                    }
+                },
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier
+                modifier = Modifier,
+                color = if (userState.isFirstTimeUser) Color.Black else Color.Gray
             )
             Row(
                 modifier = Modifier.fillMaxWidth()

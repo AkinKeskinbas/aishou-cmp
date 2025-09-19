@@ -73,6 +73,9 @@ kotlin {
             implementation(libs.purchases.either)     // Optional
             implementation(libs.purchases.result)
 
+            implementation(libs.androidx.datastore.core)
+            implementation(libs.androidx.datastore.preferences)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
