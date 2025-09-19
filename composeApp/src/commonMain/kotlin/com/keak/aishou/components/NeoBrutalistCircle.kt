@@ -27,6 +27,15 @@ fun NeoBrutalistCircle(
     shadowColor: Color = Color.Black,
     borderWith: Dp = 3.dp,
     shadowOffset: Dp = 6.dp,
+    backgroundBrush: Brush = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFEC4899),
+            Color(0xFFEF4444),
+            Color(0xFFEC4899),
+        ),
+        start = Offset(0f,0f),
+        end = Offset(Float.POSITIVE_INFINITY, 0f)
+    ),
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -39,15 +48,7 @@ fun NeoBrutalistCircle(
             modifier = Modifier
                 .matchParentSize()
                 .offset(x = -shadowOffset, y = -shadowOffset)
-                .background(brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFEC4899),
-                        Color(0xFFEF4444),
-                        Color(0xFFEC4899),
-                    ),
-                    start = Offset(0f,0f),
-                    end = Offset(Float.POSITIVE_INFINITY, 0f)
-                ), shape = CircleShape)
+                .background(brush = backgroundBrush, shape = CircleShape)
                 .border(borderWith, borderColor, shape = CircleShape)
                 ,
             contentAlignment = Alignment.Center

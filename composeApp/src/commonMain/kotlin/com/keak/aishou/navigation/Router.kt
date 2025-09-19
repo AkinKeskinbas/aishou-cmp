@@ -5,10 +5,15 @@ interface Router {
     fun goToHome()
     fun goToAllResultScreen()
     fun goToQuickTestScreen()
-    fun goToPersonelResultScreen()
+    fun goToPersonalResultScreen()
     fun goToQuizScreen(quizID: String)
     fun goToTestResultScreen(testID: String)
     fun goToSplash()
     fun goToPaywall()
+    fun goToOnBoarding()
+    fun goToOnBoardingSecond()
+    fun goToOnBoardingThird()
+    fun goToOnBoardingFourth()
+    fun goToQuickTest()
 
 }

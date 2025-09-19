@@ -58,9 +58,51 @@
     //PersonalTest
     <string name="personal_screen_send_to_friend">Send to Friend</string>
 
+    //Onboarding
+    <string name="onboarding_tired_of_fake_friend">Tired of Fake Friends?</string>
+    <string name="onboarding_real_talk">Real Talk</string>
+    <string name="onboarding_are_you_bored">Are you bored with fake friends?</string>
+    <string name="onboarding_yes">YES! I'm so done with them</string>
+    <string name="onboarding_you_know_the_feelings">You know the feeling... friends who only hit you up when they need something, ghost you randomly, or just don't get your vibe at all 😤</string>
+
+    //Onboarding-Second
+    <string name="onboarding_second_solution">Solution</string>
+    <string name="onboarding_find_your_real_tribe">Find Your Real Tribe</string>
+    <string name="onboarding_what_if">What if you could find friends who actually match your energy, understand your humor, and genuinely care about you? �</string>
+    <string name="onboarding_want_friends">Want friends who actually get you? ✨</string>
+    <string name="onboarding_sounds_amazing">YES! That sounds amazing</string>
 
 
 
 
+
+
+    //Onboarding-Third
+    <string name="onboarding_third_title">Here's How We Do It</string>
+    <string name="onboarding_third_subtitle">Science meets friendship 🧬✨</string>
+    <string name="onboarding_third_mbti_title">97% Accurate MBTI</string>
+    <string name="onboarding_third_mbti_description">Our personality test is scientifically backed and actually works (not like those basic quizzes)</string>
+    <string name="onboarding_third_mbti_badge">REAL SCIENCE ⚡</string>
+    <string name="onboarding_third_zodiac_title">Zodiac Compatibility</string>
+    <string name="onboarding_third_zodiac_description">We add cosmic vibes to find your perfect friendship match ✨</string>
+    <string name="onboarding_third_zodiac_badge">COSMIC MATCH 🌟</string>
+    <string name="onboarding_third_matching_title">Smart Matching</string>
+    <string name="onboarding_third_matching_description">Connect with people who share your mindset, humor, and energy</string>
+    <string name="onboarding_third_matching_badge">REAL CONNECTIONS 💫</string>
+    <string name="onboarding_third_question">Ready to ditch the fake friends? 🚀</string>
+    <string name="onboarding_third_lets_do_this">Let's do this!</string>
+    <string name="onboarding_third_maybe_later">Maybe later</string>
+
+    //Onboarding-Fourth
+    <string name="onboarding_fourth_perfect_title">Perfect!</string>
+    <string name="onboarding_fourth_perfect_ready">You're Ready! 🚀</string>
+    <string name="onboarding_fourth_perfect_subtitle">Time to find your real tribe and leave those fake friends behind! ✨</string>
+    <string name="onboarding_fourth_quick_test">Quick Test</string>
+    <string name="onboarding_fourth_accurate">Accurate</string>
+    <string name="onboarding_fourth_free">Free</string>
+    <string name="onboarding_fourth_always">Always</string>
+    <string name="onboarding_fourth_find_friends">Find My Real Friends</string>
+    <string name="onboarding_fourth_take_quiz">Take Quiz with Friends</string>
+    <string name="onboarding_fourth_footer">No more fake friends, only real connections 💯</string>
 
 </resources>
