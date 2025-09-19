@@ -17,6 +17,8 @@ import com.keak.aishou.purchase.RevenueCatProductsRepository
 import com.keak.aishou.screens.homescreen.HomeViewModel
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
 import com.keak.aishou.screens.splashscreen.SplashViewModel
+import com.keak.aishou.notifications.OneSignalFactory
+import com.keak.aishou.notifications.OneSignalService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,9 +28,10 @@ import org.koin.dsl.module
 val dataModules = module {
     single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
 
+
     single { DataStoreFactory.createDataStore() }
     single { DataStoreManager(get()) }
-    single { UserSessionManager.getInstance(get(), get()) }
+    single { UserSessionManager(get(), get()) }
 
     single<AishouApiService> { AishouApiImpl() }
     single<PremiumRepository> { RevenueCatPremiumRepository() }
@@ -37,13 +40,17 @@ val dataModules = module {
     single { QuickTestHomeMapper() }
     single<QuicTestScreenRepository> { QuickTestRepositoryImpl(get()) }
 
+    // OneSignal
+    single { OneSignalFactory.createOneSignalManager() }
+    single { OneSignalService(get(), get(), get()) }
+
 }
 
 val domainModule = module {
     single { QuickTestHomeUseCase(get()) }
 }
 val viewModelModule = module {
-    viewModelOf(::HomeViewModel)
+    factory { HomeViewModel(get(), get()) }
     viewModelOf(::QuickTestHomeScreenViewModel)
-    viewModelOf(::SplashViewModel)
+    factory { SplashViewModel(get(), get()) }
 }

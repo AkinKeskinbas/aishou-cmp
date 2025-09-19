@@ -3,6 +3,7 @@ package com.keak.aishou.screens.splashscreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keak.aishou.data.UserSessionManager
+import com.keak.aishou.notifications.OneSignalService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,18 +16,22 @@ sealed class SplashNavigationEvent {
 }
 
 class SplashViewModel(
-    private val userSessionManager: UserSessionManager
+    private val userSessionManager: UserSessionManager,
+    private val oneSignalService: OneSignalService
 ) : ViewModel() {
 
     private val _navigationEvent = MutableStateFlow<SplashNavigationEvent?>(null)
     val navigationEvent: StateFlow<SplashNavigationEvent?> = _navigationEvent.asStateFlow()
 
     init {
-        checkUserLoginStatus()
+        initializeApp()
     }
 
-    private fun checkUserLoginStatus() {
+    private fun initializeApp() {
         viewModelScope.launch {
+            // Initialize OneSignal
+            oneSignalService.initialize()
+
             // Check if this is the user's first time BEFORE handling app start
             val isFirstTime = userSessionManager.isUserFirstTime()
 

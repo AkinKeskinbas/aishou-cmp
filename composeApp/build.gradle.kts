@@ -29,6 +29,8 @@ kotlin {
             isStatic = true
         }
     }
+
+
     
     sourceSets {
         named { it.lowercase().startsWith("ios") }.configureEach {
@@ -41,6 +43,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(project.dependencies.platform("com.google.firebase:firebase-bom:34.2.0"))
             implementation("com.google.firebase:firebase-analytics")
+            implementation(libs.onesignal.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -107,6 +110,18 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    lint {
+        disable += setOf(
+            "NullSafeMutableLiveData",
+            "RememberInComposition",
+            "UnnecessaryComposedModifier",
+            "ComposableNaming",
+            "ModifierParameter"
+        )
+        // Ignore lint errors related to Kotlin version incompatibility
+        abortOnError = false
+        checkReleaseBuilds = false
     }
 }
 
