@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.components.ScreenHeader
+import com.keak.aishou.components.SendToFriendBottomSheet
 import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.ResultType
 import com.keak.aishou.data.api.SoloResult
@@ -80,6 +84,8 @@ fun TestResultScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val isReprocessing by viewModel.isReprocessing.collectAsStateWithLifecycle()
+    val showSendToFriendBottomSheet by viewModel.showSendToFriendBottomSheet.collectAsStateWithLifecycle()
+    val inviteLink by viewModel.inviteLink.collectAsStateWithLifecycle()
 
     // Load test results when screen starts
     LaunchedEffect(testID) {
@@ -154,6 +160,14 @@ fun TestResultScreen(
                 )
             }
         }
+
+        // Send to Friend Bottom Sheet
+        SendToFriendBottomSheet(
+            inviteLink = inviteLink,
+            soloResult = testResult?.soloResult,
+            isVisible = showSendToFriendBottomSheet,
+            onDismiss = { viewModel.closeSendToFriendBottomSheet() }
+        )
     }
 }
 
@@ -200,9 +214,18 @@ fun TestResultContent(
                     isReprocessing = isReprocessing
                 )
                 Spacer(Modifier.height(16.dp))
-                SendToFriendButton(onClick = {
-                    // TODO: Implement send to friend functionality
-                })
+                SendToFriendButton(
+                    onClick = {
+                        // TODO: Remove this temporary premium bypass after testing
+                        val isPremiumForTesting = true // Always true for testing
+                        if (isPremiumForTesting || viewModel.isPremiumUser()) {
+                            viewModel.openSendToFriendBottomSheet(testID)
+                        } else {
+                            router.goToPaywall()
+                        }
+                    },
+                    isPremium = true // TODO: Change back to viewModel.isPremiumUser() after testing
+                )
             }
             ResultType.COMPATIBILITY -> {
                 // Show compatibility results
@@ -220,9 +243,18 @@ fun TestResultContent(
                 Spacer(Modifier.height(16.dp))
                 CompatibilityResultsContent(testResult = testResult)
                 Spacer(Modifier.height(16.dp))
-                SendToFriendButton(onClick = {
-                    // TODO: Implement send to friend functionality
-                })
+                SendToFriendButton(
+                    onClick = {
+                        // TODO: Remove this temporary premium bypass after testing
+                        val isPremiumForTesting = true // Always true for testing
+                        if (isPremiumForTesting || viewModel.isPremiumUser()) {
+                            viewModel.openSendToFriendBottomSheet(testID)
+                        } else {
+                            router.goToPaywall()
+                        }
+                    },
+                    isPremium = true // TODO: Change back to viewModel.isPremiumUser() after testing
+                )
             }
             ResultType.NONE -> {
                 // No results available
@@ -746,79 +778,96 @@ fun PremiumPromptSection(onUpgradeClick: () -> Unit) {
         ),
         modifier = Modifier.fillMaxWidth(),
         shadowColor = Color(0xFFFF4757),
-        shadowOffset = 10.dp,
-        borderWidth = 4.dp
+        shadowOffset = 8.dp,
+        borderWidth = 3.dp
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "🔮✨",
-                fontSize = 48.sp
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Text(
-                text = "UNLOCK AI INSIGHTS",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.White,
-                textAlign = TextAlign.Center
+                fontSize = 40.sp
             )
 
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = "Get personalized AI analysis of your personality!",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center
+                text = "UNLOCK AI INSIGHTS",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                maxLines = 1
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(6.dp))
 
+            Text(
+                text = "Get personalized AI analysis of your personality!",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                modifier = Modifier.fillMaxWidth(0.9f)
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            // Responsive layout for features - use Row with proper spacing
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                PremiumFeature("🧠", "Deep Analysis")
-                PremiumFeature("💡", "Insights")
-                PremiumFeature("🎯", "Predictions")
+                listOf(
+                    "🧠" to "Deep Analysis",
+                    "💡" to "Insights",
+                    "🎯" to "Predictions"
+                ).forEach { (emoji, text) ->
+                    PremiumFeature(
+                        emoji = emoji,
+                        text = text,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
 
             NeoBrutalistCardViewWithFlexSize(
                 backgroundColor = Color.White,
-                modifier = Modifier.fillMaxWidth().clickable(role = Role.Button) {
-                    onUpgradeClick()
-                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(role = Role.Button) {
+                        onUpgradeClick()
+                    },
                 shadowColor = Color(0xFF00D2FF),
-                shadowOffset = 6.dp
+                shadowOffset = 4.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "👑",
-                        fontSize = 24.sp
+                        fontSize = 20.sp
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(6.dp))
                     Text(
                         text = "UPGRADE TO PREMIUM",
                         fontWeight = FontWeight.Black,
-                        fontSize = 16.sp,
-                        color = Color.Black
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        maxLines = 1
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(6.dp))
                     Text(
                         text = "⚡",
-                        fontSize = 24.sp
+                        fontSize = 20.sp
                     )
                 }
             }
@@ -827,38 +876,50 @@ fun PremiumPromptSection(onUpgradeClick: () -> Unit) {
 }
 
 @Composable
-fun PremiumFeature(emoji: String, text: String) {
+fun PremiumFeature(emoji: String, text: String, modifier: Modifier = Modifier) {
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = emoji,
-            fontSize = 32.sp
+            fontSize = 28.sp
         )
         Spacer(Modifier.height(4.dp))
         Text(
             text = text,
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            maxLines = 2
         )
     }
 }
 
 @Composable
-fun SendToFriendButton(onClick: () -> Unit) {
+fun SendToFriendButton(onClick: () -> Unit, isPremium: Boolean) {
     NeoBrutalistCardViewWithFlexSize(
         backgroundColor = null,
-        backgroundBrush = Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF06FFA5),
-                Color(0xFF4FFFB3),
-                Color(0xFF06FFA5)
+        backgroundBrush = if (isPremium) {
+            Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF06FFA5),
+                    Color(0xFF4FFFB3),
+                    Color(0xFF06FFA5)
+                )
             )
-        ),
+        } else {
+            Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFFFFD700),
+                    Color(0xFFFFA500),
+                    Color(0xFFFFD700)
+                )
+            )
+        },
         modifier = Modifier.fillMaxWidth().clickable(role = Role.Button) { onClick() },
-        shadowColor = Color(0xFF00D084),
+        shadowColor = if (isPremium) Color(0xFF00D084) else Color(0xFFFF8C00),
         shadowOffset = 8.dp,
         borderWidth = 4.dp
     ) {
@@ -868,20 +929,20 @@ fun SendToFriendButton(onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "📤",
+                text = if (isPremium) "📤" else "👑",
                 fontSize = 24.sp
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = "SEND TO FRIEND",
+                text = if (isPremium) "SEND TO FRIEND" else "SEND TO FRIEND (PREMIUM)",
                 fontWeight = FontWeight.Black,
-                fontSize = 18.sp,
+                fontSize = if (isPremium) 18.sp else 16.sp,
                 color = Color.Black,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text = "💌",
+                text = if (isPremium) "💌" else "⭐",
                 fontSize = 24.sp
             )
         }

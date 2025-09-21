@@ -6,7 +6,6 @@ import com.keak.aishou.data.DataStoreManager
 import com.keak.aishou.data.UserSessionManager
 import com.keak.aishou.data.UserRegistrationService
 import com.keak.aishou.data.PersonalityDataManager
-import com.keak.aishou.data.language.LanguageDetector
 import com.keak.aishou.data.language.LanguageManager
 import com.keak.aishou.domain.mapper.QuickTestHomeMapper
 import com.keak.aishou.domain.repository.QuicTestScreenRepository
@@ -27,11 +26,17 @@ import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashViewModel
 import com.keak.aishou.notifications.OneSignalFactory
 import com.keak.aishou.notifications.OneSignalService
+import com.keak.aishou.utils.ShareHelperFactory
+import com.keak.aishou.utils.ImageShareHelperFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.Module
 import org.koin.dsl.module
+
+// Platform module - will be provided by platform-specific implementations
+expect val platformModule: Module
 
 val dataModules = module {
     single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
@@ -62,7 +67,11 @@ val dataModules = module {
 
     // OneSignal
     single { OneSignalFactory.createOneSignalManager() }
-    single { OneSignalService(get(), get(), get()) }
+    single { OneSignalService(get(), get(), get(), get(), get()) }
+
+    // Share Helper
+    single { ShareHelperFactory.create() }
+    single { ImageShareHelperFactory.create() }
 
 }
 

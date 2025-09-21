@@ -84,6 +84,9 @@ kotlin {
             implementation(libs.androidx.datastore.core)
             implementation(libs.androidx.datastore.preferences)
 
+            implementation("com.gyanoba.inspektor:inspektor:0.3.9")
+
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

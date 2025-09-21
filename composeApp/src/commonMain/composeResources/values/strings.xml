@@ -138,4 +138,16 @@
     <string name="onboarding_fourth_take_quiz">Take Quiz with Friends</string>
     <string name="onboarding_fourth_footer">No more fake friends, only real connections 💯</string>
 
+    //Instagram Story Share
+    <string name="instagram_story_app_title">🎯 AISHOU</string>
+    <string name="instagram_story_points_label">PT</string>
+    <string name="instagram_story_key_insight_title">💡 KEY INSIGHT</string>
+    <string name="instagram_story_call_to_action">🚀 Benimle Birlikte Çöz!</string>
+    <string name="instagram_story_app_name">AISHOU.APP</string>
+    <string name="instagram_story_insight_perfect">Mükemmel bir kişilik profili! Hem analitik hem de empatiğin.</string>
+    <string name="instagram_story_insight_strong">Güçlü bir kişiliğe sahipsin! Liderlik özeliklerin öne çıkıyor.</string>
+    <string name="instagram_story_insight_balanced">Dengeli bir karakterin var. İlişkilerde başarılısın.</string>
+    <string name="instagram_story_insight_creative">Yaratıcı ruhun ve sosyal yeteneklerin dikkat çekici.</string>
+    <string name="instagram_story_insight_unique">Benzersiz kişiliğin ve potansiyelin keşfedilmeyi bekliyor!</string>
+
 </resources>

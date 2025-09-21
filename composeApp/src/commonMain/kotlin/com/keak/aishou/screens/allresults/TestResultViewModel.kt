@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.ResultType
+import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
 import com.keak.aishou.purchase.PremiumChecker
@@ -27,6 +28,18 @@ class TestResultViewModel(
 
     private val _isReprocessing = MutableStateFlow(false)
     val isReprocessing: StateFlow<Boolean> = _isReprocessing.asStateFlow()
+
+    private val _isSendingInvite = MutableStateFlow(false)
+    val isSendingInvite: StateFlow<Boolean> = _isSendingInvite.asStateFlow()
+
+    private val _inviteSuccess = MutableStateFlow<String?>(null)
+    val inviteSuccess: StateFlow<String?> = _inviteSuccess.asStateFlow()
+
+    private val _showSendToFriendBottomSheet = MutableStateFlow(false)
+    val showSendToFriendBottomSheet: StateFlow<Boolean> = _showSendToFriendBottomSheet.asStateFlow()
+
+    private val _inviteLink = MutableStateFlow<String?>(null)
+    val inviteLink: StateFlow<String?> = _inviteLink.asStateFlow()
 
     fun loadTestResults(testId: String) {
         viewModelScope.launch {
@@ -135,5 +148,84 @@ class TestResultViewModel(
                 _isReprocessing.value = false
             }
         }
+    }
+
+    fun openSendToFriendBottomSheet(testId: String) {
+        _showSendToFriendBottomSheet.value = true
+        sendToFriend(testId)
+    }
+
+    fun closeSendToFriendBottomSheet() {
+        _showSendToFriendBottomSheet.value = false
+        _inviteLink.value = null
+        _inviteSuccess.value = null
+    }
+
+    fun sendToFriend(testId: String) {
+        viewModelScope.launch {
+            _isSendingInvite.value = true
+            _error.value = null
+            _inviteSuccess.value = null
+            _inviteLink.value = null
+
+            try {
+                // Get test version from test result response
+                val testVersion = _testResult.value?.let { result ->
+                    // Extract version from test data if available, default to 1
+                    1 // For now, using version 1 as default - you may need to get this from the test data
+                } ?: 1
+
+                val inviteRequest = InviteCreateRequest(
+                    friendId = null, // null means public invite
+                    testId = testId,
+                    version = testVersion
+                )
+
+                val result = apiService.createInvite(inviteRequest)
+                when (result) {
+                    is ApiResult.Success -> {
+                        val inviteId = result.data.data?.inviteId
+                        _inviteSuccess.value = inviteId
+
+                        // Generate invite link from invite ID
+                        val inviteLink = generateInviteLink(inviteId)
+                        _inviteLink.value = inviteLink
+
+                        _error.value = null
+                        println("TestResultViewModel: Invite created successfully with ID: $inviteId")
+                        println("TestResultViewModel: Invite link: $inviteLink")
+                    }
+                    is ApiResult.Error -> {
+                        val errorMessage = result.message ?: "Failed to create invite"
+                        _error.value = errorMessage
+                        println("TestResultViewModel: Error creating invite: $errorMessage")
+                    }
+                    is ApiResult.Exception -> {
+                        val errorMessage = result.exception.message ?: "Exception creating invite"
+                        _error.value = errorMessage
+                        println("TestResultViewModel: Exception creating invite: $errorMessage")
+                    }
+                }
+            } catch (e: Exception) {
+                val errorMessage = e.message ?: "Unexpected error creating invite"
+                _error.value = errorMessage
+                println("TestResultViewModel: Unexpected error: $errorMessage")
+            } finally {
+                _isSendingInvite.value = false
+            }
+        }
+    }
+
+    private fun generateInviteLink(inviteId: String?): String? {
+        return if (inviteId != null) {
+            // TODO: Replace with actual deep link domain
+            "https://aishou.app/invite/$inviteId"
+        } else {
+            null
+        }
+    }
+
+    fun clearInviteSuccess() {
+        _inviteSuccess.value = null
     }
 }

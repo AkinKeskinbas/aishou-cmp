@@ -1,14 +1,21 @@
 package com.keak.aishou.notifications
 
 import com.keak.aishou.data.UserSessionManager
+import com.keak.aishou.data.DataStoreManager
+import com.keak.aishou.data.api.PushReq
+import com.keak.aishou.network.AishouApiService
+import com.keak.aishou.network.ApiResult
 import com.keak.aishou.utils.Platform
 import com.keak.aishou.purchase.PlatformKeys
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class OneSignalService(
     private val oneSignalManager: OneSignalManager,
     private val userSessionManager: UserSessionManager,
+    private val dataStoreManager: DataStoreManager,
+    private val apiService: AishouApiService,
     private val scope: CoroutineScope
 ) {
 
@@ -18,11 +25,22 @@ class OneSignalService(
      * Initialize OneSignal and set up user tracking
      */
     fun initialize() {
-        oneSignalManager.initialize(PlatformKeys.oneSignalAppId)
+        try {
+            val appId = PlatformKeys.oneSignalAppId.takeIf { it.isNotBlank() }
+            if (appId != null) {
+                oneSignalManager.initialize(appId)
+                println("OneSignal: ✅ Initialized with app ID: $appId")
 
-        // Set up user tracking when OneSignal is ready
-        scope.launch {
-            setupUserTracking()
+                // Set up user tracking when OneSignal is ready
+                scope.launch {
+                    setupUserTracking()
+                }
+            } else {
+                println("OneSignal: ❌ Invalid app ID, skipping initialization")
+            }
+        } catch (e: Exception) {
+            println("OneSignal: ❌ Error during initialization: ${e.message}")
+            e.printStackTrace()
         }
     }
 
@@ -46,8 +64,8 @@ class OneSignalService(
         try {
             println("OneSignal: Starting to capture OneSignal ID on platform: ${getPlatform()}")
 
-            val oneSignalId = oneSignalManager.getOneSignalId()
-            val userId = userSessionManager.getUserId()
+            val oneSignalId = oneSignalManager.getOneSignalId()?.takeIf { it.isNotBlank() }
+            val userId = userSessionManager.getUserId()?.takeIf { it.isNotBlank() }
 
             println("OneSignal: Retrieved OneSignal ID: $oneSignalId")
             println("OneSignal: Retrieved User ID: $userId")
@@ -61,6 +79,11 @@ class OneSignalService(
 
                 // Add user tags
                 addUserTags()
+
+                // Send OneSignal ID to backend
+                scope.launch {
+                    registerOneSignalIdWithBackend(oneSignalId)
+                }
             } else {
                 println("OneSignal: ❌ Missing data - OneSignalId: $oneSignalId, UserId: $userId")
                 if (oneSignalId == null) {
@@ -89,7 +112,7 @@ class OneSignalService(
         val isFirstTime = userSessionManager.isUserFirstTime()
         println("OneSignal: Is first time user: $isFirstTime")
 
-        val userId = userSessionManager.getUserId()
+        val userId = userSessionManager.getUserId()?.takeIf { it.isNotBlank() }
         println("OneSignal: Retrieved user ID from session: $userId")
 
         if (userId != null) {
@@ -103,7 +126,7 @@ class OneSignalService(
             // Try to trigger user initialization if not done
             try {
                 userSessionManager.handleAppStart()
-                val newUserId = userSessionManager.getUserId()
+                val newUserId = userSessionManager.getUserId()?.takeIf { it.isNotBlank() }
                 println("OneSignal: After initialization, user ID: $newUserId")
 
                 if (newUserId != null) {
@@ -135,6 +158,91 @@ class OneSignalService(
         tags["platform"] = getPlatform()
 
         oneSignalManager.addTags(tags)
+    }
+
+    /**
+     * Register OneSignal ID with backend
+     */
+    private suspend fun registerOneSignalIdWithBackend(oneSignalId: String) {
+        try {
+            println("OneSignal: Registering OneSignal ID with backend...")
+
+            // Check if this ID is already registered
+            val storedOneSignalId = dataStoreManager.oneSignalId.first()
+            if (storedOneSignalId == oneSignalId) {
+                println("OneSignal: ✅ OneSignal ID already registered and unchanged: $oneSignalId")
+                return
+            }
+
+            // Get current locale and timezone - simplified for cross-platform compatibility
+            val locale = "en_US" // Default locale for now
+            val timezone = "UTC" // Default timezone for now
+
+            // Create push registration request
+            val pushReq = PushReq(
+                playerId = oneSignalId,
+                platform = getPlatform().lowercase(),
+                locale = locale,
+                timezone = timezone
+            )
+
+            println("OneSignal: Sending push registration request...")
+            println("OneSignal: - Player ID: $oneSignalId")
+            println("OneSignal: - Platform: ${getPlatform().lowercase()}")
+            println("OneSignal: - Locale: $locale")
+            println("OneSignal: - Timezone: $timezone")
+
+            // Send request to backend
+            val result = apiService.registerPush(pushReq)
+
+            when (result) {
+                is ApiResult.Success -> {
+                    println("OneSignal: ✅ Successfully registered OneSignal ID with backend")
+
+                    // Store the OneSignal ID to avoid duplicate registrations
+                    dataStoreManager.setOneSignalId(oneSignalId)
+                    println("OneSignal: OneSignal ID stored locally")
+                }
+                is ApiResult.Error -> {
+                    println("OneSignal: ❌ Failed to register OneSignal ID: ${result.message}")
+                }
+                is ApiResult.Exception -> {
+                    println("OneSignal: ❌ Exception registering OneSignal ID: ${result.exception.message}")
+                    result.exception.printStackTrace()
+                }
+            }
+
+        } catch (e: Exception) {
+            println("OneSignal: ❌ Error registering OneSignal ID with backend: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * Check and update OneSignal ID if changed
+     */
+    suspend fun checkAndUpdateOneSignalId() {
+        try {
+            println("OneSignal: Checking for OneSignal ID changes...")
+
+            val currentOneSignalId = oneSignalManager.getOneSignalId()?.takeIf { it.isNotBlank() }
+            val storedOneSignalId = dataStoreManager.oneSignalId.first()
+
+            if (currentOneSignalId != null) {
+                if (storedOneSignalId != currentOneSignalId) {
+                    println("OneSignal: 🔄 OneSignal ID changed from $storedOneSignalId to $currentOneSignalId")
+                    registerOneSignalIdWithBackend(currentOneSignalId)
+                } else {
+                    println("OneSignal: ✅ OneSignal ID unchanged: $currentOneSignalId")
+                }
+            } else {
+                println("OneSignal: ⚠️ No current OneSignal ID available")
+            }
+
+        } catch (e: Exception) {
+            println("OneSignal: ❌ Error checking OneSignal ID: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
     /**

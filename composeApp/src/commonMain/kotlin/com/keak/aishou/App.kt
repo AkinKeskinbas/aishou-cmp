@@ -16,6 +16,7 @@ import com.keak.aishou.data.UserSessionManager
 import com.keak.aishou.di.dataModules
 import com.keak.aishou.di.domainModule
 import com.keak.aishou.di.viewModelModule
+import com.keak.aishou.di.platformModule
 import com.keak.aishou.navigation.AishouNavGraph
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.navigation.RouterImpl
@@ -35,7 +36,7 @@ import org.koin.dsl.KoinConfiguration
 fun App() {
     KoinMultiplatformApplication(
         config = KoinConfiguration {
-            modules(viewModelModule, dataModules, domainModule)
+            modules(platformModule, viewModelModule, dataModules, domainModule)
         }
     ) {
         val navController: NavHostController = rememberNavController()

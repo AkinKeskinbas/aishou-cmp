@@ -38,6 +38,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
@@ -68,6 +69,12 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
     val userProfile by vm.userProfile.collectAsStateWithLifecycle()
     val isLoadingProfile by vm.isLoadingProfile.collectAsStateWithLifecycle()
     val profileError by vm.profileError.collectAsStateWithLifecycle()
+
+    // Load user profile when HomeScreen opens or reopens
+    LaunchedEffect(Unit) {
+        println("HomeScreen: LaunchedEffect triggered - loading user profile")
+        vm.loadUserProfile()
+    }
 
     // Convert API solved tests to our display format
     val testResultList = userProfile?.let { profile ->
