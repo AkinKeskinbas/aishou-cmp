@@ -4,6 +4,7 @@ import com.keak.aishou.data.api.UserRegister
 import com.keak.aishou.data.language.LanguageManager
 import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
+import com.keak.aishou.purchase.PremiumChecker
 import com.keak.aishou.utils.Platform
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
@@ -81,7 +82,8 @@ class UserRegistrationService(
                 photoUrl = null,
                 lang = languageCode,
                 platform = platform,
-                isAnonymous = true
+                isAnonymous = true,
+                isPremium = PremiumChecker.isPremium
             )
 
             println("UserRegistration: Sending registration request...")

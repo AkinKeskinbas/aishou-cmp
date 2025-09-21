@@ -1,5 +1,6 @@
 package com.keak.aishou.network
 
+import com.gyanoba.inspektor.Inspektor
 import com.keak.aishou.data.DataStoreManager
 import com.keak.aishou.data.api.QuizQuestion
 import com.keak.aishou.data.api.QuizSubmissionRequest
@@ -67,6 +68,7 @@ class AishouApiImpl(
             install(ContentNegotiation) {
                 json(json, contentType = ContentType.Any)
             }
+            install(Inspektor)
 
             defaultRequest {
                 url(ApiList.BASE_URL)

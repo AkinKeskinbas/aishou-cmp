@@ -16,5 +16,7 @@ data class UserRegister(
     @SerialName("platform")
     val platform: String? = null,  // "ios" or "android"
     @SerialName("isAnonymous")
-    val isAnonymous: Boolean = true
+    val isAnonymous: Boolean = true,
+    @SerialName("isPremium")
+    val isPremium: Boolean = true
 )
