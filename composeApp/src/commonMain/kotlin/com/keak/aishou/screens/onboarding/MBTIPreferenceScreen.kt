@@ -74,14 +74,14 @@ fun MBTIPreferenceScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = "Please choose how to determine your MBTI type",
-            fontSize = 16.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
-        )
+//        Text(
+//            text = "Please choose how to determine your MBTI type",
+//            fontSize = 16.sp,
+//            color = Color.Gray,
+//            textAlign = TextAlign.Center
+//        )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Preference Selection
         Column(
@@ -92,14 +92,14 @@ fun MBTIPreferenceScreen(
             NeoBrutalistCardViewWithFlexSize(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
+                    .height(100.dp),
                 backgroundColor = if (selectedPreference == MBTIPreferenceType.TAKE_TEST)
                     Color(0xFF4FFFB3) else Color(0xFFFFE66D),
                 borderColor = Color.Black,
                 shadowColor = Color.Black,
                 borderWidth = if (selectedPreference == MBTIPreferenceType.TAKE_TEST) 4.dp else 3.dp,
                 shadowOffset = 6.dp,
-                contentPadding = 16.dp,
+                contentPadding = 8.dp,
                 contentAlignment = Alignment.Center,
                 showBadge = true,
                 badgeText = "RECOMMENDED!",
@@ -119,19 +119,19 @@ fun MBTIPreferenceScreen(
                     ) {
                         Text(
                             text = "🧠",
-                            fontSize = 32.sp
+                            fontSize = 20.sp
                         )
 
                         Text(
                             text = "Take a Full Test",
-                            fontSize = 20.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
 
                         Text(
                             text = "70 questions • 15-20 minutes",
-                            fontSize = 14.sp,
+                            fontSize = 11.sp,
                             color = Color.Black,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Medium
@@ -151,14 +151,14 @@ fun MBTIPreferenceScreen(
             NeoBrutalistCardViewWithFlexSize(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
+                    .height(100.dp),
                 backgroundColor = if (selectedPreference == MBTIPreferenceType.MANUAL_ENTRY)
                     Color(0xFF4FFFB3) else Color(0xFF74A0FF),
                 borderColor = Color.Black,
                 shadowColor = Color.Black,
                 borderWidth = if (selectedPreference == MBTIPreferenceType.MANUAL_ENTRY) 4.dp else 3.dp,
                 shadowOffset = 6.dp,
-                contentPadding = 16.dp,
+                contentPadding = 8.dp,
                 contentAlignment = Alignment.Center
             ) {
                 TextButton(
@@ -173,12 +173,12 @@ fun MBTIPreferenceScreen(
                     ) {
                         Text(
                             text = "✍️",
-                            fontSize = 32.sp
+                            fontSize = 20.sp
                         )
 
                         Text(
                             text = "I Know My Type",
-                            fontSize = 20.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
@@ -196,16 +196,16 @@ fun MBTIPreferenceScreen(
 
         // MBTI Type Selection (only show if manual entry is selected)
         if (selectedPreference == MBTIPreferenceType.MANUAL_ENTRY) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = "Select Your MBTI Type",
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -299,14 +299,14 @@ private fun MBTITypeCard(
             ) {
                 Text(
                     text = mbtiType.code,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
                 )
 
                 Text(
                     text = mbtiType.name,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     textAlign = TextAlign.Center

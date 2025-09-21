@@ -78,7 +78,8 @@ fun SplashScreen(
                 viewModel.onNavigationHandled()
             }
             is SplashNavigationEvent.NavigateToHome -> {
-                router.goToHome()
+                router.goToOnBoarding()
+                //router.goToHome()
                 viewModel.onNavigationHandled()
             }
             null -> { /* Do nothing */ }

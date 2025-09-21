@@ -78,12 +78,12 @@ fun OnBoardingScreenFourth(
             cornerRadius = 24.dp
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Heart Icon Circle
                 NeoBrutalistCircle(
-                    modifier = Modifier.size(96.dp),
+                    modifier = Modifier.size(48.dp),
                     backgroundBrush = Brush.linearGradient(
                         colors = listOf(
                             Color(0xFF4CAF50), // Green-400
@@ -94,7 +94,7 @@ fun OnBoardingScreenFourth(
                 ) {
                     Text(
                         text = "💝",
-                        fontSize = 48.sp
+                        fontSize = 24.sp
                     )
                 }
 
@@ -103,7 +103,7 @@ fun OnBoardingScreenFourth(
                 // Title
                 Text(
                     text = stringResource(Res.string.onboarding_fourth_perfect_title),
-                    fontSize = 28.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color(0xFF4CAF50), // Green-500 (simulating gradient)
                     textAlign = TextAlign.Center
@@ -113,7 +113,7 @@ fun OnBoardingScreenFourth(
 
                 Text(
                     text = stringResource(Res.string.onboarding_fourth_perfect_ready),
-                    fontSize = 28.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black,
                     textAlign = TextAlign.Center
@@ -123,7 +123,7 @@ fun OnBoardingScreenFourth(
 
                 Text(
                     text = stringResource(Res.string.onboarding_fourth_perfect_subtitle),
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF424242),
                     textAlign = TextAlign.Center
@@ -138,7 +138,7 @@ fun OnBoardingScreenFourth(
                 ) {
                     // 3min stat
                     NeoBrutalistCardViewWithFlexSize(
-                        modifier = Modifier.weight(1f).height(100.dp),
+                        modifier = Modifier.weight(1f),
                         backgroundColor = Color(0xFFE8F5E8), // Green-100
                         borderColor = Color.Black,
                         cornerRadius = 12.dp
@@ -168,7 +168,7 @@ fun OnBoardingScreenFourth(
 
                     // 97% stat
                     NeoBrutalistCardViewWithFlexSize(
-                        modifier = Modifier.weight(1f).height(100.dp),
+                        modifier = Modifier.weight(1f),
                         backgroundColor = Color(0xFFF3E5F5), // Purple-100
                         borderColor = Color.Black,
                         cornerRadius = 12.dp
@@ -205,7 +205,7 @@ fun OnBoardingScreenFourth(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     NeoBrutalistCardViewWithFlexSize(
-                        modifier = Modifier.weight(1f).height(100.dp),
+                        modifier = Modifier.weight(1f),
                         backgroundColor = Color(0xFFE3F2FD), // Blue-100
                         borderColor = Color.Black,
                         cornerRadius = 12.dp
@@ -250,20 +250,13 @@ fun OnBoardingScreenFourth(
             cornerRadius = 16.dp
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(24.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(Res.string.onboarding_fourth_find_friends),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "→",
-                    fontSize = 26.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.White
                 )
