@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keak.aishou.data.UserSessionManager
 import com.keak.aishou.notifications.OneSignalService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 sealed class SplashNavigationEvent {
     object NavigateToOnboarding : SplashNavigationEvent()
@@ -29,24 +31,40 @@ class SplashViewModel(
 
     private fun initializeApp() {
         viewModelScope.launch {
-            // Initialize OneSignal
-            oneSignalService.initialize()
+            try {
+                // Initialize OneSignal on Main thread
+                withContext(Dispatchers.Main) {
+                    oneSignalService.initialize()
+                }
 
-            // Check if this is the user's first time BEFORE handling app start
-            val isFirstTime = userSessionManager.isUserFirstTime()
+                // Perform background operations on IO dispatcher
+                val isFirstTime = withContext(Dispatchers.Default) {
+                    userSessionManager.isUserFirstTime()
+                }
 
-            // Handle app start logic (increment launch count, etc.)
-            userSessionManager.handleAppStart()
+                withContext(Dispatchers.Default) {
+                    userSessionManager.handleAppStart()
+                }
 
-            // Add a small delay for splash screen effect
-            delay(2000)
+                // Add a small delay for splash screen effect
+                delay(2000)
 
-            if (isFirstTime) {
-                // Navigate to onboarding for first-time users
-                _navigationEvent.value = SplashNavigationEvent.NavigateToOnboarding
-            } else {
-                // Navigate to home for returning users
-                _navigationEvent.value = SplashNavigationEvent.NavigateToHome
+                // Update navigation state on Main thread
+                withContext(Dispatchers.Main) {
+                    if (isFirstTime) {
+                        // Navigate to onboarding for first-time users
+                        _navigationEvent.value = SplashNavigationEvent.NavigateToOnboarding
+                    } else {
+                        // Navigate to home for returning users
+                        _navigationEvent.value = SplashNavigationEvent.NavigateToHome
+                    }
+                }
+            } catch (e: Exception) {
+                println("SplashViewModel: Error during initialization: ${e.message}")
+                // Fallback to onboarding on error
+                withContext(Dispatchers.Main) {
+                    _navigationEvent.value = SplashNavigationEvent.NavigateToOnboarding
+                }
             }
         }
     }

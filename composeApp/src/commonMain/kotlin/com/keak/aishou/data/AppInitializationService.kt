@@ -36,10 +36,14 @@ class AppInitializationService(
                 delay(1000)
 
                 // Step 4: Initialize user registration (depends on language and user session)
-                println("AppInitialization: 3/4 - Initializing user registration...")
+                println("AppInitialization: 3/5 - Initializing user registration...")
                 userRegistrationService.initialize()
 
-                println("AppInitialization: 4/4 - All services initialized successfully! ✅")
+                // Step 5: Check and update OneSignal ID if needed
+                println("AppInitialization: 4/5 - Checking OneSignal ID...")
+                oneSignalService.checkAndUpdateOneSignalId()
+
+                println("AppInitialization: 5/5 - All services initialized successfully! ✅")
 
             } catch (e: Exception) {
                 println("AppInitialization: ❌ Error during initialization: ${e.message}")

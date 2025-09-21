@@ -61,11 +61,14 @@ class UserSessionManager(
     private suspend fun getRevenueCatUserId(): String? {
         return try {
             val userId = RevenueCatUserHelper.getRevenueCatUserId()
-            if (userId != null) {
-                println("UserSessionManager: Retrieved RevenueCat user ID: $userId")
-                userId
+            // Extra safety check for iOS
+            val safeUserId = userId?.takeIf { it.isNotBlank() && it != "null" }
+
+            if (safeUserId != null) {
+                println("UserSessionManager: Retrieved RevenueCat user ID: $safeUserId")
+                safeUserId
             } else {
-                println("UserSessionManager: RevenueCat user ID is null")
+                println("UserSessionManager: RevenueCat user ID is null or invalid")
                 null
             }
         } catch (e: Exception) {

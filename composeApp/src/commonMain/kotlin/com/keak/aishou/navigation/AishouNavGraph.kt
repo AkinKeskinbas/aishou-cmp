@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.keak.aishou.screens.allresults.AllResultsScreen
 import com.keak.aishou.screens.allresults.AllResultsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import com.keak.aishou.screens.allresults.TestResultViewModel
 import com.keak.aishou.screens.allresults.PersonalResultScreen
 import com.keak.aishou.screens.allresults.TestResultScreen
@@ -95,6 +97,7 @@ fun NavGraphBuilder.mainRoute(
         route = Routes.MBTIPreference.route
     ) {
         val personalityDataManager: PersonalityDataManager = koinInject()
+        val scope: CoroutineScope = koinInject()
         MBTIPreferenceScreen(
             onPreferenceSelected = { preferenceType, mbtiType ->
                 when (preferenceType) {
@@ -105,9 +108,21 @@ fun NavGraphBuilder.mainRoute(
                     MBTIPreferenceType.MANUAL_ENTRY -> {
                         mbtiType?.let {
                             personalityDataManager.setMBTIType(it)
-                            // Make API call and proceed to home
-                            // TODO: Handle API call result
-                            router.goToHome()
+
+                            // Make API call to update personality data
+                            scope.launch {
+                                try {
+                                    val result = personalityDataManager.updatePersonality()
+                                    println("PersonalityUpdate: API call result: $result")
+
+                                    // Navigate to home regardless of API result
+                                    router.goToHome()
+                                } catch (e: Exception) {
+                                    println("PersonalityUpdate: Error updating personality: ${e.message}")
+                                    // Navigate to home even on error
+                                    router.goToHome()
+                                }
+                            }
                         }
                     }
                 }
@@ -148,7 +163,7 @@ fun NavGraphBuilder.mainRoute(
             navArgument("testID") { type = NavType.StringType }
         )
     ) { backStackEntry ->
-        val testID: String = backStackEntry.arguments?.getString("testID") ?: ""
+        val testID: String = backStackEntry.savedStateHandle.get<String>("testID") ?: ""
         val testResultViewModel: TestResultViewModel = koinViewModel()
         TestResultScreen(router = router, testID = testID, viewModel = testResultViewModel)
     }
@@ -158,7 +173,7 @@ fun NavGraphBuilder.mainRoute(
             navArgument("quizID") { type = NavType.StringType }
         )
     ) { backStackEntry ->
-        val quizID: String = backStackEntry.arguments?.getString("quizID") ?: ""
+        val quizID: String = backStackEntry.savedStateHandle.get<String>("quizID") ?: ""
         val quizViewModel: QuizViewModel = koinViewModel()
         QuizScreen(router = router, quizID = quizID, viewModel = quizViewModel)
     }

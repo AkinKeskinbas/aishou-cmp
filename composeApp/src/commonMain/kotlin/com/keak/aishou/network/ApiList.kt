@@ -13,6 +13,8 @@ object ApiList {
     const val GET_PERSONALITY_PROFILE = "/v1/personality/profile"
     const val GET_PERSONALITY_QUICK_QUIZ = "/v1/personality/quick-quiz"
     const val GET_TESTS = "/v1/tests"
+    const val POST_CREATE_INVITE = "/v1/invites"
+    const val POST_PUSH_REGISTER = "/v1/push/register"
 
     // Quiz questions endpoint - use with string formatting: v1/tests/{testId}/versions/{version}/questions
     fun getQuizQuestionsUrl(testId: String, version: Int): String {

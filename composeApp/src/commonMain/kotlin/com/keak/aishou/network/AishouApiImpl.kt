@@ -11,6 +11,9 @@ import com.keak.aishou.data.api.PersonalityAssessRequest
 import com.keak.aishou.data.api.PersonalityAssessResponse
 import com.keak.aishou.data.api.UserProfileResponse
 import com.keak.aishou.data.api.TestResultResponse
+import com.keak.aishou.data.api.InviteCreateRequest
+import com.keak.aishou.data.api.InviteResponse
+import com.keak.aishou.data.api.PushReq
 import com.keak.aishou.response.BaseResponse
 import com.keak.aishou.response.TokenResponse
 import io.ktor.client.HttpClient
@@ -301,6 +304,42 @@ class AishouApiImpl(
             client.put(url) {
                 contentType(ContentType.Application.Json)
                 setBody(submission)
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun createInvite(inviteRequest: InviteCreateRequest): ApiResult<InviteResponse> {
+        println("AishouApiImpl: Making create invite request to ${ApiList.BASE_URL}${ApiList.POST_CREATE_INVITE}")
+        println("AishouApiImpl: Request body: $inviteRequest")
+
+        val authHeader = getAuthHeader()
+        println("AishouApiImpl: Auth header present: ${authHeader != null}")
+
+        return handleApi {
+            client.post(ApiList.POST_CREATE_INVITE) {
+                contentType(ContentType.Application.Json)
+                setBody(inviteRequest)
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun registerPush(pushReq: PushReq): ApiResult<BaseResponse<Unit>> {
+        println("AishouApiImpl: Making push register request to ${ApiList.BASE_URL}${ApiList.POST_PUSH_REGISTER}")
+        println("AishouApiImpl: Request body: $pushReq")
+
+        val authHeader = getAuthHeader()
+        println("AishouApiImpl: Auth header present: ${authHeader != null}")
+
+        return handleApi {
+            client.post(ApiList.POST_PUSH_REGISTER) {
+                contentType(ContentType.Application.Json)
+                setBody(pushReq)
                 authHeader?.let {
                     header(HttpHeaders.Authorization, it)
                 }

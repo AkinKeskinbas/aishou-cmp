@@ -11,10 +11,15 @@ import kotlinx.coroutines.launch
 class OneSignalManagerIOS : OneSignalManager {
 
     override fun initialize(appId: String) {
-        NSLog("OneSignal iOS: SDK already initialized in Swift App")
-        NSLog("OneSignal iOS: ✅ Ready to use real OneSignal features")
-        NSLog("OneSignal iOS: App ID: $appId")
-        // Note: OneSignal is initialized in the iOS App (iOSApp.swift)
+        try {
+            val safeAppId = appId.takeIf { it.isNotBlank() } ?: "invalid"
+            NSLog("OneSignal iOS: SDK already initialized in Swift App")
+            NSLog("OneSignal iOS: ✅ Ready to use real OneSignal features")
+            NSLog("OneSignal iOS: App ID: $safeAppId")
+            // Note: OneSignal is initialized in the iOS App (iOSApp.swift)
+        } catch (e: Exception) {
+            NSLog("OneSignal iOS: ❌ Error during initialization: ${e.message}")
+        }
     }
 
     override suspend fun getOneSignalId(): String? = suspendCancellableCoroutine { continuation ->
@@ -81,11 +86,12 @@ class OneSignalManagerIOS : OneSignalManager {
     }
 
     override fun setExternalUserId(externalId: String) {
-        NSLog("OneSignal iOS: Setting external user ID: $externalId")
+        val safeExternalId = externalId.takeIf { it.isNotBlank() } ?: return
+        NSLog("OneSignal iOS: Setting external user ID: $safeExternalId")
 
         try {
             // Set external user ID through the iOS SDK
-            setRealExternalUserId(externalId)
+            setRealExternalUserId(safeExternalId)
             NSLog("OneSignal iOS: ✅ External user ID set with real iOS SDK")
         } catch (e: Exception) {
             NSLog("OneSignal iOS: ❌ Error setting external user ID: ${e.message}")

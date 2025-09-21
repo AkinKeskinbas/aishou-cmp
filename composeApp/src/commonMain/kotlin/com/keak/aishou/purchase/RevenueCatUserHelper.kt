@@ -16,8 +16,11 @@ object RevenueCatUserHelper {
             val customerInfo = Purchases.sharedInstance.awaitCustomerInfo()
             val userId = customerInfo.originalAppUserId
 
-            println("RevenueCatUserHelper: Retrieved user ID: $userId")
-            userId
+            // Additional null/empty check for iOS safety
+            val safeUserId = userId?.takeIf { it.isNotBlank() }
+
+            println("RevenueCatUserHelper: Retrieved user ID: $safeUserId")
+            safeUserId
         } catch (e: Exception) {
             println("RevenueCatUserHelper: Error getting user ID: ${e.message}")
             null

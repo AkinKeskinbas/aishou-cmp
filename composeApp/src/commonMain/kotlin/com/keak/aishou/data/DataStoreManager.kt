@@ -23,6 +23,7 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
         private val APP_LANGUAGE_LOCALE = stringPreferencesKey("app_language_locale")
         private val ACCESS_TOKEN = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        private val ONE_SIGNAL_ID = stringPreferencesKey("one_signal_id")
     }
 
     val isFirstTimeUser: Flow<Boolean> = dataStore.data.map { preferences ->
@@ -65,6 +66,10 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
 
     val refreshToken: Flow<String?> = dataStore.data.map { preferences ->
         preferences[REFRESH_TOKEN]
+    }
+
+    val oneSignalId: Flow<String?> = dataStore.data.map { preferences ->
+        preferences[ONE_SIGNAL_ID]
     }
 
     suspend fun markUserAsReturning() {
@@ -142,6 +147,18 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { preferences ->
             preferences.remove(ACCESS_TOKEN)
             preferences.remove(REFRESH_TOKEN)
+        }
+    }
+
+    suspend fun setOneSignalId(id: String) {
+        dataStore.edit { preferences ->
+            preferences[ONE_SIGNAL_ID] = id
+        }
+    }
+
+    suspend fun clearOneSignalId() {
+        dataStore.edit { preferences ->
+            preferences.remove(ONE_SIGNAL_ID)
         }
     }
 }
