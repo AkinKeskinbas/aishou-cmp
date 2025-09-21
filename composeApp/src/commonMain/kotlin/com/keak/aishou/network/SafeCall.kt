@@ -37,15 +37,20 @@ suspend fun <T : Any> ApiResult<T>.onException(executable: suspend (Throwable) -
 suspend inline fun <reified T : Any> handleApi(request: suspend () -> HttpResponse): ApiResult<T> {
     return try {
         val response = request()
-        if (response.status == HttpStatusCode.OK) {
+        println("SafeCall: Response status: ${response.status.value} - ${response.status.description}")
+        if (response.status.value in 200..299) {
             val body = response.body<T>()
+            println("SafeCall: Response body parsed successfully")
             ApiResult.Success(body)
         } else {
+            println("SafeCall: Error response - Status: ${response.status.value}, Description: ${response.status.description}")
             ApiResult.Error(response.status.value, response.status.description)
         }
     } catch (e: CancellationException) {
         throw e // Coroutine'in iptal edilmesi durumu
     } catch (e: Throwable) {
+        println("SafeCall: Exception occurred: ${e.message}")
+        e.printStackTrace()
         ApiResult.Exception(e)
     }
 }

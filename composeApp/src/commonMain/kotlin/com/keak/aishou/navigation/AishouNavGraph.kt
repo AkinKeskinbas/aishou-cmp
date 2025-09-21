@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.keak.aishou.screens.allresults.AllResultsScreen
+import com.keak.aishou.screens.allresults.AllResultsViewModel
+import com.keak.aishou.screens.allresults.TestResultViewModel
 import com.keak.aishou.screens.allresults.PersonalResultScreen
 import com.keak.aishou.screens.allresults.TestResultScreen
 import com.keak.aishou.screens.paywall.PaywallScreen
@@ -18,12 +20,18 @@ import com.keak.aishou.screens.onboarding.OnBoardingScreenFourth
 import com.keak.aishou.screens.onboarding.OnBoardingScreenThird
 import com.keak.aishou.screens.onboarding.OnboardingScreen
 import com.keak.aishou.screens.onboarding.OnboardingScreenSecond
+import com.keak.aishou.screens.onboarding.ZodiacSelectionScreen
+import com.keak.aishou.screens.onboarding.MBTIPreferenceScreen
+import com.keak.aishou.screens.onboarding.MBTIPreferenceType
+import com.keak.aishou.data.PersonalityDataManager
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreen
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
 import com.keak.aishou.screens.quicktestscreen.QuizScreen
+import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashScreen
 import com.keak.aishou.screens.splashscreen.SplashViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun AishouNavGraph(
@@ -73,6 +81,40 @@ fun NavGraphBuilder.mainRoute(
         OnBoardingScreenFourth(router = router)
     }
     composable(
+        route = Routes.ZodiacSelection.route
+    ) {
+        val personalityDataManager: PersonalityDataManager = koinInject()
+        ZodiacSelectionScreen(
+            onZodiacSelected = { zodiacSign ->
+                personalityDataManager.setZodiacSign(zodiacSign)
+                router.goToMBTIPreference()
+            }
+        )
+    }
+    composable(
+        route = Routes.MBTIPreference.route
+    ) {
+        val personalityDataManager: PersonalityDataManager = koinInject()
+        MBTIPreferenceScreen(
+            onPreferenceSelected = { preferenceType, mbtiType ->
+                when (preferenceType) {
+                    MBTIPreferenceType.TAKE_TEST -> {
+                        // Navigate to MBTI test using existing quiz system
+                        router.goToQuizScreen("personality-full-v1")
+                    }
+                    MBTIPreferenceType.MANUAL_ENTRY -> {
+                        mbtiType?.let {
+                            personalityDataManager.setMBTIType(it)
+                            // Make API call and proceed to home
+                            // TODO: Handle API call result
+                            router.goToHome()
+                        }
+                    }
+                }
+            }
+        )
+    }
+    composable(
         route = Routes.Paywall.route
     ) {
         PaywallScreen(router = router)
@@ -86,7 +128,8 @@ fun NavGraphBuilder.mainRoute(
     composable(
         route = Routes.AllResults.route
     ) {
-        AllResultsScreen(router = router)
+        val allResultsViewModel: AllResultsViewModel = koinViewModel()
+        AllResultsScreen(router = router, viewModel = allResultsViewModel)
     }
     composable(
         route = Routes.QuicTests.route
@@ -105,8 +148,9 @@ fun NavGraphBuilder.mainRoute(
             navArgument("testID") { type = NavType.StringType }
         )
     ) { backStackEntry ->
-        val testID: String = backStackEntry.savedStateHandle.get<String>("testID") ?: ""
-        TestResultScreen(router = router, testID = testID)
+        val testID: String = backStackEntry.arguments?.getString("testID") ?: ""
+        val testResultViewModel: TestResultViewModel = koinViewModel()
+        TestResultScreen(router = router, testID = testID, viewModel = testResultViewModel)
     }
     composable(
         route = Routes.QuizScreen.route,
@@ -114,7 +158,14 @@ fun NavGraphBuilder.mainRoute(
             navArgument("quizID") { type = NavType.StringType }
         )
     ) { backStackEntry ->
-        val quizID: String = backStackEntry.savedStateHandle.get<String>("quizID") ?: ""
-        QuizScreen(router,quizID)
+        val quizID: String = backStackEntry.arguments?.getString("quizID") ?: ""
+        val quizViewModel: QuizViewModel = koinViewModel()
+        QuizScreen(router = router, quizID = quizID, viewModel = quizViewModel)
+    }
+    composable(
+        route = Routes.QuickQuizScreen.route
+    ) {
+        val quizViewModel: QuizViewModel = koinViewModel()
+        QuizScreen(router = router, quizID = null, viewModel = quizViewModel)
     }
 }

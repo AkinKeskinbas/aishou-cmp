@@ -55,7 +55,7 @@ import com.keak.aishou.data.UserState
 import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.screenSize
-import com.keak.aishou.screens.quicktestscreen.QuizType
+import com.keak.aishou.data.api.QuizType
 import com.keak.aishou.util.FormatUtils
 import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.DrawableResource
@@ -65,38 +65,37 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
     val userState by vm.userState.collectAsStateWithLifecycle()
-    val testResultList = listOf(
-        RecentTestsData(
-            testerName = "Me",
-            testerMbti = "ENFP",
-            testResult = "94",
-            testerType = TesterType.MYSELF,
-            testerUserId = "1",
-            resultBg = Color(0xFF66BB6A),
-            testID = "1",
-            testType = QuizType.Single
-        ),
-        RecentTestsData(
-            testerName = "Me",
-            testerMbti = "ENFP",
-            testResult = "78",
-            testerType = TesterType.MYSELF,
-            testerUserId = "2",
-            resultBg = Color(0xFFFFA726),
-            testID = "1",
-            testType = QuizType.Single
-        ),
-        RecentTestsData(
-            testerName = "Jordan",
-            testerMbti = "ENTP",
-            testResult = "86",
-            testerType = TesterType.PARTNER,
-            testerUserId = "3",
-            resultBg = Color(0xFFFFEB3B),
-            testID = "1",
-            testType = QuizType.Compat
-        )
-    )
+    val userProfile by vm.userProfile.collectAsStateWithLifecycle()
+    val isLoadingProfile by vm.isLoadingProfile.collectAsStateWithLifecycle()
+    val profileError by vm.profileError.collectAsStateWithLifecycle()
+
+    // Convert API solved tests to our display format
+    val testResultList = userProfile?.let { profile ->
+        println("HomeScreen: Profile MBTI: ${profile.mbti}, Zodiac: ${profile.zodiac}")
+        println("HomeScreen: Solo quizzes count: ${profile.soloQuizzes.size}")
+        println("HomeScreen: Match quizzes count: ${profile.matchQuizzes.size}")
+        println("HomeScreen: Solved tests count: ${profile.solvedTests.size}")
+
+        profile.solvedTests.mapIndexed { index, solvedTest ->
+            println("HomeScreen: Converting test $index: id=${solvedTest.id}, type=${solvedTest.type}")
+            RecentTestsData(
+                testerName = "Me",
+                testerMbti = profile.mbti ?: "Unknown",
+                testResult = solvedTest.score?.toString() ?: "N/A",
+                testerType = TesterType.MYSELF,
+                testerUserId = solvedTest.id ?: "unknown_${index}",
+                resultBg = when (index) {
+                    0 -> Color(0xFF66BB6A)
+                    1 -> Color(0xFFFFA726)
+                    else -> Color(0xFFFFEB3B)
+                },
+                testID = solvedTest.title ?: "unknown_${index}",
+                testType = if (solvedTest.type == "match") QuizType.Compat else QuizType.Single
+            )
+        }.filter { it.testID.startsWith("unknown_").not() }
+    } ?: emptyList()
+
+    println("HomeScreen: Final test result list size: ${testResultList.size}")
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -107,7 +106,12 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
             HomeHeader()
         }
         item {
-            UserCard(userState = userState)
+            UserCard(
+                userState = userState,
+                userProfile = userProfile,
+                isLoadingProfile = isLoadingProfile,
+                onRetryProfile = { vm.retryLoadProfile() }
+            )
             Spacer(Modifier.height(16.dp))
         }
         item {
@@ -123,6 +127,9 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
                     when(actionName){
                         "New Test"->{
                             router.goToQuickTestScreen()
+                        }
+                        "Quick Quiz" -> {
+                            router.goToQuickQuizScreen()
                         }
                         else -> {
 
@@ -149,7 +156,7 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
                 bgColor = recentTestsData.resultBg,
                 clickAction = {
                     if (recentTestsData.testType == QuizType.Single){
-                        router.goToPersonalResultScreen()
+                        router.goToTestResultScreen(recentTestsData.testID)
                     }else{
                         router.goToTestResultScreen(recentTestsData.testID)
                     }
@@ -300,7 +307,12 @@ private fun QuickActionsCard(
 }
 
 @Composable
-private fun UserCard(userState: UserState) {
+private fun UserCard(
+    userState: UserState,
+    userProfile: com.keak.aishou.data.api.UserProfileResponse?,
+    isLoadingProfile: Boolean,
+    onRetryProfile: () -> Unit
+) {
     val phoneScreenSize = screenSize()
     val screenWidth = phoneScreenSize.width / 2.2
     NeoBrutalistCardViewWithFlexSize(
@@ -356,12 +368,21 @@ private fun UserCard(userState: UserState) {
                             ).border(1.dp, Color.Black),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "INFP",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Black,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
+                            if (isLoadingProfile) {
+                                Text(
+                                    text = "...",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Black,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            } else {
+                                Text(
+                                    text = userProfile?.mbti ?: "Unknown",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Black,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
@@ -389,12 +410,21 @@ private fun UserCard(userState: UserState) {
                             alignment = Alignment.Center,
                             modifier = Modifier.size(25.dp)
                         )
-                        Text(
-                            text = "Pisces",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier,
-                        )
+                        if (isLoadingProfile) {
+                            Text(
+                                text = "...",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier,
+                            )
+                        } else {
+                            Text(
+                                text = userProfile?.zodiac ?: "Unknown",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier,
+                            )
+                        }
                         Text(
                             text = stringResource(Res.string.zodiac_sign_profile_home),
                             fontSize = 12.sp,

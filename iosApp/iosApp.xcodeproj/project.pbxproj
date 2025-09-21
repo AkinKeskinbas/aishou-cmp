@@ -11,6 +11,7 @@
 		176289622E7DCD1500B1C0A5 /* OneSignalExtension in Frameworks */ = {isa = PBXBuildFile; productRef = 176289612E7DCD1500B1C0A5 /* OneSignalExtension */; };
 		176289642E7DCD1500B1C0A5 /* OneSignalFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 176289632E7DCD1500B1C0A5 /* OneSignalFramework */; };
 		176289662E7DCD1500B1C0A5 /* OneSignalInAppMessages in Frameworks */ = {isa = PBXBuildFile; productRef = 176289652E7DCD1500B1C0A5 /* OneSignalInAppMessages */; };
+		176289692E7FD46800B1C0A5 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 176289682E7FD46800B1C0A5 /* FirebaseCrashlytics */; };
 		176FC5AC2E67346B0061FD26 /* PurchasesHybridCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 176FC5AB2E67346B0061FD26 /* PurchasesHybridCommon */; };
 		176FC5AE2E67346B0061FD26 /* PurchasesHybridCommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 176FC5AD2E67346B0061FD26 /* PurchasesHybridCommonUI */; };
 		176FC5C92E6DEC270061FD26 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 176FC5C82E6DEC270061FD26 /* StoreKit.framework */; };
@@ -103,6 +104,7 @@
 				176289662E7DCD1500B1C0A5 /* OneSignalInAppMessages in Frameworks */,
 				176289642E7DCD1500B1C0A5 /* OneSignalFramework in Frameworks */,
 				176FC5C92E6DEC270061FD26 /* StoreKit.framework in Frameworks */,
+				176289692E7FD46800B1C0A5 /* FirebaseCrashlytics in Frameworks */,
 				176FC5AE2E67346B0061FD26 /* PurchasesHybridCommonUI in Frameworks */,
 				176FC5AC2E67346B0061FD26 /* PurchasesHybridCommon in Frameworks */,
 			);
@@ -189,6 +191,7 @@
 				176FC5AD2E67346B0061FD26 /* PurchasesHybridCommonUI */,
 				176289632E7DCD1500B1C0A5 /* OneSignalFramework */,
 				176289652E7DCD1500B1C0A5 /* OneSignalInAppMessages */,
+				176289682E7FD46800B1C0A5 /* FirebaseCrashlytics */,
 			);
 			productName = iosApp;
 			productReference = B9DA97B12DC1472C00A4DA20 /* Aishou.app */;
@@ -224,6 +227,7 @@
 			packageReferences = (
 				176FC5AA2E67346B0061FD26 /* XCRemoteSwiftPackageReference "purchases-hybrid-common" */,
 				1762894D2E7DBAC900B1C0A5 /* XCRemoteSwiftPackageReference "OneSignal-iOS-SDK" */,
+				176289672E7FD46800B1C0A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B9DA97B22DC1472C00A4DA20 /* Products */;
@@ -591,6 +595,14 @@
 				minimumVersion = 5.1.21;
 			};
 		};
+		176289672E7FD46800B1C0A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
 		176FC5AA2E67346B0061FD26 /* XCRemoteSwiftPackageReference "purchases-hybrid-common" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RevenueCat/purchases-hybrid-common";
@@ -616,6 +628,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1762894D2E7DBAC900B1C0A5 /* XCRemoteSwiftPackageReference "OneSignal-iOS-SDK" */;
 			productName = OneSignalInAppMessages;
+		};
+		176289682E7FD46800B1C0A5 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 176289672E7FD46800B1C0A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		176FC5AB2E67346B0061FD26 /* PurchasesHybridCommon */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -7,6 +7,7 @@ interface Router {
     fun goToQuickTestScreen()
     fun goToPersonalResultScreen()
     fun goToQuizScreen(quizID: String)
+    fun goToQuickQuizScreen()
     fun goToTestResultScreen(testID: String)
     fun goToSplash()
     fun goToPaywall()
@@ -14,6 +15,8 @@ interface Router {
     fun goToOnBoardingSecond()
     fun goToOnBoardingThird()
     fun goToOnBoardingFourth()
+    fun goToZodiacSelection()
+    fun goToMBTIPreference()
     fun goToQuickTest()
 
 }

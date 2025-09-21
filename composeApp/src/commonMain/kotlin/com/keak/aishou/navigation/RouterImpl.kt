@@ -32,6 +32,10 @@ class RouterImpl(
         navigateArg(Routes.QuizScreen.passQuizID(quizID))
     }
 
+    override fun goToQuickQuizScreen() {
+        navigate(Routes.QuickQuizScreen)
+    }
+
     override fun goToTestResultScreen(testID: String) {
         navigateArg(Routes.TestResult.passTestID(testID))
     }
@@ -58,6 +62,14 @@ class RouterImpl(
 
     override fun goToOnBoardingFourth() {
         navigate(Routes.OnBoardingFourth)
+    }
+
+    override fun goToZodiacSelection() {
+        navigate(Routes.ZodiacSelection)
+    }
+
+    override fun goToMBTIPreference() {
+        navigate(Routes.MBTIPreference)
     }
 
     override fun goToQuickTest() {
