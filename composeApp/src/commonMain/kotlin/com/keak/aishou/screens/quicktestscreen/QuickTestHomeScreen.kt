@@ -28,6 +28,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -39,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.components.ScreenHeader
 import com.keak.aishou.navigation.Router
-import com.keak.aishou.purchase.PremiumChecker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -48,46 +52,13 @@ fun QuickTestHomeScreen(
     router: Router,
     viewModel: QuickTestHomeScreenViewModel
 ) {
+    var uiState by remember { mutableStateOf(TestUiState()) }
 
-    val cards = listOf(
-        TestCardModel(
-            title = "MIND + STARS",
-            subtitle = "MBTI & Zodiac Fusion!",
-            from = Color(0xFFbef264), // lime-300
-            via = Color(0xFFfb923c), // orange-400
-            to = Color(0xFFef4444), // red-500
-            shadowColor = Color(0xFF22d3ee),
-            cardImage = Res.drawable.brain
-        ),
-        TestCardModel(
-            title = "RAPID TYPE",
-            subtitle = "Quick Vibe Check",
-            from = Color(0xFF60a5fa),
-            via = Color(0xFFc084fc),
-            to = Color(0xFFf472b6),
-            shadowColor = Color(0xFF22c55e),
-            cardImage = Res.drawable.film
-        ),
-        TestCardModel(
-            title = "MIND + STARS",
-            subtitle = "MBTI & Zodiac Fusion!",
-            from = Color(0xFFbef264), // lime-300
-            via = Color(0xFFfb923c), // orange-400
-            to = Color(0xFFef4444), // red-500
-            shadowColor = Color(0xFF22d3ee),
-            cardImage = Res.drawable.double_star
-        ),
-        TestCardModel(
-            title = "RAPID TYPE",
-            subtitle = "Quick Vibe Check",
-            from = Color(0xFF60a5fa),
-            via = Color(0xFFc084fc),
-            to = Color(0xFFf472b6),
-            shadowColor = Color(0xFF22c55e),
-            cardImage = Res.drawable.brain
-        )
-
-    )
+    LaunchedEffect(viewModel) {
+        viewModel.uiState.collect { newState ->
+            uiState = newState
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -131,16 +102,16 @@ fun QuickTestHomeScreen(
                 PremiumSubHeader()
                 Spacer(Modifier.height(8.dp))
             }
-            items(cards) { card ->
+            items(uiState.tests) { test ->
                 BrutalCard(
-                    title = card.title,
-                    subtitle = card.subtitle,
-                    gradient = listOf(card.from, card.via, card.to),
-                    shadowColor = card.shadowColor,
-                    isPremium = PremiumChecker.isPremium,
-                    cardImage = card.cardImage,
+                    title = test.title,
+                    subtitle = test.category.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+                    gradient = generateGradientFromColor(test.display.color),
+                    shadowColor = parseColorWithAlpha(test.display.color),
+                    isPremium = test.isPremium,
+                    cardImage = mapCategoryToIcon(test.category),
                     onClick = {
-                        router.goToQuizScreen(quizID = card.title)
+                        router.goToQuizScreen(quizID = test.id)
                     }
                 )
                 Spacer(Modifier.height(8.dp))
@@ -237,5 +208,75 @@ private fun MainHeader() {
             contentDescription = null,
             modifier = Modifier.size(40.dp)
         )
+    }
+}
+
+/**
+ * Generate gradient colors from primary color
+ */
+private fun generateGradientFromColor(hexColor: String): List<Color> {
+    val primaryColor = parseHexColor(hexColor)
+
+    // Create variations of the primary color for gradient
+    val lighterColor = primaryColor.copy(
+        red = minOf(1f, primaryColor.red + 0.2f),
+        green = minOf(1f, primaryColor.green + 0.2f),
+        blue = minOf(1f, primaryColor.blue + 0.2f)
+    )
+
+    val darkerColor = primaryColor.copy(
+        red = maxOf(0f, primaryColor.red - 0.2f),
+        green = maxOf(0f, primaryColor.green - 0.2f),
+        blue = maxOf(0f, primaryColor.blue - 0.2f)
+    )
+
+    return listOf(lighterColor, primaryColor, darkerColor)
+}
+
+/**
+ * Parse color with alpha for shadow
+ */
+private fun parseColorWithAlpha(hexColor: String): Color {
+    return parseHexColor(hexColor).copy(alpha = 0.6f)
+}
+
+/**
+ * Parse hex color string to Compose Color
+ */
+private fun parseHexColor(hexColor: String): Color {
+    val cleanHex = hexColor.removePrefix("#")
+    return when (cleanHex.length) {
+        6 -> {
+            // RGB format
+            val rgb = cleanHex.toULong(16)
+            Color((0xFF000000UL or rgb).toLong())
+        }
+        8 -> {
+            // ARGB format
+            val argb = cleanHex.toULong(16)
+            Color(argb.toLong())
+        }
+        else -> {
+            // Invalid format, return default
+            Color(0xFF6B73FF)
+        }
+    }
+}
+
+/**
+ * Map test category to appropriate icon resource
+ */
+private fun mapCategoryToIcon(category: String): org.jetbrains.compose.resources.DrawableResource {
+    return when (category.lowercase()) {
+        "personality" -> Res.drawable.brain
+        "cognition" -> Res.drawable.brain
+        "social" -> Res.drawable.double_star
+        "resilience" -> Res.drawable.film
+        "creativity" -> Res.drawable.double_star
+        "entertainment" -> Res.drawable.film
+        "literature" -> Res.drawable.brain
+        "arts" -> Res.drawable.double_star
+        "gaming" -> Res.drawable.film
+        else -> Res.drawable.brain // Default fallback
     }
 }

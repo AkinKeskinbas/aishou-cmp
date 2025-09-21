@@ -243,7 +243,7 @@ fun OnBoardingScreenFourth(
             modifier = Modifier
                 .width(maxWidth)
                 .clickable(role = Role.Button) {
-                    router.goToHome()
+                    router.goToZodiacSelection()
                 },
             backgroundColor = Color(0xFF4CAF50), // Green gradient simulation
             borderColor = Color.Black,

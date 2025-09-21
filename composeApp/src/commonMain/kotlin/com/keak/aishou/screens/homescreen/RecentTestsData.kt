@@ -1,7 +1,7 @@
 package com.keak.aishou.screens.homescreen
 
 import androidx.compose.ui.graphics.Color
-import com.keak.aishou.screens.quicktestscreen.QuizType
+import com.keak.aishou.data.api.QuizType
 
 data class RecentTestsData(
     val testerName: String,

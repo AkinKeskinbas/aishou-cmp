@@ -1,8 +1,6 @@
 package com.keak.aishou
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
+import com.keak.aishou.ui.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -13,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.keak.aishou.data.AppInitializationService
 import com.keak.aishou.data.UserSessionManager
 import com.keak.aishou.di.dataModules
 import com.keak.aishou.di.domainModule
@@ -46,9 +45,13 @@ fun App() {
         RevenueCatInit.configure(apiKey = PlatformKeys.revenuecatApiKey)
         val presenter: PremiumPresenter = koinInject()
         val userSessionManager: UserSessionManager = koinInject()
+        val appInitService: AppInitializationService = koinInject()
 
         LaunchedEffect(Unit) {
-            userSessionManager.handleAppStart()
+            // Initialize all app services (includes user registration)
+            appInitService.initialize()
+
+            // Keep existing premium initialization
             presenter.onAppStart()
         }
 
@@ -61,7 +64,8 @@ fun App() {
             MaterialTheme {
                 AishouNavGraph(
                     navController = navController,
-                    router = router
+                    router = router,
+                    modifier = Modifier.safeDrawingPadding()
                 )
             }
         }

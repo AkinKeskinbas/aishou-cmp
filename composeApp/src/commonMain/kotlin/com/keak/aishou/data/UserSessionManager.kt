@@ -1,5 +1,6 @@
 package com.keak.aishou.data
 
+import com.keak.aishou.purchase.RevenueCatUserHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,9 +22,17 @@ class UserSessionManager(
         val isFirstTime = dataStoreManager.isFirstTimeUser.firstOrNull() ?: true
 
         if (isFirstTime) {
-            val newUserId = generateUserId()
+            val revenueCatUserId = getRevenueCatUserId()
             val currentTimestamp = Clock.System.now().epochSeconds
-            dataStoreManager.initializeFirstTimeUser(newUserId, currentTimestamp)
+
+            if (revenueCatUserId != null) {
+                dataStoreManager.initializeFirstTimeUser(revenueCatUserId, currentTimestamp)
+                println("UserSessionManager: Initialized with RevenueCat ID: $revenueCatUserId")
+            } else {
+                println("UserSessionManager: ❌ Failed to get RevenueCat user ID")
+                // Don't initialize user session if we can't get RevenueCat ID
+                // This prevents creating invalid user sessions
+            }
         } else {
             dataStoreManager.incrementLaunchCount()
         }
@@ -46,12 +55,44 @@ class UserSessionManager(
         return dataStoreManager.firstLaunchTimestamp.firstOrNull()
     }
 
-    private fun generateUserId(): String {
-        val chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-        val randomString = (1..16)
-            .map { chars.random() }
-            .joinToString("")
-        return "user_$randomString"
+    /**
+     * Get RevenueCat user ID
+     */
+    private suspend fun getRevenueCatUserId(): String? {
+        return try {
+            val userId = RevenueCatUserHelper.getRevenueCatUserId()
+            if (userId != null) {
+                println("UserSessionManager: Retrieved RevenueCat user ID: $userId")
+                userId
+            } else {
+                println("UserSessionManager: RevenueCat user ID is null")
+                null
+            }
+        } catch (e: Exception) {
+            println("UserSessionManager: Error getting RevenueCat user ID: ${e.message}")
+            null
+        }
+    }
+
+    /**
+     * Ensure we have a valid RevenueCat user ID
+     */
+    suspend fun ensureRevenueCatUserId(): String? {
+        val storedUserId = getUserId()
+
+        if (storedUserId != null) {
+            return storedUserId
+        }
+
+        // Try to get RevenueCat ID if we don't have one stored
+        val revenueCatUserId = getRevenueCatUserId()
+        if (revenueCatUserId != null) {
+            dataStoreManager.setUserId(revenueCatUserId)
+            println("UserSessionManager: Stored RevenueCat user ID: $revenueCatUserId")
+            return revenueCatUserId
+        }
+
+        return null
     }
 
     companion object {

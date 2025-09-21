@@ -44,6 +44,10 @@ kotlin {
             implementation(project.dependencies.platform("com.google.firebase:firebase-bom:34.2.0"))
             implementation("com.google.firebase:firebase-analytics")
             implementation(libs.onesignal.android)
+            implementation(libs.ktor.client.okhttp)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -66,6 +70,7 @@ kotlin {
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.auth)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.serialization.kotlinx.json)
 

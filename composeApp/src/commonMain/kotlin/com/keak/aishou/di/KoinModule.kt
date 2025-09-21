@@ -1,8 +1,13 @@
 package com.keak.aishou.di
 
+import com.keak.aishou.data.AppInitializationService
 import com.keak.aishou.data.DataStoreFactory
 import com.keak.aishou.data.DataStoreManager
 import com.keak.aishou.data.UserSessionManager
+import com.keak.aishou.data.UserRegistrationService
+import com.keak.aishou.data.PersonalityDataManager
+import com.keak.aishou.data.language.LanguageDetector
+import com.keak.aishou.data.language.LanguageManager
 import com.keak.aishou.domain.mapper.QuickTestHomeMapper
 import com.keak.aishou.domain.repository.QuicTestScreenRepository
 import com.keak.aishou.domain.repositoryimpl.QuickTestRepositoryImpl
@@ -14,8 +19,11 @@ import com.keak.aishou.purchase.PremiumRepository
 import com.keak.aishou.purchase.ProductsRepository
 import com.keak.aishou.purchase.RevenueCatPremiumRepository
 import com.keak.aishou.purchase.RevenueCatProductsRepository
+import com.keak.aishou.screens.allresults.AllResultsViewModel
+import com.keak.aishou.screens.allresults.TestResultViewModel
 import com.keak.aishou.screens.homescreen.HomeViewModel
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
+import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashViewModel
 import com.keak.aishou.notifications.OneSignalFactory
 import com.keak.aishou.notifications.OneSignalService
@@ -33,12 +41,24 @@ val dataModules = module {
     single { DataStoreManager(get()) }
     single { UserSessionManager(get(), get()) }
 
-    single<AishouApiService> { AishouApiImpl() }
+    // Language Management - Platform-specific LanguageDetector will be provided by platform modules
+    single { LanguageManager(get(), get(), get()) }
+
+    // User Registration Service
+    single { UserRegistrationService(get(), get(), get(), get(), get()) }
+
+    // App Initialization Service
+    single { AppInitializationService(get(), get(), get(), get()) }
+
+    // Personality Data Manager
+    single { PersonalityDataManager(get()) }
+
+    single<AishouApiService> { AishouApiImpl(get()) }
     single<PremiumRepository> { RevenueCatPremiumRepository() }
     single { PremiumPresenter(repo = get(), scope = get()) }
     single<ProductsRepository> { RevenueCatProductsRepository() }
     single { QuickTestHomeMapper() }
-    single<QuicTestScreenRepository> { QuickTestRepositoryImpl(get()) }
+    single<QuicTestScreenRepository> { QuickTestRepositoryImpl(get(), get()) }
 
     // OneSignal
     single { OneSignalFactory.createOneSignalManager() }
@@ -50,7 +70,10 @@ val domainModule = module {
     single { QuickTestHomeUseCase(get()) }
 }
 val viewModelModule = module {
-    factory { HomeViewModel(get(), get()) }
+    factory { AllResultsViewModel(get()) }
+    factory { TestResultViewModel(get()) }
+    factory { HomeViewModel(get(), get(), get()) }
     viewModelOf(::QuickTestHomeScreenViewModel)
+    factory { QuizViewModel(get(), get()) }
     factory { SplashViewModel(get(), get()) }
 }

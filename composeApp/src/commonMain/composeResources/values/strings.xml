@@ -39,6 +39,39 @@
 
     //ResultScreen
     <string name="match_results">MATCH RESULTS!</string>
+    <string name="result_loading_test_results">Loading test results...</string>
+    <string name="result_error_loading_results">Error loading results</string>
+    <string name="result_unknown_error">Unknown error</string>
+    <string name="result_retry">Retry</string>
+    <string name="result_your_test_results">Your Test Results</string>
+    <string name="result_love_matches">Love Matches</string>
+    <string name="result_complete_results">Complete Results</string>
+    <string name="result_test_results">Test Results</string>
+    <string name="result_points">POINTS</string>
+    <string name="result_personality_breakdown">🧠 PERSONALITY BREAKDOWN</string>
+    <string name="result_detailed_breakdown_coming_soon">📊 Detailed breakdown coming soon!</string>
+    <string name="result_ai_psychologist_says">AI PSYCHOLOGIST SAYS:</string>
+    <string name="result_generate_detailed_insights">GENERATE DETAILED INSIGHTS</string>
+    <string name="result_premium_user_generate_analysis">As a premium user, you can generate personalized MBTI analysis for this test</string>
+    <string name="result_generating">GENERATING...</string>
+    <string name="result_generate_insights">✨ GENERATE INSIGHTS</string>
+    <string name="result_love_matches_title">LOVE MATCHES</string>
+    <string name="result_friend_number">👤 Friend #%1$d</string>
+    <string name="result_compatibility_analysis_coming_soon">Compatibility analysis coming soon! 💫</string>
+    <string name="result_unlock_ai_insights">UNLOCK AI INSIGHTS</string>
+    <string name="result_get_personalized_ai_analysis">Get personalized AI analysis of your personality!</string>
+    <string name="result_deep_analysis">Deep Analysis</string>
+    <string name="result_insights">Insights</string>
+    <string name="result_predictions">Predictions</string>
+    <string name="result_upgrade_to_premium">UPGRADE TO PREMIUM</string>
+    <string name="result_send_to_friend">SEND TO FRIEND</string>
+    <string name="result_oops">OOPS!</string>
+    <string name="result_no_results_yet">No Results Yet</string>
+    <string name="result_test_not_completed">This test hasn't been completed yet!</string>
+    <string name="result_take_test_to_discover">Take the test to discover your personality insights and compatibility matches!</string>
+    <string name="result_start_test_now">START TEST NOW</string>
+    <string name="result_mbti_label">MBTI</string>
+    <string name="result_zodiac_label">ZODIAC</string>
 
     //QuicTestScreen
     <string name="quick_tests_screen_title">Quick Tests</string>
