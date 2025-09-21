@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -87,7 +89,7 @@ fun BrokenTVText(
         }
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
         // Main text with glitch effects
         Text(
             text = if (staticNoise.isNotEmpty()) staticNoise else text,
@@ -97,7 +99,8 @@ fun BrokenTVText(
             modifier = Modifier
                 .offset(x = glitchOffset.dp, y = (glitchOffset * 0.3f).dp)
                 .scale(scaleX = scaleX, scaleY = 1f)
-                .alpha(alpha)
+                .alpha(alpha),
+            textAlign = TextAlign.Center
         )
 
         // Red ghost text for chromatic aberration
@@ -109,7 +112,8 @@ fun BrokenTVText(
                 color = Color.Red.copy(alpha = 0.3f),
                 modifier = Modifier
                     .offset(x = (glitchOffset + 1f).dp, y = 0.dp)
-                    .alpha(alpha * 0.7f)
+                    .alpha(alpha * 0.7f),
+                textAlign = TextAlign.Center
             )
         }
 
@@ -122,7 +126,8 @@ fun BrokenTVText(
                 color = Color.Cyan.copy(alpha = 0.2f),
                 modifier = Modifier
                     .offset(x = (glitchOffset - 1f).dp, y = 0.dp)
-                    .alpha(alpha * 0.5f)
+                    .alpha(alpha * 0.5f),
+                textAlign = TextAlign.Center
             )
         }
     }
