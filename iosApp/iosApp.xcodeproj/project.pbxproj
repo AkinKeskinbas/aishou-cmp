@@ -12,6 +12,7 @@
 		176289642E7DCD1500B1C0A5 /* OneSignalFramework in Frameworks */ = {isa = PBXBuildFile; productRef = 176289632E7DCD1500B1C0A5 /* OneSignalFramework */; };
 		176289662E7DCD1500B1C0A5 /* OneSignalInAppMessages in Frameworks */ = {isa = PBXBuildFile; productRef = 176289652E7DCD1500B1C0A5 /* OneSignalInAppMessages */; };
 		176289692E7FD46800B1C0A5 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 176289682E7FD46800B1C0A5 /* FirebaseCrashlytics */; };
+		176289A22E80ECB500B1C0A5 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 176289A02E80EC9000B1C0A5 /* libsqlite3.tbd */; };
 		176FC5AC2E67346B0061FD26 /* PurchasesHybridCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 176FC5AB2E67346B0061FD26 /* PurchasesHybridCommon */; };
 		176FC5AE2E67346B0061FD26 /* PurchasesHybridCommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 176FC5AD2E67346B0061FD26 /* PurchasesHybridCommonUI */; };
 		176FC5C92E6DEC270061FD26 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 176FC5C82E6DEC270061FD26 /* StoreKit.framework */; };
@@ -43,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		176289532E7DCC0200B1C0A5 /* OneSignalNotificatinServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OneSignalNotificatinServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		176289A02E80EC9000B1C0A5 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		176FC5C82E6DEC270061FD26 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		B9DA97B12DC1472C00A4DA20 /* Aishou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aishou.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -101,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				176289A22E80ECB500B1C0A5 /* libsqlite3.tbd in Frameworks */,
 				176289662E7DCD1500B1C0A5 /* OneSignalInAppMessages in Frameworks */,
 				176289642E7DCD1500B1C0A5 /* OneSignalFramework in Frameworks */,
 				176FC5C92E6DEC270061FD26 /* StoreKit.framework in Frameworks */,
@@ -116,6 +119,7 @@
 		176FC5C72E6DEC270061FD26 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				176289A02E80EC9000B1C0A5 /* libsqlite3.tbd */,
 				176FC5C82E6DEC270061FD26 /* StoreKit.framework */,
 			);
 			name = Frameworks;

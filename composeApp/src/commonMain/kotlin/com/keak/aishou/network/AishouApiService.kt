@@ -13,6 +13,7 @@ import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.data.api.InviteResponse
 import com.keak.aishou.data.api.PushReq
+import com.keak.aishou.data.models.*
 import com.keak.aishou.response.BaseResponse
 import com.keak.aishou.response.TokenResponse
 
@@ -31,4 +32,18 @@ interface AishouApiService {
     suspend fun submitQuiz(testId: String, version: Int, submission: QuizSubmissionRequest): ApiResult<BaseResponse<Submission>>
     suspend fun createInvite(inviteRequest: InviteCreateRequest): ApiResult<InviteResponse>
     suspend fun registerPush(pushReq: PushReq): ApiResult<BaseResponse<Unit>>
+
+    // Friends API endpoints
+    suspend fun sendFriendRequest(request: SendFriendRequestReq): ApiResult<BaseResponse<FriendRequest>>
+    suspend fun respondToFriendRequest(requestId: String, response: RespondFriendRequestReq): ApiResult<BaseResponse<FriendRequest>>
+    suspend fun getReceivedRequests(unreadOnly: Boolean = false): ApiResult<BaseResponse<List<RequestWithSenderInfo>>>
+    suspend fun getSentRequests(): ApiResult<BaseResponse<List<RequestWithReceiverInfo>>>
+    suspend fun getFriendsList(): ApiResult<BaseResponse<List<FriendInfo>>>
+    suspend fun markRequestAsRead(requestId: String): ApiResult<BaseResponse<Unit>>
+    suspend fun markAllRequestsAsRead(): ApiResult<BaseResponse<Unit>>
+    suspend fun getUnreadRequestsCount(): ApiResult<BaseResponse<UnreadCount>>
+    suspend fun removeFriend(friendId: String): ApiResult<BaseResponse<Unit>>
+
+    // Invite endpoints
+    suspend fun acceptInvite(inviteId: String): ApiResult<BaseResponse<Unit>>
 }

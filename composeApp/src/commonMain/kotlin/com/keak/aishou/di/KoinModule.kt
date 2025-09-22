@@ -24,6 +24,10 @@ import com.keak.aishou.screens.homescreen.HomeViewModel
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
 import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashViewModel
+import com.keak.aishou.screens.friends.FriendsViewModel
+import com.keak.aishou.screens.notifications.NotificationsViewModel
+import com.keak.aishou.screens.invite.InviteViewModel
+import com.keak.aishou.screens.profile.ProfileViewModel
 import com.keak.aishou.notifications.OneSignalFactory
 import com.keak.aishou.notifications.OneSignalService
 import com.keak.aishou.utils.ShareHelperFactory
@@ -50,7 +54,7 @@ val dataModules = module {
     single { LanguageManager(get(), get(), get()) }
 
     // User Registration Service
-    single { UserRegistrationService(get(), get(), get(), get(), get()) }
+    single { UserRegistrationService(get(), get(), get(), get(), get(), get()) }
 
     // App Initialization Service
     single { AppInitializationService(get(), get(), get(), get()) }
@@ -73,6 +77,7 @@ val dataModules = module {
     single { ShareHelperFactory.create() }
     single { ImageShareHelperFactory.create() }
 
+
 }
 
 val domainModule = module {
@@ -80,9 +85,13 @@ val domainModule = module {
 }
 val viewModelModule = module {
     factory { AllResultsViewModel(get()) }
-    factory { TestResultViewModel(get()) }
+    factory { TestResultViewModel(get(), get()) }
     factory { HomeViewModel(get(), get(), get()) }
     viewModelOf(::QuickTestHomeScreenViewModel)
     factory { QuizViewModel(get(), get()) }
     factory { SplashViewModel(get(), get()) }
+    factory { FriendsViewModel(get()) }
+    factory { NotificationsViewModel(get()) }
+    factory { InviteViewModel(get()) }
+    factory { ProfileViewModel(get(), get()) }
 }

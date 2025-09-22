@@ -32,6 +32,13 @@ import com.keak.aishou.screens.quicktestscreen.QuizScreen
 import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashScreen
 import com.keak.aishou.screens.splashscreen.SplashViewModel
+import com.keak.aishou.screens.friends.FriendsScreen
+import com.keak.aishou.screens.notifications.NotificationsScreen
+import com.keak.aishou.screens.invite.InviteScreen
+import com.keak.aishou.screens.matching.UserMatchScreen
+import com.keak.aishou.screens.profile.ProfileScreen
+import com.keak.aishou.data.models.UserMatch
+import com.keak.aishou.data.models.UserInfo
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
 
@@ -116,7 +123,7 @@ fun NavGraphBuilder.mainRoute(
                                     println("PersonalityUpdate: API call result: $result")
 
                                     // Navigate to home regardless of API result
-                                    router.goToHome()
+                                    router.goToPaywall()
                                 } catch (e: Exception) {
                                     println("PersonalityUpdate: Error updating personality: ${e.message}")
                                     // Navigate to home even on error
@@ -182,5 +189,89 @@ fun NavGraphBuilder.mainRoute(
     ) {
         val quizViewModel: QuizViewModel = koinViewModel()
         QuizScreen(router = router, quizID = null, viewModel = quizViewModel)
+    }
+    composable(
+        route = Routes.Friends.route
+    ) {
+        FriendsScreen(router = router)
+    }
+    composable(
+        route = Routes.Notifications.route
+    ) {
+        NotificationsScreen(router = router)
+    }
+    composable(
+        route = Routes.FriendRequest.route,
+        arguments = listOf(
+            navArgument("senderId") { type = NavType.StringType },
+            navArgument("senderName") {
+                type = NavType.StringType
+                defaultValue = ""
+            }
+        )
+    ) { backStackEntry ->
+
+        val senderId = backStackEntry.savedStateHandle.get<String>("senderId") ?: ""
+        val senderName = backStackEntry.savedStateHandle.get<String>("senderName") ?: ""
+
+        // URL decode sender name
+        val decodedName = senderName.replace("%20", " ").replace("%26", "&")
+
+        // Navigate to notifications screen with the specific senderId to highlight
+        NotificationsScreen(
+            router = router,
+            highlightSenderId = senderId,
+            highlightSenderName = decodedName
+        )
+    }
+    composable(
+        route = Routes.Invite.route,
+        arguments = listOf(
+            navArgument("inviteId") { type = NavType.StringType },
+            navArgument("senderId") { type = NavType.StringType },
+            navArgument("testId") { type = NavType.StringType },
+            navArgument("testTitle") {
+                type = NavType.StringType
+                defaultValue = ""
+            }
+        )
+    ) { backStackEntry ->
+
+        val inviteId = backStackEntry.savedStateHandle.get<String>("inviteId") ?: ""
+        val senderId = backStackEntry.savedStateHandle.get<String>("senderId") ?: ""
+        val testId = backStackEntry.savedStateHandle.get<String>("testId") ?: ""
+        val testTitle = backStackEntry.savedStateHandle.get<String>("testTitle") ?: ""
+
+        // URL decode test title
+        val decodedTitle = testTitle.replace("%20", " ").replace("%26", "&")
+
+        InviteScreen(
+            inviteId = inviteId,
+            senderId = senderId,
+            testId = testId,
+            testTitle = decodedTitle,
+            router = router
+        )
+    }
+    composable(
+        route = Routes.UserMatch.route,
+        arguments = listOf(
+            navArgument("testID") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val testID: String = backStackEntry.savedStateHandle.get<String>("testID") ?: ""
+
+        UserMatchScreen(
+            testID = testID,
+            router = router
+        )
+    }
+
+    composable(
+        route = Routes.Profile.route
+    ) {
+        ProfileScreen(
+            router = router
+        )
     }
 }

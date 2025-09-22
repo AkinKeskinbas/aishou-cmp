@@ -1,0 +1,7 @@
+language = C
+headers = OneSignalCBridge.h
+
+---
+
+const char* getOneSignalPushId(void);
+const char* getOneSignalUserId(void);

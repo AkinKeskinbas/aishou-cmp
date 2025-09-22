@@ -1,9 +1,11 @@
 package com.keak.aishou.network
 
 object ApiList {
-   // const val BASE_URL = "https://rizzu-backend.onrender.com"
-    // const val BASE_URL = "http://10.0.2.2:3060"  // Use 10.0.2.2 for Android emulator to reach host localhost
-    const val BASE_URL = "http://172.22.1.95:3060"  // Use actual IP for real device testing
+    // Platform-specific base URLs - automatically selects correct URL for each platform
+    val BASE_URL = PlatformConfig.baseUrl
+
+    // Alternative URLs (comment out PlatformConfig.baseUrl above and uncomment one below if needed):
+    // const val BASE_URL = "http://172.22.1.95:3060"  // Use actual IP for real device testing
 
     const val GET_CHAT_ANALYSIS = "/analyze"
     const val GET_TOKEN = "/auth/token"
@@ -15,6 +17,14 @@ object ApiList {
     const val GET_TESTS = "/v1/tests"
     const val POST_CREATE_INVITE = "/v1/invites"
     const val POST_PUSH_REGISTER = "/v1/push/register"
+
+    // Friends API endpoints
+    const val POST_FRIEND_REQUEST = "/v1/friends/request"
+    const val GET_RECEIVED_REQUESTS = "/v1/friends/requests/received"
+    const val GET_SENT_REQUESTS = "/v1/friends/requests/sent"
+    const val GET_FRIENDS_LIST = "/v1/friends/my-friends"
+    const val PUT_MARK_ALL_READ = "/v1/friends/requests/mark-all-read"
+    const val GET_UNREAD_COUNT = "/v1/friends/requests/unread-count"
 
     // Quiz questions endpoint - use with string formatting: v1/tests/{testId}/versions/{version}/questions
     fun getQuizQuestionsUrl(testId: String, version: Int): String {
@@ -34,6 +44,24 @@ object ApiList {
     // Reprocess test results endpoint - use with string formatting: /v1/tests/{testId}/reprocess
     fun getReprocessTestUrl(testId: String): String {
         return "/v1/tests/$testId/reprocess"
+    }
+
+    // Friends dynamic endpoints
+    fun getRespondFriendRequestUrl(requestId: String): String {
+        return "/v1/friends/request/$requestId/respond"
+    }
+
+    fun getMarkRequestReadUrl(requestId: String): String {
+        return "/v1/friends/request/$requestId/mark-read"
+    }
+
+    fun getRemoveFriendUrl(friendId: String): String {
+        return "/v1/friends/$friendId"
+    }
+
+    // Invite accept endpoint - use with string formatting: /v1/{inviteId}/accept
+    fun getAcceptInviteUrl(inviteId: String): String {
+        return "/v1/$inviteId/accept"
     }
 
 }

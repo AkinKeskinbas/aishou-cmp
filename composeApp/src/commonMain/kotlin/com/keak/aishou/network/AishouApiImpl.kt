@@ -1,6 +1,6 @@
 package com.keak.aishou.network
 
-import com.gyanoba.inspektor.Inspektor
+// import com.gyanoba.inspektor.Inspektor // Disabled due to iOS notification crash
 import com.keak.aishou.data.DataStoreManager
 import com.keak.aishou.data.api.QuizQuestion
 import com.keak.aishou.data.api.QuizSubmissionRequest
@@ -15,6 +15,7 @@ import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.data.api.InviteResponse
 import com.keak.aishou.data.api.PushReq
+import com.keak.aishou.data.models.*
 import com.keak.aishou.response.BaseResponse
 import com.keak.aishou.response.TokenResponse
 import io.ktor.client.HttpClient
@@ -27,8 +28,10 @@ import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -68,7 +71,7 @@ class AishouApiImpl(
             install(ContentNegotiation) {
                 json(json, contentType = ContentType.Any)
             }
-            install(Inspektor)
+            // install(Inspektor) // Disabled due to iOS notification crash
 
             defaultRequest {
                 url(ApiList.BASE_URL)
@@ -348,4 +351,152 @@ class AishouApiImpl(
             }
         }
     }
+
+    // Friends API Implementation
+    override suspend fun sendFriendRequest(request: SendFriendRequestReq): ApiResult<BaseResponse<FriendRequest>> {
+        println("AishouApiImpl: Making send friend request to ${ApiList.BASE_URL}${ApiList.POST_FRIEND_REQUEST}")
+        println("AishouApiImpl: Request body: $request")
+
+        val authHeader = getAuthHeader()
+        println("AishouApiImpl: Auth header present: ${authHeader != null}")
+
+        return handleApi {
+            client.post(ApiList.POST_FRIEND_REQUEST) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun respondToFriendRequest(requestId: String, response: RespondFriendRequestReq): ApiResult<BaseResponse<FriendRequest>> {
+        val url = ApiList.getRespondFriendRequestUrl(requestId)
+        println("AishouApiImpl: Making respond to friend request to ${ApiList.BASE_URL}$url")
+        println("AishouApiImpl: Request body: $response")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(response)
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun getReceivedRequests(unreadOnly: Boolean): ApiResult<BaseResponse<List<RequestWithSenderInfo>>> {
+        println("AishouApiImpl: Making get received requests to ${ApiList.BASE_URL}${ApiList.GET_RECEIVED_REQUESTS}")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.get(ApiList.GET_RECEIVED_REQUESTS) {
+                if (unreadOnly) {
+                    parameter("unread_only", "true")
+                }
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun getSentRequests(): ApiResult<BaseResponse<List<RequestWithReceiverInfo>>> {
+        println("AishouApiImpl: Making get sent requests to ${ApiList.BASE_URL}${ApiList.GET_SENT_REQUESTS}")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.get(ApiList.GET_SENT_REQUESTS) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun getFriendsList(): ApiResult<BaseResponse<List<FriendInfo>>> {
+        println("AishouApiImpl: Making get friends list to ${ApiList.BASE_URL}${ApiList.GET_FRIENDS_LIST}")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.get(ApiList.GET_FRIENDS_LIST) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun markRequestAsRead(requestId: String): ApiResult<BaseResponse<Unit>> {
+        val url = ApiList.getMarkRequestReadUrl(requestId)
+        println("AishouApiImpl: Making mark request as read to ${ApiList.BASE_URL}$url")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.put(url) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun markAllRequestsAsRead(): ApiResult<BaseResponse<Unit>> {
+        println("AishouApiImpl: Making mark all requests as read to ${ApiList.BASE_URL}${ApiList.PUT_MARK_ALL_READ}")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.put(ApiList.PUT_MARK_ALL_READ) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun getUnreadRequestsCount(): ApiResult<BaseResponse<UnreadCount>> {
+        println("AishouApiImpl: Making get unread requests count to ${ApiList.BASE_URL}${ApiList.GET_UNREAD_COUNT}")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.get(ApiList.GET_UNREAD_COUNT) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun removeFriend(friendId: String): ApiResult<BaseResponse<Unit>> {
+        val url = ApiList.getRemoveFriendUrl(friendId)
+        println("AishouApiImpl: Making remove friend to ${ApiList.BASE_URL}$url")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.delete(url) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+            }
+        }
+    }
+
+    override suspend fun acceptInvite(inviteId: String): ApiResult<BaseResponse<Unit>> {
+        val url = ApiList.getAcceptInviteUrl(inviteId)
+        println("AishouApiImpl: Making accept invite to ${ApiList.BASE_URL}$url")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.post(url) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
 }

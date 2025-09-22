@@ -1,6 +1,7 @@
 package com.keak.aishou.screens.homescreen
 
 import aishou.composeapp.generated.resources.Res
+import aishou.composeapp.generated.resources.bell
 import aishou.composeapp.generated.resources.cosmic_match_home
 import aishou.composeapp.generated.resources.hearth_desc
 import aishou.composeapp.generated.resources.lightining_home
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -40,6 +42,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,10 +75,11 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
     val isLoadingProfile by vm.isLoadingProfile.collectAsStateWithLifecycle()
     val profileError by vm.profileError.collectAsStateWithLifecycle()
 
-    // Load user profile when HomeScreen opens or reopens
+    // Load user profile and notification count when HomeScreen opens or reopens
     LaunchedEffect(Unit) {
-        println("HomeScreen: LaunchedEffect triggered - loading user profile")
+        println("HomeScreen: LaunchedEffect triggered - loading user profile and notification count")
         vm.loadUserProfile()
+        vm.loadUnreadNotificationCount()
     }
 
     // Convert API solved tests to our display format
@@ -110,7 +116,15 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
             .background(brush = BackGroundBrush.homNeoBrush)
     ) {
         stickyHeader {
-            HomeHeader()
+            HomeHeader(
+                vm = vm,
+                onNotificationClick = {
+                    router.goToNotifications()
+                },
+                onProfileClick = {
+                    router.goToProfile()
+                }
+            )
         }
         item {
             UserCard(
@@ -138,11 +152,22 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
                         "Quick Quiz" -> {
                             router.goToQuickQuizScreen()
                         }
+                        "User Match" -> {
+
+                        }
                         else -> {
 
                         }
                     }
 
+                }
+            )
+            Spacer(Modifier.height(16.dp))
+        }
+        item {
+            FriendsSection(
+                onFriendsClick = {
+                    router.goToFriends()
                 }
             )
             Spacer(Modifier.height(16.dp))
@@ -162,11 +187,12 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
                 testerType = recentTestsData.testerType,
                 bgColor = recentTestsData.resultBg,
                 clickAction = {
-                    if (recentTestsData.testType == QuizType.Single){
-                        router.goToTestResultScreen(recentTestsData.testID)
-                    }else{
-                        router.goToTestResultScreen(recentTestsData.testID)
-                    }
+                    router.goToUserMatch(recentTestsData.testID)
+//                    if (recentTestsData.testType == QuizType.Single){
+//                        router.goToTestResultScreen(recentTestsData.testID)
+//                    }else{
+//                        router.goToTestResultScreen(recentTestsData.testID)
+//                    }
 
                 }
             )
@@ -220,12 +246,6 @@ private fun UserActions(
             actionText = stringResource(Res.string.quick_quiz_home),
             onClickAction=onClickAction
         )
-//        QuickActionsCard(
-//            backgroundColor = Color(0xFF4DD0E1),
-//            image = Res.drawable.profile_home,
-//            actionText = stringResource(Res.string.view_all_home),
-//            onClickAction = onClickAction
-//        )
     }
     Spacer(Modifier.height(8.dp))
 //    Row(
@@ -233,17 +253,19 @@ private fun UserActions(
 //        horizontalArrangement = Arrangement.Center
 //    ) {
 //        QuickActionsCard(
-//            backgroundColor = Color(0xFFFFEE58),
-//            image = Res.drawable.star_dec,
-//            actionText = stringResource(Res.string.best_matches_home),
+//            backgroundColor = Color(0xFF9C27B0),
+//            image = Res.drawable.hearth_desc,
+//            actionText = "User Match",
+//            textColor = Color.White,
+//            imageColor = Color.White,
 //            onClickAction = onClickAction
 //        )
 //        Spacer(Modifier.width(8.dp))
 //        QuickActionsCard(
-//            backgroundColor = Color(0xFF66BB6A),
-//            image = Res.drawable.star,
-//            actionText = stringResource(Res.string.quick_quiz_home),
-//            onClickAction=onClickAction
+//            backgroundColor = Color(0xFF4DD0E1),
+//            image = Res.drawable.profile_home,
+//            actionText = "View All",
+//            onClickAction = { onClickAction("View All") }
 //        )
 //    }
 }
@@ -447,7 +469,68 @@ private fun UserCard(
 }
 
 @Composable
-private fun HomeHeader() {
+private fun FriendsSection(
+    onFriendsClick: () -> Unit
+) {
+    NeoBrutalistCardViewWithFlexSize(
+        backgroundColor = Color(0xFF9C27B0), // Purple color for friends
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clickable(role = Role.Button) {
+                onFriendsClick()
+            }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.profile_home),
+                    contentDescription = "Friends",
+                    colorFilter = ColorFilter.tint(Color.White),
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "Friends",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Connect with friends",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+                }
+            }
+            Text(
+                text = "→",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.White
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomeHeader(
+    vm: HomeViewModel,
+    onNotificationClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+) {
+    val notificationCount by vm.unreadNotificationCount.collectAsStateWithLifecycle()
+
     NeoBrutalistCardViewWithFlexSize(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = Color.White
@@ -476,7 +559,6 @@ private fun HomeHeader() {
                     fontWeight = FontWeight.Black,
                     modifier = Modifier
                 )
-                // Spacer(Modifier.height(8.dp))
                 Text(
                     text = stringResource(Res.string.mbti_zodiac_home),
                     fontSize = 12.sp,
@@ -487,25 +569,63 @@ private fun HomeHeader() {
             }
             Spacer(Modifier.weight(1f))
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                // Notification Button with Badge
+                Box {
+                    Image(
+                        painter = painterResource(Res.drawable.bell),
+                        contentDescription = "Notifications",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable(role = Role.Button) {
+                                onNotificationClick()
+                            }
+                            .padding(2.dp)
+                    )
+
+                    // Badge
+                    if (notificationCount > 0) {
+                        Box(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .offset(x = 6.dp, y = (-2).dp)
+                                .background(
+                                    Color(0xFFE91E63),
+                                    androidx.compose.foundation.shape.CircleShape
+                                )
+                                .align(Alignment.TopEnd),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (notificationCount > 9) "9+" else notificationCount.toInt().toString(),
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                // Profile Button
                 Image(
                     painter = painterResource(Res.drawable.profile_home),
-                    contentDescription = null,
+                    contentDescription = "Profile",
                     alignment = Alignment.Center,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(24.dp).clickable(){
+                        onProfileClick.invoke()
+                    }
                 )
 
-                Spacer(Modifier.width(4.dp))
-
+                // Settings Button
                 Image(
                     painter = painterResource(Res.drawable.settings_home),
-                    contentDescription = null,
+                    contentDescription = "Settings",
                     alignment = Alignment.Center,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
-
         }
     }
 }

@@ -27,7 +27,11 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            linkerOpts("-lsqlite3")
         }
+
+        // Remove cinterop approach due to androidx.core dependency issue
+        // Using platform-specific implementation instead
     }
 
 
@@ -38,6 +42,20 @@ kotlin {
                 optIn("kotlinx.cinterop.ExperimentalForeignApi")
             }
         }
+    }
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilations.configureEach {
+            compilerOptions.configure {
+                freeCompilerArgs.addAll(listOf(
+                    "-Xruntime-logs=gc=info",
+                    "-Xdisable-phases=VerifyBitcode"
+                ))
+            }
+        }
+    }
+
+    sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)

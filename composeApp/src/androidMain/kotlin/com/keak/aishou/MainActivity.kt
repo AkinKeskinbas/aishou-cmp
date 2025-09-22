@@ -1,5 +1,7 @@
 package com.keak.aishou
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +25,29 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            App()
+            App(deepLinkUrl = handleDeepLink(intent)?.toString())
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // Handle deeplink when app is already running
+        val uri = handleDeepLink(intent)
+        uri?.let {
+            // TODO: Handle deeplink navigation when app is already running
+            println("MainActivity: New deeplink intent: $it")
+        }
+    }
+
+    private fun handleDeepLink(intent: Intent): Uri? {
+        return when (intent.action) {
+            Intent.ACTION_VIEW -> {
+                val uri = intent.data
+                println("MainActivity: Received deeplink: $uri")
+                uri
+            }
+            else -> null
         }
     }
 }

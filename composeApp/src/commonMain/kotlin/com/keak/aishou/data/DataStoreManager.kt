@@ -72,6 +72,7 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
         preferences[ONE_SIGNAL_ID]
     }
 
+
     suspend fun markUserAsReturning() {
         dataStore.edit { preferences ->
             preferences[IS_FIRST_TIME_USER] = false
@@ -155,6 +156,7 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
             preferences[ONE_SIGNAL_ID] = id
         }
     }
+
 
     suspend fun clearOneSignalId() {
         dataStore.edit { preferences ->

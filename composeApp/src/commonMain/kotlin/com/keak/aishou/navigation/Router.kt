@@ -18,5 +18,11 @@ interface Router {
     fun goToZodiacSelection()
     fun goToMBTIPreference()
     fun goToQuickTest()
+    fun goToFriends()
+    fun goToNotifications()
+    fun goToFriendRequest(senderId: String, senderName: String)
+    fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String)
+    fun goToUserMatch(testID: String)
+    fun goToProfile()
 
 }

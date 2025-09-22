@@ -8,5 +8,10 @@
 	<array>
 		<string>group.com.keak.aishou.onesignal</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:aishou.site</string>
+		<string>applinks:aishou.app</string>
+	</array>
 </dict>
 </plist>

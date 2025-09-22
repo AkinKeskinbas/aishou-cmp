@@ -23,6 +23,28 @@ sealed class Routes(val route: String = "") {
         }
     }
     data object QuickQuizScreen : Routes("QuickQuizScreen")
+    data object Friends : Routes("Friends")
+    data object Notifications : Routes("Notifications")
+    data object FriendRequest : Routes("Friends/Request?senderId={senderId}&senderName={senderName}") {
+        fun passFriendRequestData(senderId: String, senderName: String): String {
+            // URL encode sender name for safe passing
+            val encodedName = senderName.replace(" ", "%20").replace("&", "%26")
+            return "Friends/Request?senderId=$senderId&senderName=$encodedName"
+        }
+    }
+    data object Invite : Routes("Invite/{inviteId}?senderId={senderId}&testId={testId}&testTitle={testTitle}") {
+        fun passInviteData(inviteId: String, senderId: String, testId: String, testTitle: String): String {
+            // URL encode test title for safe passing
+            val encodedTitle = testTitle.replace(" ", "%20").replace("&", "%26")
+            return "Invite/$inviteId?senderId=$senderId&testId=$testId&testTitle=$encodedTitle"
+        }
+    }
 
     data object Paywall : Routes("Paywall")
+    data object UserMatch : Routes("UserMatch/{testID}") {
+        fun passTestID(testID: String): String {
+            return "UserMatch/$testID"
+        }
+    }
+    data object Profile : Routes("Profile")
 }
