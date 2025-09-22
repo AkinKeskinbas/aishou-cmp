@@ -165,6 +165,7 @@ fun TestResultScreen(
         SendToFriendBottomSheet(
             inviteLink = inviteLink,
             soloResult = testResult?.soloResult,
+            testId = testID,
             isVisible = showSendToFriendBottomSheet,
             onDismiss = { viewModel.closeSendToFriendBottomSheet() }
         )
@@ -297,17 +298,17 @@ fun SoloResultContent(
                 shadowOffset = 12.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier.padding(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "🎯",
-                        fontSize = 48.sp
+                        fontSize = 24.sp
                     )
 
                     Text(
                         text = "$animatedPercent",
-                        fontSize = 64.sp,
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White,
                         textAlign = TextAlign.Center
@@ -315,7 +316,7 @@ fun SoloResultContent(
 
                     Text(
                         text = stringResource(Res.string.result_points),
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.Black,
                         textAlign = TextAlign.Center
@@ -323,7 +324,7 @@ fun SoloResultContent(
 
                     Text(
                         text = getScoreEmoji(soloResult.totalScore),
-                        fontSize = 32.sp
+                        fontSize = 24.sp
                     )
                 }
             }
@@ -353,7 +354,7 @@ fun SoloResultContent(
                     val colors = listOf(
                         Color(0xFFFFE66D), Color(0xFF06FFA5), Color(0xFF4ECDC4),
                         Color(0xFFFF6B6B), Color(0xFFA8E6CF), Color(0xFFFFD93D),
-                        Color(0xFF6C5CE7), Color(0xFFFDCB6E)
+                        Color(0xFF6C5CE7), Color(0xFF66BB6A)
                     )
 
                     Column {
@@ -561,24 +562,24 @@ fun TraitScoreCard(
 ) {
     NeoBrutalistCardViewWithFlexSize(
         backgroundColor = color,
-        modifier = modifier.padding(2.dp),
+        modifier = modifier,
         borderWidth = 3.dp,
         shadowOffset = 4.dp
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(4.dp)
         ) {
             Text(
                 text = trait,
                 fontWeight = FontWeight.Black,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 color = Color.Black
             )
             Text(
                 text = score.toString(),
                 fontWeight = FontWeight.Black,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = Color.Black
             )
         }

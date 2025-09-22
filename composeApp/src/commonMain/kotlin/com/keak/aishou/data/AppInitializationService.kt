@@ -25,19 +25,19 @@ class AppInitializationService(
 
             try {
                 // Step 1: Initialize language system
-                println("AppInitialization: 1/4 - Initializing language system...")
+                println("AppInitialization: 1/5 - Initializing language system...")
                 languageManager.initialize()
 
-                // Step 2: Initialize OneSignal
-                println("AppInitialization: 2/4 - Initializing OneSignal...")
-                oneSignalService.initialize()
-
-                // Step 3: Small delay to let other systems settle
-                delay(1000)
-
-                // Step 4: Initialize user registration (depends on language and user session)
-                println("AppInitialization: 3/5 - Initializing user registration...")
+                // Step 2: Initialize user registration FIRST (to get auth token)
+                println("AppInitialization: 2/5 - Initializing user registration...")
                 userRegistrationService.initialize()
+
+                // Step 3: Small delay to let user registration complete
+                delay(2000)
+
+                // Step 4: Initialize OneSignal (after we have auth token)
+                println("AppInitialization: 3/5 - Initializing OneSignal...")
+                oneSignalService.initialize()
 
                 // Step 5: Check and update OneSignal ID if needed
                 println("AppInitialization: 4/5 - Checking OneSignal ID...")

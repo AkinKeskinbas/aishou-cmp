@@ -32,7 +32,7 @@ class SplashViewModel(
     private fun initializeApp() {
         viewModelScope.launch {
             try {
-                // Initialize OneSignal on Main thread
+                // Initialize OneSignal (but don't register yet - need token first)
                 withContext(Dispatchers.Main) {
                     oneSignalService.initialize()
                 }

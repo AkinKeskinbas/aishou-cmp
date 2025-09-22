@@ -6,6 +6,7 @@ import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
 import com.keak.aishou.purchase.PremiumChecker
 import com.keak.aishou.utils.Platform
+import com.keak.aishou.notifications.OneSignalService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ class UserRegistrationService(
     private val dataStoreManager: DataStoreManager,
     private val apiService: AishouApiService,
     private val languageManager: LanguageManager,
+    private val oneSignalService: OneSignalService,
     private val scope: CoroutineScope
 ) {
 
@@ -107,9 +109,31 @@ class UserRegistrationService(
                     result.data.data?.let { tokenResponse ->
                         dataStoreManager.setTokens(tokenResponse.token, tokenResponse.refreshToken)
                         println("UserRegistration: Tokens stored successfully")
+                        println("UserRegistration: Access token: ${tokenResponse.token}")
+                        println("UserRegistration: Refresh token: ${tokenResponse.refreshToken}")
+
+                        // Verify tokens were saved
+                        val savedAccessToken = dataStoreManager.accessToken.first()
+                        println("UserRegistration: Verification - saved access token: $savedAccessToken")
+                    } ?: run {
+                        println("UserRegistration: ❌ No token data in response!")
                     }
 
                     markUserAsRegistered()
+
+                    // Now that we have token, start OneSignal user tracking and request permissions
+                    scope.launch {
+                        println("UserRegistration: Starting OneSignal user tracking now that we have token")
+                        oneSignalService.startUserTracking()
+
+                        // Also request notification permission now
+                        try {
+                            val permissionGranted = oneSignalService.requestPermissionAndRegister()
+                            println("UserRegistration: Notification permission granted: $permissionGranted")
+                        } catch (e: Exception) {
+                            println("UserRegistration: Error requesting notification permission: ${e.message}")
+                        }
+                    }
                 }
                 is ApiResult.Error -> {
                     println("UserRegistration: ❌ Registration failed: ${result.message}")

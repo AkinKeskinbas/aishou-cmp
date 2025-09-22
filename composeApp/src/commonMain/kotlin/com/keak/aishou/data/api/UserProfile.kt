@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserProfileResponse(
+    val userId: String? = null,
+    val displayName: String? = null,
+    val email: String? = null,
     val mbtiType: String? = null,
     val zodiacSign: String? = null,
     val personalityAssessed: Boolean = false,

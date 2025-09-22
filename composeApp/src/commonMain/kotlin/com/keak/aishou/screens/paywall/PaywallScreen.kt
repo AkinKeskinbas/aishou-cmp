@@ -7,6 +7,7 @@ import aishou.composeapp.generated.resources.monthly_premium_paywall
 import aishou.composeapp.generated.resources.monthly_premium_per_month
 import aishou.composeapp.generated.resources.monthly_premium_per_week
 import aishou.composeapp.generated.resources.paywall_cancel_anytime
+import aishou.composeapp.generated.resources.paywall_cancel_paywall
 import aishou.composeapp.generated.resources.paywall_choose_your_sign
 import aishou.composeapp.generated.resources.paywall_go_premium
 import aishou.composeapp.generated.resources.paywall_join_discover
@@ -358,6 +359,30 @@ fun PaywallScreen(router: Router) {
                             fontWeight = FontWeight.Black,
                             modifier = Modifier,
                             color = Color.Black
+
+                        )
+                    }
+
+                }
+                Spacer(Modifier.height(16.dp))
+                NeoBrutalistCardViewWithFlexSize(
+                    modifier = Modifier.fillMaxWidth().clickable(){
+                        router.goToHome()
+                    },
+                    backgroundColor = Color(0xFF66BB6A),
+
+                    ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.paywall_cancel_paywall),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier,
+                            color = Color.White
 
                         )
                     }

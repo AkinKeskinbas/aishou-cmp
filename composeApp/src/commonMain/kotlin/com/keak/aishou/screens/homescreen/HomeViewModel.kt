@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.keak.aishou.response.isSuccess
 
 class HomeViewModel(
     private val userSessionManager: UserSessionManager,
@@ -23,8 +24,6 @@ class HomeViewModel(
     private val apiService: AishouApiService
 ) : ViewModel() {
 
-    private val _notificationPermissionRequested = MutableStateFlow(false)
-    val notificationPermissionRequested: StateFlow<Boolean> = _notificationPermissionRequested.asStateFlow()
 
     private val _userProfile = MutableStateFlow<UserProfileResponse?>(null)
     val userProfile: StateFlow<UserProfileResponse?> = _userProfile.asStateFlow()
@@ -34,6 +33,9 @@ class HomeViewModel(
 
     private val _profileError = MutableStateFlow<String?>(null)
     val profileError: StateFlow<String?> = _profileError.asStateFlow()
+
+    private val _unreadNotificationCount = MutableStateFlow(0L)
+    val unreadNotificationCount: StateFlow<Long> = _unreadNotificationCount.asStateFlow()
 
     val userState: StateFlow<UserState> = combine(
         userSessionManager.isFirstTimeUser,
@@ -57,32 +59,10 @@ class HomeViewModel(
         // Load user profile when ViewModel is initialized
         loadUserProfile()
 
-        // Request notification permission after a short delay when home screen loads
-        viewModelScope.launch {
-            kotlinx.coroutines.delay(1000) // Give user time to see the home screen
-            requestNotificationPermission()
-        }
+        // Load unread notification count when ViewModel is initialized
+        loadUnreadNotificationCount()
     }
 
-    fun requestNotificationPermission() {
-        if (_notificationPermissionRequested.value) return
-
-        viewModelScope.launch {
-            try {
-                val granted = oneSignalService.requestPermissionAndRegister()
-                _notificationPermissionRequested.value = true
-
-                if (granted) {
-                    println("Notification permission granted and OneSignal registered")
-                } else {
-                    println("Notification permission denied")
-                }
-            } catch (e: Exception) {
-                println("Error requesting notification permission: ${e.message}")
-                _notificationPermissionRequested.value = true
-            }
-        }
-    }
 
     fun loadUserProfile() {
         viewModelScope.launch {
@@ -132,5 +112,37 @@ class HomeViewModel(
 
     fun getDisplayableTests(): List<SolvedTest> {
         return _userProfile.value?.solvedTests?.take(3) ?: emptyList()
+    }
+
+    fun loadUnreadNotificationCount() {
+        viewModelScope.launch {
+            try {
+                when (val result = apiService.getUnreadRequestsCount()) {
+                    is ApiResult.Success -> {
+                        if (result.data.isSuccess() && result.data.data != null) {
+                            _unreadNotificationCount.value = result.data.data.count
+                            println("HomeViewModel: Unread notification count loaded: ${result.data.data.count}")
+                        } else {
+                            _unreadNotificationCount.value = 0
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        if (result.code == 500) {
+                            println("HomeViewModel: Server error (500) loading unread count - backend issue")
+                        } else {
+                            println("HomeViewModel: Error loading unread count: ${result.message}")
+                        }
+                        _unreadNotificationCount.value = 0
+                    }
+                    is ApiResult.Exception -> {
+                        println("HomeViewModel: Exception loading unread count: ${result.exception.message}")
+                        _unreadNotificationCount.value = 0
+                    }
+                }
+            } catch (e: Exception) {
+                println("HomeViewModel: Unexpected error loading unread count: ${e.message}")
+                _unreadNotificationCount.value = 0
+            }
+        }
     }
 }

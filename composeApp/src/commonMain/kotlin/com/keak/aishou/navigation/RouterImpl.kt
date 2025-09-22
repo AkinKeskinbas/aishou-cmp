@@ -76,6 +76,30 @@ class RouterImpl(
         navigate(Routes.QuicTests)
     }
 
+    override fun goToFriends() {
+        navigate(Routes.Friends)
+    }
+
+    override fun goToNotifications() {
+        navigate(Routes.Notifications)
+    }
+
+    override fun goToFriendRequest(senderId: String, senderName: String) {
+        navigateArg(Routes.FriendRequest.passFriendRequestData(senderId, senderName))
+    }
+
+    override fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String) {
+        navigateArg(Routes.Invite.passInviteData(inviteId, senderId, testId, testTitle))
+    }
+
+    override fun goToUserMatch(testID: String) {
+        navigateArg(Routes.UserMatch.passTestID(testID))
+    }
+
+    override fun goToProfile() {
+        navigate(Routes.Profile)
+    }
+
     private fun navigate(
         routes: Routes,
         removeFromHistory: Boolean = false,

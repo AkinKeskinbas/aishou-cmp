@@ -8,13 +8,17 @@ import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
 import com.keak.aishou.purchase.PremiumChecker
+import com.keak.aishou.data.UserSessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class TestResultViewModel(
-    private val apiService: AishouApiService
+    private val apiService: AishouApiService,
+    private val userSessionManager: UserSessionManager
 ) : ViewModel() {
 
     private val _testResult = MutableStateFlow<TestResultResponse?>(null)
@@ -216,16 +220,90 @@ class TestResultViewModel(
         }
     }
 
-    private fun generateInviteLink(inviteId: String?): String? {
+    private fun generateInviteLink(inviteId: String?, testId: String? = null, senderId: String? = null, testTitle: String? = null): String? {
         return if (inviteId != null) {
-            // TODO: Replace with actual deep link domain
-            "https://aishou.app/invite/$inviteId"
+            val actualSenderId = senderId ?: getCurrentUserId() ?: "unknown"
+            val actualTestId = testId ?: _testResult.value?.testId ?: "unknown"
+            val actualTestTitle = testTitle ?: "Test" // We'll get this from tests API when needed
+
+            // Create deep link URL - replace with actual production domain
+            "https://aishou.app/invite/$inviteId?senderId=$actualSenderId&testId=$actualTestId&testTitle=${actualTestTitle.replace(" ", "%20").replace("&", "%26")}"
         } else {
+            null
+        }
+    }
+
+    private fun getCurrentUserId(): String? {
+        return try {
+            // Get current user ID from UserSessionManager
+            runBlocking { userSessionManager.userId.first() }
+        } catch (e: Exception) {
+            println("TestResultViewModel: Error getting current user ID: ${e.message}")
             null
         }
     }
 
     fun clearInviteSuccess() {
         _inviteSuccess.value = null
+    }
+
+    // Create invite for specific friend
+    fun createInviteForFriend(testId: String, friendId: String, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                println("TestResultViewModel: Creating invite for friend $friendId")
+
+                // Get test version from test result response
+                val testVersion = _testResult.value?.let { result ->
+                    // Extract version from test data if available, default to 1
+                    1 // For now, using version 1 as default
+                } ?: 1
+
+                val inviteRequest = InviteCreateRequest(
+                    friendId = friendId, // Specific friend ID
+                    testId = testId,
+                    version = testVersion
+                )
+
+                val result = apiService.createInvite(inviteRequest)
+                when (result) {
+                    is ApiResult.Success -> {
+                        val inviteId = result.data.data?.inviteId
+                        if (inviteId != null) {
+                            // Use provided test title or default
+                            val testTitle = "Test" // We'll load this properly from tests API later
+                            val inviteLink = generateInviteLink(
+                                inviteId = inviteId,
+                                testId = testId,
+                                senderId = getCurrentUserId(),
+                                testTitle = testTitle
+                            )
+                            if (inviteLink != null) {
+                                println("TestResultViewModel: Created friend invite successfully: $inviteLink")
+                                onSuccess(inviteLink)
+                            } else {
+                                onError("Failed to generate invite link")
+                            }
+                        } else {
+                            onError("No invite ID received")
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        val errorMessage = result.message ?: "Failed to create friend invite"
+                        println("TestResultViewModel: Error creating friend invite: $errorMessage")
+                        onError(errorMessage)
+                    }
+                    is ApiResult.Exception -> {
+                        val errorMessage = result.exception.message ?: "Exception creating friend invite"
+                        println("TestResultViewModel: Exception creating friend invite: $errorMessage")
+                        onError(errorMessage)
+                    }
+                }
+            } catch (e: Exception) {
+                val errorMessage = e.message ?: "Unexpected error creating friend invite"
+                println("TestResultViewModel: Unexpected error: $errorMessage")
+                onError(errorMessage)
+            }
+        }
     }
 }

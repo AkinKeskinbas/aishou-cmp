@@ -35,4 +35,14 @@ interface OneSignalManager {
      * Remove tags from the user
      */
     fun removeTags(tagKeys: List<String>)
+
+    /**
+     * Add listener for OneSignal user state changes
+     */
+    fun addUserStateChangeListener(listener: (String?) -> Unit)
+
+    /**
+     * Remove user state change listener
+     */
+    fun removeUserStateChangeListener()
 }
