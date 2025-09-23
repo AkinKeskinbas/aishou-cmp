@@ -6,10 +6,13 @@ import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
 import com.keak.aishou.data.models.*
 import com.keak.aishou.response.isSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FriendsViewModel(
     private val apiService: AishouApiService
@@ -39,7 +42,11 @@ class FriendsViewModel(
             _isLoading.value = true
             _error.value = null
 
-            when (val result = apiService.getFriendsList()) {
+            val result = withContext(Dispatchers.IO) {
+                apiService.getFriendsList()
+            }
+
+            when (result) {
                 is ApiResult.Success -> {
                     if (result.data.isSuccess()) {
                         _friendsList.value = result.data.data.orEmpty()
@@ -73,7 +80,11 @@ class FriendsViewModel(
                 message = message
             )
 
-            when (val result = apiService.sendFriendRequest(request)) {
+            val result = withContext(Dispatchers.IO) {
+                apiService.sendFriendRequest(request)
+            }
+
+            when (result) {
                 is ApiResult.Success -> {
                     if (result.data.isSuccess()) {
                         _sendRequestResult.value = "Friend request sent successfully!"
@@ -99,7 +110,11 @@ class FriendsViewModel(
         viewModelScope.launch {
             _isLoading.value = true
 
-            when (val result = apiService.removeFriend(friendId)) {
+            val result = withContext(Dispatchers.IO) {
+                apiService.removeFriend(friendId)
+            }
+
+            when (result) {
                 is ApiResult.Success -> {
                     if (result.data.isSuccess()) {
                         // Remove friend from local list

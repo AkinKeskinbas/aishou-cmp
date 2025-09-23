@@ -151,4 +151,10 @@
     <string name="instagram_story_insight_creative">Yaratıcı ruhun ve sosyal yeteneklerin dikkat çekici.</string>
     <string name="instagram_story_insight_unique">Benzersiz kişiliğin ve potansiyelin keşfedilmeyi bekliyor!</string>
 
+    //Thank You Screen
+    <string name="thank_you_title">Thanks for Completing!</string>
+    <string name="thank_you_message_normal">Your test results have been saved. You can view them anytime from your profile.</string>
+    <string name="thank_you_message_invite">Your test results have been saved. You will receive a notification when your compatibility results are ready!</string>
+    <string name="thank_you_go_home">Go to Home</string>
+
 </resources>

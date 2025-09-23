@@ -32,6 +32,10 @@ class RouterImpl(
         navigateArg(Routes.QuizScreen.passQuizID(quizID))
     }
 
+    override fun goToQuizScreenWithSender(quizID: String, senderId: String) {
+        navigateArg(Routes.QuizScreen.passQuizIDWithSender(quizID, senderId))
+    }
+
     override fun goToQuickQuizScreen() {
         navigate(Routes.QuickQuizScreen)
     }
@@ -98,6 +102,10 @@ class RouterImpl(
 
     override fun goToProfile() {
         navigate(Routes.Profile)
+    }
+
+    override fun goToThankYou(isFromInvite: Boolean) {
+        navigateArg(Routes.ThankYou.passFromInvite(isFromInvite))
     }
 
     private fun navigate(

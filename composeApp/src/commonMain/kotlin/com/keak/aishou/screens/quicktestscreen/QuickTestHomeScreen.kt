@@ -63,13 +63,7 @@ fun QuickTestHomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFbef264), // from-lime-300
-                        Color(0xFFfb923c), // via-orange-400
-                        Color(0xFFef4444)  // to-red-500
-                    )
-                )
+               Color(0xFF707CF3)
             )
             .padding(16.dp)
     ) {

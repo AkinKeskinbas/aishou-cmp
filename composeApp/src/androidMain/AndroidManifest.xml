@@ -29,6 +29,15 @@
                       android:host="aishou.site" />
             </intent-filter>
 
+            <!-- Deeplink intent filter for www.aishou.site domain -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="www.aishou.site" />
+            </intent-filter>
+
             <!-- Alternative deeplink for aishou.app domain -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

@@ -1,10 +1,12 @@
 package com.keak.aishou.screens.homescreen
 
 import androidx.compose.ui.graphics.Color
+import com.keak.aishou.data.api.FriendInfo
 import com.keak.aishou.data.api.QuizType
 
 data class RecentTestsData(
     val testerName: String,
+    val friendInfo: FriendInfo? = null, // Optional for solo tests
     val testerMbti: String,
     val testResult: String,
     val testerUserId: String,

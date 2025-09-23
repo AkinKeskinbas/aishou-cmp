@@ -82,30 +82,59 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
         vm.loadUnreadNotificationCount()
     }
 
-    // Convert API solved tests to our display format
+    // Request notification permission when HomeScreen is ready
+    LaunchedEffect(userState) {
+        if (userState.isFirstTimeUser) {
+            // For first time users, request permission immediately after a short delay
+            println("HomeScreen: First time user - requesting notification permission after 2s delay")
+            kotlinx.coroutines.delay(2000)
+            vm.requestNotificationPermission()
+        } else {
+            // For returning users, request permission after a longer delay to avoid disruption
+            println("HomeScreen: Returning user - requesting notification permission after 5s delay")
+            kotlinx.coroutines.delay(5000)
+            vm.requestNotificationPermission()
+        }
+    }
+
+    // Convert API data to display format - combining solo and match quizzes
     val testResultList = userProfile?.let { profile ->
         println("HomeScreen: Profile MBTI: ${profile.mbti}, Zodiac: ${profile.zodiac}")
         println("HomeScreen: Solo quizzes count: ${profile.soloQuizzes.size}")
         println("HomeScreen: Match quizzes count: ${profile.matchQuizzes.size}")
-        println("HomeScreen: Solved tests count: ${profile.solvedTests.size}")
 
-        profile.solvedTests.mapIndexed { index, solvedTest ->
-            println("HomeScreen: Converting test $index: id=${solvedTest.id}, type=${solvedTest.type}")
+        val soloTests = profile.soloQuizzes.map { soloQuiz ->
             RecentTestsData(
                 testerName = "Me",
                 testerMbti = profile.mbti ?: "Unknown",
-                testResult = solvedTest.score?.toString() ?: "N/A",
+                testResult = soloQuiz.totalScore?.toString() ?: "N/A",
                 testerType = TesterType.MYSELF,
-                testerUserId = solvedTest.id ?: "unknown_${index}",
-                resultBg = when (index) {
-                    0 -> Color(0xFF66BB6A)
-                    1 -> Color(0xFFFFA726)
-                    else -> Color(0xFFFFEB3B)
-                },
-                testID = solvedTest.title ?: "unknown_${index}",
-                testType = if (solvedTest.type == "match") QuizType.Compat else QuizType.Single
+                testerUserId = soloQuiz.submissionId ?: "",
+                resultBg = Color(0xFF66BB6A), // Green for solo tests
+                testID = soloQuiz.testId ?: "", // Use testId, not submissionId
+                friendInfo = null,
+                testType = QuizType.Single
             )
-        }.filter { it.testID.startsWith("unknown_").not() }
+        }
+
+        val matchTests = profile.matchQuizzes.map { matchQuiz ->
+            RecentTestsData(
+                testerName = "Me",
+                testerMbti = profile.mbti ?: "Unknown",
+                testResult = matchQuiz.score?.toString() ?: "N/A",
+                testerType = TesterType.PARTNER,
+                testerUserId = matchQuiz.compatibilityId ?: "",
+                resultBg = Color(0xFFFFA726), // Orange for match tests
+                testID = matchQuiz.testId ?: "", // Use testId for endpoint, store compatibilityId in testerUserId
+                friendInfo = matchQuiz.friendInfo,
+                testType = QuizType.Compat
+            )
+        }
+
+        // Combine and sort by most recent
+        (soloTests + matchTests)
+            .filter { it.testID.isNotBlank() }
+            .take(5) // Show only last 5 tests
     } ?: emptyList()
 
     println("HomeScreen: Final test result list size: ${testResultList.size}")
@@ -113,7 +142,8 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(brush = BackGroundBrush.homNeoBrush)
+            //.background(brush = BackGroundBrush.homNeoBrush)
+            .background(Color(0xFF49DC9C))
     ) {
         stickyHeader {
             HomeHeader(
@@ -182,10 +212,13 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
         items(testResultList) { recentTestsData ->
             RecentTestCard(
                 testerName = recentTestsData.testerName,
-                testResult = recentTestsData.testResult,
+                friendName = recentTestsData.friendInfo?.displayName ?: "",
+                friendMbti = recentTestsData.friendInfo?.mbtiType ?: "",
                 testerMbti = recentTestsData.testerMbti,
+                testResult = recentTestsData.testResult,
                 testerType = recentTestsData.testerType,
                 bgColor = recentTestsData.resultBg,
+                testType = if (recentTestsData.testType == QuizType.Compat) "match" else "solo",
                 clickAction = {
                     router.goToUserMatch(recentTestsData.testID)
 //                    if (recentTestsData.testType == QuizType.Single){
@@ -358,7 +391,16 @@ private fun UserCard(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = if (userState.isFirstTimeUser) "Welcome to Aishou! ✨" else "Welcome back! 👋",
+                text = if (userState.isFirstTimeUser) {
+                    "Welcome to Aishou! ✨"
+                } else {
+                    val displayName = userProfile?.displayName
+                    if (!displayName.isNullOrBlank()) {
+                        "Welcome back, $displayName! 👋"
+                    } else {
+                        "Welcome back! 👋"
+                    }
+                },
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 modifier = Modifier
@@ -609,14 +651,14 @@ private fun HomeHeader(
                 }
 
                 // Profile Button
-                Image(
-                    painter = painterResource(Res.drawable.profile_home),
-                    contentDescription = "Profile",
-                    alignment = Alignment.Center,
-                    modifier = Modifier.size(24.dp).clickable(){
-                        onProfileClick.invoke()
-                    }
-                )
+//                Image(
+//                    painter = painterResource(Res.drawable.profile_home),
+//                    contentDescription = "Profile",
+//                    alignment = Alignment.Center,
+//                    modifier = Modifier.size(24.dp).clickable(){
+//                        onProfileClick.invoke()
+//                    }
+//                )
 
                 // Settings Button
                 Image(

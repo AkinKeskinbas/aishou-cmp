@@ -40,7 +40,7 @@ fun NotificationsScreen(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(brush = BackGroundBrush.homNeoBrush)
+            .background(Color(0xFF7DFAFF))
             .padding(16.dp)
     ) {
         // Custom Header

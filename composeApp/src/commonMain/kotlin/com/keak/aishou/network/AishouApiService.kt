@@ -13,6 +13,8 @@ import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.data.api.InviteResponse
 import com.keak.aishou.data.api.PushReq
+import com.keak.aishou.data.api.CompatibilityRequest
+import com.keak.aishou.data.api.CompatibilityResult
 import com.keak.aishou.data.models.*
 import com.keak.aishou.response.BaseResponse
 import com.keak.aishou.response.TokenResponse
@@ -46,4 +48,7 @@ interface AishouApiService {
 
     // Invite endpoints
     suspend fun acceptInvite(inviteId: String): ApiResult<BaseResponse<Unit>>
+
+    // Compatibility endpoints
+    suspend fun computeCompatibility(request: CompatibilityRequest): ApiResult<BaseResponse<CompatibilityResult>>
 }

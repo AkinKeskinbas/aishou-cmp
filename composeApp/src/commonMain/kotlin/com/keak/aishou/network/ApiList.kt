@@ -17,6 +17,7 @@ object ApiList {
     const val GET_TESTS = "/v1/tests"
     const val POST_CREATE_INVITE = "/v1/invites"
     const val POST_PUSH_REGISTER = "/v1/push/register"
+    const val POST_COMPUTE_COMPATIBILITY = "/v1/compatibility/compute"
 
     // Friends API endpoints
     const val POST_FRIEND_REQUEST = "/v1/friends/request"
@@ -61,7 +62,7 @@ object ApiList {
 
     // Invite accept endpoint - use with string formatting: /v1/{inviteId}/accept
     fun getAcceptInviteUrl(inviteId: String): String {
-        return "/v1/$inviteId/accept"
+        return "/v1/invites/$inviteId/accept"
     }
 
 }

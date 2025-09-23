@@ -17,9 +17,13 @@ sealed class Routes(val route: String = "") {
             return "TestResults/$testID"
         }
     }
-    data object QuizScreen : Routes("QuizScreen/{quizID}") {
+    data object QuizScreen : Routes("QuizScreen/{quizID}?senderId={senderId}") {
         fun passQuizID(quizID: String): String {
             return "QuizScreen/$quizID"
+        }
+
+        fun passQuizIDWithSender(quizID: String, senderId: String): String {
+            return "QuizScreen/$quizID?senderId=$senderId"
         }
     }
     data object QuickQuizScreen : Routes("QuickQuizScreen")
@@ -47,4 +51,9 @@ sealed class Routes(val route: String = "") {
         }
     }
     data object Profile : Routes("Profile")
+    data object ThankYou : Routes("ThankYou?isFromInvite={isFromInvite}") {
+        fun passFromInvite(isFromInvite: Boolean): String {
+            return "ThankYou?isFromInvite=$isFromInvite"
+        }
+    }
 }

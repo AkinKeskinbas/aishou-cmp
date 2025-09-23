@@ -46,7 +46,7 @@ class OneSignalManagerAndroid(
     override suspend fun getOneSignalId(): String? {
         return try {
             val userId = OneSignal.User.pushSubscription.id
-            println("OneSignal Android: Raw OneSignal.User.onesignalId = '$userId'")
+            println("OneSignal Android: Raw OneSignal.pushSubscription.id = '$userId'")
 
             if (userId.isNullOrBlank()) {
                 println("OneSignal Android: ⚠️ OneSignal ID is null or blank")
@@ -86,11 +86,41 @@ class OneSignalManagerAndroid(
 
     override suspend fun requestNotificationPermission(): Boolean {
         return try {
-            OneSignal.Notifications.requestPermission(true)
+            // Wait for OneSignal to be fully initialized before requesting permission
+            if (!waitForOneSignalReady()) {
+                println("OneSignal: OneSignal not ready after waiting, requesting permission anyway")
+            }
+
+            println("OneSignal: Requesting notification permission...")
+            val result = OneSignal.Notifications.requestPermission(true)
+            println("OneSignal: Permission request result: $result")
+            result
         } catch (e: Exception) {
             println("OneSignal: Error requesting permission: ${e.message}")
             false
         }
+    }
+
+    private suspend fun waitForOneSignalReady(maxWaitMs: Long = 10000): Boolean {
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < maxWaitMs) {
+            try {
+                // Check if OneSignal is ready by attempting to get subscription info
+                val subscriptionId = OneSignal.User.pushSubscription.id
+                val isOptedIn = OneSignal.User.pushSubscription.optedIn
+
+                println("OneSignal: Checking readiness - subscriptionId: $subscriptionId, optedIn: $isOptedIn")
+
+                // OneSignal is considered ready if we can access these properties without exception
+                println("OneSignal: OneSignal appears to be ready")
+                return true
+            } catch (e: Exception) {
+                println("OneSignal: Not ready yet, waiting... (${e.message})")
+                delay(500)
+            }
+        }
+        println("OneSignal: Timeout waiting for OneSignal to be ready")
+        return false
     }
 
     override fun setExternalUserId(externalId: String) {
@@ -144,7 +174,7 @@ class OneSignalManagerAndroid(
             // For now, simulate state change after a delay since OneSignal observer interfaces may have changed
             CoroutineScope(Dispatchers.Main).launch {
                 delay(3000)
-                val oneSignalId = OneSignal.User.onesignalId
+                val oneSignalId = OneSignal.User.pushSubscription.id
                 if (!oneSignalId.isNullOrBlank()) {
                     println("OneSignal Android: Simulating user state change with ID: $oneSignalId")
                     listener(oneSignalId)

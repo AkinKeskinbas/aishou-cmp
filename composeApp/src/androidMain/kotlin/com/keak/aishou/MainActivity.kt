@@ -9,46 +9,47 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
-import com.keak.aishou.utils.ShareHelperFactory
+import androidx.lifecycle.lifecycleScope
+import com.keak.aishou.navigation.DeepLinkCoordinator
 import com.keak.aishou.utils.ImageShareHelperFactory
+import com.keak.aishou.utils.ShareHelperFactory
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Initialize ShareHelper for Android
         ShareHelperFactory.initialize(this)
         ImageShareHelperFactory.initialize(this)
-
-        // Make status bar and navigation bar transparent/immersive
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            App(deepLinkUrl = handleDeepLink(intent)?.toString())
+            App()
+        }
+
+        handleDeepLink(intent)?.toString()?.let { url ->
+            println("MainActivity-->DeepLinkCoordinator: incoming deeplink $url")
+            if (!DeepLinkCoordinator.tryEmit(url)) {
+                lifecycleScope.launch { DeepLinkCoordinator.emit(url) }
+            }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        // Handle deeplink when app is already running
-        val uri = handleDeepLink(intent)
-        uri?.let {
-            // TODO: Handle deeplink navigation when app is already running
-            println("MainActivity: New deeplink intent: $it")
+        handleDeepLink(intent)?.toString()?.let { url ->
+            println("MainActivity: New deeplink intent: $url")
+            if (!DeepLinkCoordinator.tryEmit(url)) {
+                lifecycleScope.launch { DeepLinkCoordinator.emit(url) }
+            }
         }
     }
 
-    private fun handleDeepLink(intent: Intent): Uri? {
-        return when (intent.action) {
-            Intent.ACTION_VIEW -> {
-                val uri = intent.data
-                println("MainActivity: Received deeplink: $uri")
-                uri
-            }
-            else -> null
-        }
+    private fun handleDeepLink(intent: Intent): Uri? = when (intent.action) {
+        Intent.ACTION_VIEW -> intent.data?.also { println("MainActivity: Received deeplink: $it") }
+        else -> null
     }
 }
 

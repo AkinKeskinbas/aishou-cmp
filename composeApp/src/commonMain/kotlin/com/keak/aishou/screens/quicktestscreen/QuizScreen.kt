@@ -1,6 +1,7 @@
 package com.keak.aishou.screens.quicktestscreen
 
 import aishou.composeapp.generated.resources.Res
+import aishou.composeapp.generated.resources.quick_tests_screen_title
 import aishou.composeapp.generated.resources.quiz_screen_finish_test
 import aishou.composeapp.generated.resources.quiz_screen_title
 import androidx.compose.foundation.background
@@ -46,6 +47,7 @@ import org.jetbrains.compose.resources.stringResource
 fun QuizScreen(
     router: Router,
     quizID: String?,
+    senderId: String? = null,
     viewModel: QuizViewModel
 ) {
     val screenWidth = screenSize().width
@@ -53,7 +55,10 @@ fun QuizScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(quizID) {
+    LaunchedEffect(quizID, senderId) {
+        // Set sender info first
+        viewModel.setSenderInfo(senderId)
+
         if (quizID != null) {
             viewModel.onEvent(QuizUiEvent.LoadQuestions(quizID, 1))
         } else {
@@ -79,11 +84,7 @@ fun QuizScreen(
         Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFFDCE775), Color(0xFFFFA726), Color(0xFFF44336)
-                    )
-                )
+                Color(0xFFFECB7F)
             )
     ) {
         Column(
@@ -92,15 +93,32 @@ fun QuizScreen(
                 .zIndex(2f)               // Üstte dursun
         ) {
             ScreenHeader(
-                modifier = Modifier.width(desiredWidth.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp),
                 screenName = stringResource(Res.string.quiz_screen_title),
-                backGroundColor = Color.Black,
-                textColor = Color.White,
-                fontSize = 15,
                 backAction = {
-                    router.goBack()
+                    if (senderId != null) {
+                        // If came from invite, go directly to home instead of back stack
+                        router.goToHome()
+                    } else {
+                        router.goBack()
+                    }
                 }
             )
+//            ScreenHeader(
+//                modifier = Modifier.width(desiredWidth.dp),
+//                screenName = stringResource(Res.string.quiz_screen_title),
+//                backGroundColor = Color.Black,
+//                textColor = Color.White,
+//                fontSize = 15,
+//                backAction = {
+//                    if (senderId != null) {
+//                        // If came from invite, go directly to home instead of back stack
+//                        router.goToHome()
+//                    } else {
+//                        router.goBack()
+//                    }
+//                }
+//            )
             Spacer(Modifier.height(16.dp))
             NeoBrutalistProgressBar(
                 current = (progress * totalQuestions).toInt(),
@@ -116,13 +134,7 @@ fun QuizScreen(
             Spacer(Modifier.height(16.dp))
             LazyColumn(
                 modifier = Modifier.background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFDCE775),
-                            Color(0xFFFFA726),
-                            Color(0xFFF44336),
-                        )
-                    )
+                    Color(0xFFFECB7F)
                 )
                     .clipToBounds()            // gölgeler/çizimler üstten sızmasın
                     .zIndex(1f),
@@ -161,7 +173,12 @@ fun QuizScreen(
                                 NeoBrutalistCardViewWithFlexSize(
                                     modifier = Modifier.fillMaxWidth()
                                         .clickable(role = Role.Button) {
-                                            viewModel.onEvent(QuizUiEvent.SelectAnswer(question.index, choice.key))
+                                            viewModel.onEvent(
+                                                QuizUiEvent.SelectAnswer(
+                                                    question.index,
+                                                    choice.key
+                                                )
+                                            )
                                         },
                                     backgroundColor = bg,
                                     shadowColor = shadow
@@ -185,10 +202,25 @@ fun QuizScreen(
                 item {
                     NeoBrutalistCardViewWithFlexSize(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clickable(
-                            enabled = !uiState.isSubmitting && !uiState.submissionSuccess,
+                            enabled = !uiState.isSubmitting && (
+                                    !uiState.submissionSuccess || // Not completed yet
+                                            (!uiState.isFromInvite) || // Normal test (always can click when completed)
+                                            (uiState.isFromInvite && uiState.compatibilityResult != null) // Invite test with compatibility ready
+                                    ),
                             role = Role.Button
-                        ){
-                            if (uiState.submissionError != null) {
+                        ) {
+                            if (uiState.submissionSuccess) {
+                                if (uiState.isFromInvite) {
+                                    if (uiState.compatibilityResult != null) {
+                                        // Invite test completed with compatibility, go to thank you screen
+                                        router.goToThankYou(isFromInvite = true)
+                                    }
+                                    // If compatibility not ready yet, button stays disabled
+                                } else {
+                                    // Normal test completed, go to thank you screen
+                                    router.goToThankYou(isFromInvite = false)
+                                }
+                            } else if (uiState.submissionError != null) {
                                 // Reset state and retry
                                 viewModel.onEvent(QuizUiEvent.ResetSubmissionState)
                             } else {
@@ -209,8 +241,24 @@ fun QuizScreen(
                     ) {
                         Text(
                             text = when {
-                                uiState.isSubmitting -> if (uiState.isMBTITest) "Analyzing your personality..." else "Submitting..."
-                                uiState.submissionSuccess -> "✅ Completed Successfully!"
+                                uiState.isSubmitting -> {
+                                    if (uiState.isMBTITest) "Analyzing your personality..."
+                                    else if (uiState.isFromInvite) "Submitting & calculating compatibility..."
+                                    else "Submitting..."
+                                }
+
+                                uiState.submissionSuccess -> {
+                                    if (uiState.isFromInvite) {
+                                        if (uiState.compatibilityResult != null) {
+                                            "✅ Test Complete! Tap to continue"
+                                        } else {
+                                            "✅ Test Complete! Processing compatibility..."
+                                        }
+                                    } else {
+                                        "✅ Test Complete! Tap to continue"
+                                    }
+                                }
+
                                 uiState.submissionError != null -> "❌ Error - Tap to retry"
                                 viewModel.canFinish() -> stringResource(Res.string.quiz_screen_finish_test)
                                 else -> "Complete all questions to finish"

@@ -7,6 +7,7 @@ interface Router {
     fun goToQuickTestScreen()
     fun goToPersonalResultScreen()
     fun goToQuizScreen(quizID: String)
+    fun goToQuizScreenWithSender(quizID: String, senderId: String)
     fun goToQuickQuizScreen()
     fun goToTestResultScreen(testID: String)
     fun goToSplash()
@@ -24,5 +25,6 @@ interface Router {
     fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String)
     fun goToUserMatch(testID: String)
     fun goToProfile()
+    fun goToThankYou(isFromInvite: Boolean = false)
 
 }

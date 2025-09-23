@@ -89,14 +89,7 @@ fun SplashScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFF4CAF50), // Green
-                        Color(0xFF2196F3), // Blue
-                        Color(0xFF9C27B0)  // Purple
-                    ),
-                    radius = 800f
-                )
+                Color(0xFF3459FC)
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -163,22 +156,6 @@ fun SplashScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Loading indicator
-            NeoBrutalistCardViewWithFlexSize(
-                backgroundColor = Color.Black,
-                borderColor = Color.White,
-                cornerRadius = 16.dp
-            ) {
-                Text(
-                    text = "Loading...",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
         }
     }
 }

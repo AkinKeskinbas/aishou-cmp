@@ -34,34 +34,56 @@ fun AllResultsScreen(
     val isLoadingProfile by viewModel.isLoadingProfile.collectAsStateWithLifecycle()
     val profileError by viewModel.profileError.collectAsStateWithLifecycle()
 
-    // Convert all API solved tests to display format (no limit)
+    // Convert all API data to display format (no limit for All Results)
     val testResultList = userProfile?.let { profile ->
         println("AllResultsScreen: Profile MBTI: ${profile.mbti}, Zodiac: ${profile.zodiac}")
-        println("AllResultsScreen: Total tests: ${profile.solvedTests.size}")
+        println("AllResultsScreen: Solo quizzes count: ${profile.soloQuizzes.size}")
+        println("AllResultsScreen: Match quizzes count: ${profile.matchQuizzes.size}")
 
-        profile.solvedTests.mapIndexed { index, solvedTest ->
-            println("AllResultsScreen: Converting test $index: id=${solvedTest.id}, type=${solvedTest.type}")
+        val soloTests = profile.soloQuizzes.mapIndexed { index, soloQuiz ->
             RecentTestsData(
                 testerName = "Me",
                 testerMbti = profile.mbti ?: "Unknown",
-                testResult = solvedTest.score?.toString() ?: "N/A",
+                testResult = soloQuiz.totalScore?.toString() ?: "N/A",
                 testerType = TesterType.MYSELF,
-                testerUserId = solvedTest.id ?: "unknown_${index}",
+                testerUserId = soloQuiz.submissionId ?: "",
                 resultBg = when (index % 3) {
                     0 -> Color(0xFF66BB6A)
                     1 -> Color(0xFFFFA726)
                     else -> Color(0xFFFFEB3B)
                 },
-                testID = solvedTest.id ?: "unknown_${index}",
-                testType = if (solvedTest.type == "match") QuizType.Compat else QuizType.Single
+                testID = soloQuiz.testId ?: "",
+                friendInfo = null,
+                testType = QuizType.Single
             )
-        }.filter { it.testID.startsWith("unknown_").not() }
+        }
+
+        val matchTests = profile.matchQuizzes.mapIndexed { index, matchQuiz ->
+            RecentTestsData(
+                testerName = "Me",
+                testerMbti = profile.mbti ?: "Unknown",
+                testResult = matchQuiz.score?.toString() ?: "N/A",
+                testerType = TesterType.PARTNER,
+                testerUserId = matchQuiz.compatibilityId ?: "",
+                resultBg = when (index % 3) {
+                    0 -> Color(0xFFEC407A)
+                    1 -> Color(0xFFFF7043)
+                    else -> Color(0xFF9C27B0)
+                },
+                testID = matchQuiz.testId ?: "",
+                friendInfo = matchQuiz.friendInfo,
+                testType = QuizType.Compat
+            )
+        }
+
+        // Combine all tests
+        (soloTests + matchTests).filter { it.testID.isNotBlank() }
     } ?: emptyList()
 
     println("AllResultsScreen: Final test result list size: ${testResultList.size}")
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(
-            brush = BackGroundBrush.homNeoBrush
+           Color(0xFFFEA079)
         )
     ) {
 
@@ -78,10 +100,13 @@ fun AllResultsScreen(
         items(testResultList) { recentTestsData ->
             RecentTestCard(
                 testerName = recentTestsData.testerName,
-                testResult = recentTestsData.testResult,
+                friendName = recentTestsData.friendInfo?.displayName ?: "",
+                friendMbti = recentTestsData.friendInfo?.mbtiType ?: "",
                 testerMbti = recentTestsData.testerMbti,
+                testResult = recentTestsData.testResult,
                 testerType = recentTestsData.testerType,
                 bgColor = recentTestsData.resultBg,
+                testType = if (recentTestsData.testType == QuizType.Compat) "match" else "solo",
                 clickAction = {
                     router.goToTestResultScreen(recentTestsData.testID)
                 }

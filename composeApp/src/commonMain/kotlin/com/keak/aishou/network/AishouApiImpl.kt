@@ -15,6 +15,8 @@ import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.data.api.InviteResponse
 import com.keak.aishou.data.api.PushReq
+import com.keak.aishou.data.api.CompatibilityRequest
+import com.keak.aishou.data.api.CompatibilityResult
 import com.keak.aishou.data.models.*
 import com.keak.aishou.response.BaseResponse
 import com.keak.aishou.response.TokenResponse
@@ -495,6 +497,25 @@ class AishouApiImpl(
                     header(HttpHeaders.Authorization, it)
                 }
                 contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun computeCompatibility(request: CompatibilityRequest): ApiResult<BaseResponse<CompatibilityResult>> {
+        println("AishouApiImpl: Making compute compatibility to ${ApiList.BASE_URL}${ApiList.POST_COMPUTE_COMPATIBILITY}")
+        println("AishouApiImpl: Request body: $request")
+        println("AishouApiImpl: Request fields - testId: '${request.testId}', version: ${request.version}, friendId: '${request.friendId}'")
+
+        val authHeader = getAuthHeader()
+        println("AishouApiImpl: Auth header present: ${authHeader != null}")
+
+        return handleApi {
+            client.post(ApiList.POST_COMPUTE_COMPATIBILITY) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
             }
         }
     }

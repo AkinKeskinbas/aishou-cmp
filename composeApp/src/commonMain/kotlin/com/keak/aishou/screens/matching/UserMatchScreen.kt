@@ -31,6 +31,8 @@ import com.keak.aishou.data.api.ResultType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import com.keak.aishou.components.SendToFriendBottomSheet
+import com.keak.aishou.data.api.MatchingAnalysis
+import com.keak.aishou.misc.orZero
 
 @Composable
 fun UserMatchScreen(
@@ -43,9 +45,13 @@ fun UserMatchScreen(
     val error by viewModel.error.collectAsStateWithLifecycle()
     val showSendToFriendBottomSheet by viewModel.showSendToFriendBottomSheet.collectAsStateWithLifecycle()
     val inviteLink by viewModel.inviteLink.collectAsStateWithLifecycle()
+    val resultType = ResultType.fromString(testResult?.resultType.orEmpty())
+
 
     // Load test results when screen starts
     LaunchedEffect(testID) {
+        println("UserMatchScreen: Loading test results for ID: $testID")
+        // All tests now use the same endpoint with testId
         viewModel.loadTestResults(testID)
     }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -87,95 +93,138 @@ fun UserMatchScreen(
                     )
                 }
             }
-
             testResult != null -> {
+
                 val result = testResult!!
-                val isSoloTest = result.resultType == "solo"
+                val hasSoloResult = result.soloResult != null
                 val hasCompatibilityResults = result.compatibilityResults.isNotEmpty()
+
+                // Determine display title based on available data
+                val title = when {
+                    hasSoloResult && hasCompatibilityResults -> "Test Results"
+                    hasSoloResult -> "Solo Test Results"
+                    hasCompatibilityResults -> "Match Analysis"
+                    else -> "Test Results"
+                }
 
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .windowInsetsPadding(WindowInsets.safeDrawing)
-                        .background(brush = BackGroundBrush.homNeoBrush)
+                        .background(Color(0xFF8565FF))
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Header
                     item {
                         NeobrutalistHeader(
-                            title = if (isSoloTest) "Solo Test Results" else "Match Analysis",
+                            title = title,
                             onBackClick = { router.goBack() }
                         )
                     }
-
-                    // Solo Test Results
-                    if (isSoloTest && result.soloResult != null) {
-                        item {
-                            NeobrutalistSoloScoreCard(
-                                soloResult = result.soloResult
-                            )
-                        }
-
-                        // Show personalizedInsights if available
-                        result.soloResult.personalizedInsights?.let { insights ->
+                    when (resultType){
+                        ResultType.SOLO -> {
                             item {
-                                NeobrutalistAnalysisCard(
-                                    analysis = insights
+                                NeobrutalistSoloScoreCard(
+                                    soloResult = result.soloResult
                                 )
                             }
-                        }
 
-                        // Solo test: Add "Send to Friend" button
-                        item {
-                            NeobrutalistSendToFriendCard(
-                                onSendToFriendClick = { viewModel.openSendToFriendBottomSheet(testID) }
-                            )
+                            // Show personalizedInsights if available
+                            result.soloResult?.personalizedInsights?.let { insights ->
+                                item {
+                                    NeobrutalistAnalysisCard(
+                                        analysis = insights
+                                    )
+                                }
+                            }
+
+                            // Show "Send to Friend" button if this is a solo result
+                            if (viewModel.shouldShowSendToFriendButton()) {
+                                item {
+                                    NeobrutalistSendToFriendCard(
+                                        onSendToFriendClick = { viewModel.openSendToFriendBottomSheet(testID) }
+                                    )
+                                }
+                            }
                         }
+                        ResultType.COMPATIBILITY -> {
+                            items(result.compatibilityResults) { compatibilityResult ->
+                                // VS Section - Main comparison
+                                NeobrutalistVSCard(
+                                    compatibilityResult = compatibilityResult,
+                                    myDisplayName = testResult?.myDisplayName.orEmpty()
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Summary
+                                NeobrutalistScoreCard(
+                                    summary = compatibilityResult.summary.orEmpty()
+                                )
+
+                                // Chemistry analysis if available
+                                compatibilityResult.matchingAnalysis?.let { analysis ->
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    NeobrutalistMBTICompatibilityCard(
+                                        matchingAnalysis = analysis
+                                    )
+                                }
+                                compatibilityResult.matchingAnalysis?.let { analysis ->
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    NeobrutalistZodiacCompatibilityCard(
+                                        matchingAnalysis = analysis
+                                    )
+                                }
+                            }
+                        }
+                        ResultType.BOTH -> {
+                            item {
+                                NeobrutalistSoloScoreCard(
+                                    soloResult = result.soloResult,
+                                    isBoth = true
+                                )
+                            }
+
+                            // Show personalizedInsights if available
+                            result.soloResult?.personalizedInsights?.let { insights ->
+                                item {
+                                    NeobrutalistAnalysisCard(
+                                        analysis = insights
+                                    )
+                                }
+                            }
+                            items(result.compatibilityResults) { compatibilityResult ->
+                                // VS Section - Main comparison
+                                NeobrutalistVSCard(
+                                    compatibilityResult = compatibilityResult,
+                                    myDisplayName = testResult?.myDisplayName.orEmpty()
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Summary
+                                NeobrutalistScoreCard(
+                                    summary = compatibilityResult.summary.orEmpty()
+                                )
+
+                                // Chemistry analysis if available
+                                compatibilityResult.matchingAnalysis?.let { analysis ->
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    NeobrutalistMBTICompatibilityCard(
+                                        matchingAnalysis = analysis
+                                    )
+                                }
+                                compatibilityResult.matchingAnalysis?.let { analysis ->
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    NeobrutalistZodiacCompatibilityCard(
+                                        matchingAnalysis = analysis
+                                    )
+                                }
+                            }
+                        }
+                        ResultType.NONE -> {}
                     }
-
-                    // Compatibility Results
-                    if (hasCompatibilityResults) {
-                        items(result.compatibilityResults) { compatibilityResult ->
-                            // VS Section - Main comparison
-                            NeobrutalistVSCard(
-                                compatibilityResult = compatibilityResult
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Summary
-                            NeobrutalistScoreCard(
-                                summary = compatibilityResult.summary
-                            )
-
-                            // Chemistry analysis if available
-                            compatibilityResult.chemistry?.let { chemistry ->
-                                Spacer(modifier = Modifier.height(16.dp))
-                                NeobrutalistChemistryCard(
-                                    chemistry = chemistry
-                                )
-                            }
-
-                            // Detailed explanations if available
-                            compatibilityResult.explanations?.let { explanations ->
-                                Spacer(modifier = Modifier.height(16.dp))
-                                NeobrutalistExplanationsCard(
-                                    explanations = explanations
-                                )
-                            }
-
-                            // Matching analysis if available
-                            compatibilityResult.matchingAnalysis?.overallAnalysis?.let { analysis ->
-                                Spacer(modifier = Modifier.height(16.dp))
-                                NeobrutalistAnalysisCard(
-                                    analysis = analysis
-                                )
-                            }
-                        }
-                    }
-
-                    // Bottom spacing
                     item {
                         Spacer(modifier = Modifier.height(32.dp))
                     }
@@ -244,20 +293,21 @@ private fun NeobrutalistHeader(
 
 @Composable
 private fun NeobrutalistVSCard(
-    compatibilityResult: com.keak.aishou.data.api.CompatibilityResult
+    compatibilityResult: com.keak.aishou.data.api.CompatibilityResult,
+    myDisplayName: String
 ) {
     val score = compatibilityResult.score
 
     // Convert FriendInfo to UserInfo for compatibility with existing components
     val currentUser = UserInfo(
         userId = "current",
-        displayName = "You",
-        mbtiType = compatibilityResult.matchingAnalysis?.mbtiCompatibility?.user1Type,
-        zodiacSign = compatibilityResult.matchingAnalysis?.zodiacCompatibility?.user1Sign
+        displayName = myDisplayName,
+        mbtiType = compatibilityResult.matchingAnalysis?.mbtiMatch?.typeA,
+        zodiacSign = compatibilityResult.matchingAnalysis?.zodiacMatch?.signA
     )
 
     val friendUser = UserInfo(
-        userId = compatibilityResult.friendId,
+        userId = compatibilityResult.friendId.orEmpty(),
         displayName = compatibilityResult.friendInfo?.displayName ?: "Friend",
         mbtiType = compatibilityResult.friendInfo?.mbtiType,
         zodiacSign = compatibilityResult.friendInfo?.zodiacSign
@@ -319,7 +369,7 @@ private fun NeobrutalistVSCard(
                         color = Color.Black
                     )
                     AnimatedScoreCounter(
-                        targetScore = score,
+                        targetScore = score.orZero(),
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.Black
@@ -377,6 +427,13 @@ private fun NeobrutalistVSCard(
                     modifier = Modifier.weight(1f)
                 )
             }
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = compatibilityResult.chemistry.orEmpty(),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.Black
+            )
         }
     }
 }
@@ -439,13 +496,13 @@ private fun NeobrutalistUserCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Name
-            Text(
-                text = user.displayName ?: "Unknown",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
+//            Text(
+//                text = user.displayName ?: "Unknown",
+//                fontSize = 16.sp,
+//                fontWeight = FontWeight.Black,
+//                color = Color.Black,
+//                textAlign = TextAlign.Center
+//            )
 
             // MBTI & Zodiac
             val details = listOfNotNull(user.mbtiType, user.zodiacSign)
@@ -466,9 +523,10 @@ private fun NeobrutalistUserCard(
 
 @Composable
 private fun NeobrutalistSoloScoreCard(
-    soloResult: com.keak.aishou.data.api.SoloResult
+    soloResult: com.keak.aishou.data.api.SoloResult?,
+    isBoth: Boolean  = false
 ) {
-    val score = soloResult.totalScore
+    val score = soloResult?.totalScore
 
     Box(
         modifier = Modifier
@@ -527,7 +585,7 @@ private fun NeobrutalistSoloScoreCard(
                         color = Color.White
                     )
                     AnimatedScoreCounter(
-                        targetScore = score,
+                        targetScore = score.orZero(),
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White
@@ -536,31 +594,33 @@ private fun NeobrutalistSoloScoreCard(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Achievement message
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(12.dp)
+            if (isBoth.not()){
+                // Achievement message
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = Color.Black,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "🎉 Great job completing this test! Share your results with friends to see how compatible you are.",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF333333),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 20.sp
                     )
-                    .border(
-                        width = 2.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "🎉 Great job completing this test! Share your results with friends to see how compatible you are.",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF333333),
-                    textAlign = TextAlign.Center,
-                    lineHeight = 20.sp
-                )
+                }
             }
+
         }
     }
 }
@@ -681,8 +741,8 @@ private fun NeobrutalistScoreCard(
 }
 
 @Composable
-private fun NeobrutalistChemistryCard(
-    chemistry: String
+private fun NeobrutalistMBTICompatibilityCard(
+    matchingAnalysis: MatchingAnalysis
 ) {
     Box(
         modifier = Modifier
@@ -713,7 +773,7 @@ private fun NeobrutalistChemistryCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Chemistry Analysis",
+                    text = "MBTI Compatibility",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
@@ -723,12 +783,132 @@ private fun NeobrutalistChemistryCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = chemistry,
+                text = matchingAnalysis.mbtiMatch?.explanation.orEmpty(),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF333333),
                 lineHeight = 20.sp
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Strengths",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            matchingAnalysis.mbtiMatch?.strengths?.forEach { strength->
+                Text(
+                    text = strength,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF333333),
+                    lineHeight = 20.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Challenges",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            matchingAnalysis.mbtiMatch?.challenges?.forEach { strength->
+                Text(
+                    text = strength,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF333333),
+                    lineHeight = 20.sp
+                )
+            }
+        }
+    }
+}
+@Composable
+private fun NeobrutalistZodiacCompatibilityCard(
+    matchingAnalysis: MatchingAnalysis
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 6.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = Color.Black
+            )
+            .background(
+                color = Color(0xFFFFF3E0),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .border(
+                width = 3.dp,
+                color = Color.Black,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(20.dp)
+    ) {
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "🧪",
+                    fontSize = 24.sp
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Zodiac Compatibility",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.Black
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = matchingAnalysis.zodiacMatch?.explanation.orEmpty(),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF333333),
+                lineHeight = 20.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Strengths",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            matchingAnalysis.zodiacMatch?.strengths?.forEach { strength->
+                Text(
+                    text = strength,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF333333),
+                    lineHeight = 20.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Challenges",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            matchingAnalysis.zodiacMatch?.challenges?.forEach { strength->
+                Text(
+                    text = strength,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF333333),
+                    lineHeight = 20.sp
+                )
+            }
         }
     }
 }
@@ -772,16 +952,8 @@ private fun NeobrutalistExplanationsCard(
                     color = Color.Black
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            explanations.forEachIndexed { index, explanation ->
-                if (index > 0) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
-
-                NeobrutalistExplanationCard(explanation = explanation.description)
-            }
         }
     }
 }
@@ -868,70 +1040,6 @@ private fun NeobrutalistSectionHeader(text: String) {
     }
 }
 
-@Composable
-private fun NeobrutalistExplanationCard(explanation: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(12.dp),
-                ambientColor = Color.Black
-            )
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .border(
-                width = 3.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(16.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.Top
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .shadow(
-                        elevation = 2.dp,
-                        shape = RoundedCornerShape(6.dp),
-                        ambientColor = Color.Black
-                    )
-                    .background(
-                        color = Color(0xFF4CAF50),
-                        shape = RoundedCornerShape(6.dp)
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(6.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "✓",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Text(
-                text = explanation,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF333333),
-                lineHeight = 20.sp,
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
 
 @Composable
 private fun NeobrutalistIconButton(

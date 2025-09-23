@@ -7,6 +7,8 @@ import com.keak.aishou.data.api.QuizSubmissionRequest
 import com.keak.aishou.data.api.Submission
 import com.keak.aishou.data.api.PersonalityAssessRequest
 import com.keak.aishou.data.api.PersonalityAssessResponse
+import com.keak.aishou.data.api.CompatibilityRequest
+import com.keak.aishou.data.api.CompatibilityResult
 import com.keak.aishou.data.PersonalityDataManager
 import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
@@ -28,7 +30,9 @@ data class QuizUiState(
     val submissionResult: Submission? = null,
     val showIncompleteWarning: Boolean = false,
     val personalityResult: PersonalityAssessResponse? = null,
-    val isMBTITest: Boolean = false
+    val isMBTITest: Boolean = false,
+    val compatibilityResult: CompatibilityResult? = null,
+    val isFromInvite: Boolean = false // Indicates if test was started from invite
 )
 
 sealed class QuizUiEvent {
@@ -49,8 +53,16 @@ class QuizViewModel(
     private val personalityDataManager: PersonalityDataManager
 ) : ViewModel() {
 
+    private var currentSenderId: String? = null
+
     private val _uiState = MutableStateFlow(QuizUiState())
     val uiState: StateFlow<QuizUiState> = _uiState.asStateFlow()
+
+    fun setSenderInfo(senderId: String?) {
+        currentSenderId = senderId
+        _uiState.value = _uiState.value.copy(isFromInvite = senderId != null)
+        println("QuizViewModel: Sender ID set to: $senderId")
+    }
 
     fun onEvent(event: QuizUiEvent) {
         when (event) {
@@ -252,6 +264,12 @@ class QuizViewModel(
                         if (testId == "personality-full-v1") {
                             handleMBTITestSubmission(testId, version, answersForSubmission)
                         }
+
+                        // If this test was started from an invite, compute compatibility
+                        currentSenderId?.let { senderId ->
+                            println("QuizViewModel: Computing compatibility with sender: $senderId")
+                            computeCompatibility(testId, version, senderId)
+                        }
                     }
                     is ApiResult.Error -> {
                         val errorMessage = result.message ?: "Submission failed"
@@ -392,6 +410,46 @@ class QuizViewModel(
                     submissionError = e.message ?: "MBTI assessment failed"
                 )
                 println("QuizViewModel: Error handling MBTI test submission: ${e.message}")
+            }
+        }
+    }
+
+    private fun computeCompatibility(testId: String, version: Int, friendId: String) {
+        viewModelScope.launch {
+            try {
+                println("QuizViewModel: Starting compatibility computation...")
+                println("QuizViewModel: Request params - testId: '$testId', version: $version, friendId: '$friendId'")
+
+                val compatibilityRequest = CompatibilityRequest(
+                    testId = testId,
+                    version = version,
+                    friendId = friendId
+                )
+                println("QuizViewModel: Compatibility request created: $compatibilityRequest")
+
+                val result = apiService.computeCompatibility(compatibilityRequest)
+                when (result) {
+                    is ApiResult.Success -> {
+                        val compatibilityData = result.data.data
+                        _uiState.value = _uiState.value.copy(
+                            compatibilityResult = compatibilityData
+                        )
+                        println("QuizViewModel: Compatibility computed successfully: Score=${compatibilityData?.score}")
+                    }
+                    is ApiResult.Error -> {
+                        val errorMessage = result.message ?: "Compatibility calculation failed"
+                        println("QuizViewModel: Error computing compatibility: $errorMessage")
+                        // Don't update submissionError since the main submission was successful
+                    }
+                    is ApiResult.Exception -> {
+                        val errorMessage = result.exception.message ?: "Compatibility calculation failed"
+                        println("QuizViewModel: Exception computing compatibility: $errorMessage")
+                        // Don't update submissionError since the main submission was successful
+                    }
+                }
+            } catch (e: Exception) {
+                println("QuizViewModel: Unexpected error computing compatibility: ${e.message}")
+                // Don't update submissionError since the main submission was successful
             }
         }
     }

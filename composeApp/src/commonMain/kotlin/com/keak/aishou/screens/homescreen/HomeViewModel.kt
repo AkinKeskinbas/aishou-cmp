@@ -77,6 +77,7 @@ class HomeViewModel(
                         _userProfile.value = profileData
                         _profileError.value = null
                         println("HomeViewModel: User profile loaded successfully")
+                        println("HomeViewModel: User Name:${profileData?.displayName}")
                         println("HomeViewModel: MBTI: ${profileData?.mbti}, Zodiac: ${profileData?.zodiac}")
                         println("HomeViewModel: Solo quizzes: ${profileData?.soloQuizzes?.size}")
                         println("HomeViewModel: Match quizzes: ${profileData?.matchQuizzes?.size}")
@@ -142,6 +143,18 @@ class HomeViewModel(
             } catch (e: Exception) {
                 println("HomeViewModel: Unexpected error loading unread count: ${e.message}")
                 _unreadNotificationCount.value = 0
+            }
+        }
+    }
+
+    fun requestNotificationPermission() {
+        viewModelScope.launch {
+            try {
+                println("HomeViewModel: Requesting notification permission...")
+                val permissionGranted = oneSignalService.requestNotificationPermission()
+                println("HomeViewModel: Permission granted: $permissionGranted")
+            } catch (e: Exception) {
+                println("HomeViewModel: Error requesting notification permission: ${e.message}")
             }
         }
     }
