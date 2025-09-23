@@ -4,16 +4,18 @@ import com.keak.aishou.data.api.UserRegister
 import com.keak.aishou.data.language.LanguageManager
 import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
+import com.keak.aishou.notifications.OneSignalService
 import com.keak.aishou.purchase.PremiumChecker
 import com.keak.aishou.utils.Platform
-import com.keak.aishou.notifications.OneSignalService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
-/**
- * Service responsible for handling user registration when the app first opens
- */
 class UserRegistrationService(
     private val userSessionManager: UserSessionManager,
     private val dataStoreManager: DataStoreManager,
@@ -22,19 +24,22 @@ class UserRegistrationService(
     private val oneSignalService: OneSignalService,
     private val scope: CoroutineScope
 ) {
+    private val initializationMutex = Mutex()
+    private var initialized = false
+    private val permissionMutex = Mutex()
+    private var permissionRequested = false
+    private var permissionJob: Job? = null
 
-    /**
-     * Initialize registration - should be called on app startup
-     */
-    fun initialize() {
-        scope.launch {
-            handleFirstAppOpen()
+    suspend fun initialize() {
+        initializationMutex.withLock {
+            if (initialized) return
+            withContext(Dispatchers.Default) {
+                handleFirstAppOpen()
+            }
+            initialized = true
         }
     }
 
-    /**
-     * Handle registration logic for first app open
-     */
     private suspend fun handleFirstAppOpen() {
         try {
             println("UserRegistration: Checking if user needs registration...")
@@ -47,6 +52,7 @@ class UserRegistrationService(
                 registerUser()
             } else {
                 println("UserRegistration: User already registered with ID: $userId")
+                finishSetupForReturningUser()
             }
         } catch (e: Exception) {
             println("UserRegistration: Error during initialization: ${e.message}")
@@ -54,15 +60,10 @@ class UserRegistrationService(
         }
     }
 
-    /**
-     * Register user with backend
-     */
     private suspend fun registerUser() {
         try {
-            // Ensure user session is initialized first
             userSessionManager.handleAppStart()
 
-            // Try to ensure we have a RevenueCat user ID
             val userId = userSessionManager.ensureRevenueCatUserId()
             if (userId == null) {
                 println("UserRegistration: ❌ Failed to get RevenueCat user ID")
@@ -70,17 +71,13 @@ class UserRegistrationService(
                 return
             }
 
-            // Get current language
             val currentLanguage = languageManager.currentLanguage.first()
             val languageCode = currentLanguage?.languageCode ?: "en"
-
-            // Get platform
             val platform = Platform.name.lowercase()
 
-            // Create registration request
             val userRegister = UserRegister(
                 revenueCatId = userId,
-                displayName = null, // Anonymous user
+                displayName = null,
                 photoUrl = null,
                 lang = languageCode,
                 platform = platform,
@@ -89,50 +86,25 @@ class UserRegistrationService(
             )
 
             println("UserRegistration: Sending registration request...")
-            println("UserRegistration: - API Endpoint: http://localhost:3060/v1/auth/register")
             println("UserRegistration: - RevenueCat ID: $userId")
             println("UserRegistration: - Language: $languageCode")
             println("UserRegistration: - Platform: $platform")
-            println("UserRegistration: - Display Name: ${userRegister.displayName}")
-            println("UserRegistration: - Photo URL: ${userRegister.photoUrl}")
-            println("UserRegistration: - Is Anonymous: ${userRegister.isAnonymous}")
-            println("UserRegistration: - Full request object: $userRegister")
 
-            val result = apiService.registerUser(userRegister)
-
-            when (result) {
+            when (val result = apiService.registerUser(userRegister)) {
                 is ApiResult.Success -> {
                     println("UserRegistration: ✅ User registered successfully!")
-                    println("UserRegistration: Response: ${result.data}")
 
-                    // Store tokens from registration response
                     result.data.data?.let { tokenResponse ->
                         dataStoreManager.setTokens(tokenResponse.token, tokenResponse.refreshToken)
                         println("UserRegistration: Tokens stored successfully")
                         println("UserRegistration: Access token: ${tokenResponse.token}")
                         println("UserRegistration: Refresh token: ${tokenResponse.refreshToken}")
-
-                        // Verify tokens were saved
-                        val savedAccessToken = dataStoreManager.accessToken.first()
-                        println("UserRegistration: Verification - saved access token: $savedAccessToken")
-                    } ?: run {
-                        println("UserRegistration: ❌ No token data in response!")
-                    }
+                    } ?: println("UserRegistration: ❌ No token data in response!")
 
                     markUserAsRegistered()
 
-                    // Now that we have token, start OneSignal user tracking and request permissions
-                    scope.launch {
-                        println("UserRegistration: Starting OneSignal user tracking now that we have token")
-                        oneSignalService.startUserTracking()
-
-                        // Also request notification permission now
-                        try {
-                            val permissionGranted = oneSignalService.requestPermissionAndRegister()
-                            println("UserRegistration: Notification permission granted: $permissionGranted")
-                        } catch (e: Exception) {
-                            println("UserRegistration: Error requesting notification permission: ${e.message}")
-                        }
+                    scope.launch(Dispatchers.Main) {
+                        finishSetupForReturningUser()
                     }
                 }
                 is ApiResult.Error -> {
@@ -140,33 +112,63 @@ class UserRegistrationService(
                     handleRegistrationFailure(Exception(result.message ?: "Unknown error"))
                 }
                 is ApiResult.Exception -> {
-                    val exception = result.exception
-                    println("UserRegistration: ❌ Registration exception:")
-                    println("UserRegistration: - Exception type: ${exception::class.simpleName}")
-                    println("UserRegistration: - Exception message: ${exception.message}")
-                    println("UserRegistration: - Exception cause: ${exception.cause}")
-                    exception.printStackTrace()
-                    handleRegistrationFailure(exception)
+                    println("UserRegistration: ❌ Registration exception: ${result.exception.message}")
+                    result.exception.printStackTrace()
+                    handleRegistrationFailure(result.exception)
                 }
             }
 
         } catch (e: Exception) {
-            println("UserRegistration: ❌ Exception during registration:")
-            println("UserRegistration: - Exception type: ${e::class.simpleName}")
-            println("UserRegistration: - Exception message: ${e.message}")
-            println("UserRegistration: - Exception cause: ${e.cause}")
-            println("UserRegistration: - Stack trace:")
+            println("UserRegistration: ❌ Exception during registration: ${e.message}")
             e.printStackTrace()
             handleRegistrationFailure(e)
         }
     }
 
-    /**
-     * Mark user as registered in local storage
-     */
+    private suspend fun finishSetupForReturningUser() {
+        println("UserRegistration: Finishing setup for authenticated user")
+        oneSignalService.startUserTracking()
+        launchNotificationPermissionRequest()
+    }
+
+    private fun launchNotificationPermissionRequest() {
+        if (permissionJob?.isActive == true) return
+
+        permissionJob = scope.launch(Dispatchers.Main) {
+            val shouldRequest = permissionMutex.withLock {
+                if (permissionRequested) return@withLock false
+                permissionRequested = true
+                true
+            }
+
+            if (!shouldRequest) {
+                permissionJob = null
+                return@launch
+            }
+
+            println("UserRegistration: Requesting notification permission...")
+
+            try {
+                val permissionGranted = oneSignalService.requestPermissionAndRegister()
+                println("UserRegistration: Notification permission granted: $permissionGranted")
+                if (!permissionGranted) {
+                    permissionMutex.withLock { permissionRequested = false }
+                }
+            } catch (e: Exception) {
+                println("UserRegistration: Error requesting notification permission: ${e.message}")
+                permissionMutex.withLock { permissionRequested = false }
+            } finally {
+                permissionJob = null
+            }
+        }
+    }
+
+    fun requestNotificationPermission() {
+        launchNotificationPermissionRequest()
+    }
+
     private suspend fun markUserAsRegistered() {
         try {
-            // Update DataStore to mark user as no longer first time
             dataStoreManager.markUserAsReturning()
             println("UserRegistration: User marked as registered in local storage")
         } catch (e: Exception) {
@@ -174,33 +176,19 @@ class UserRegistrationService(
         }
     }
 
-    /**
-     * Handle registration failure
-     */
     private suspend fun handleRegistrationFailure(exception: Throwable) {
         println("UserRegistration: Handling registration failure...")
-
-        // For now, we'll still mark the user as registered to avoid repeated failed attempts
-        // In a production app, you might want to implement retry logic or store failure state
         markUserAsRegistered()
-
-        // Log the failure for debugging
         println("UserRegistration: Registration failed but marked user as registered to avoid retries")
         println("UserRegistration: Failure reason: ${exception.message}")
     }
 
-    /**
-     * Force re-registration (useful for testing or user profile updates)
-     */
     suspend fun forceReregister() {
         println("UserRegistration: Force re-registration requested")
         registerUser()
     }
 
-    /**
-     * Check if user is registered
-     */
-    suspend fun isUserRegistered(): Boolean {
+    suspend fun isUserAuthenticated(): Boolean {
         val isFirstTime = userSessionManager.isUserFirstTime()
         val hasUserId = userSessionManager.getUserId() != null
         return !isFirstTime && hasUserId

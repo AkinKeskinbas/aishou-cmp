@@ -44,7 +44,7 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(brush = BackGroundBrush.homNeoBrush)
+            .background(Color(0xFFFDF29D))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

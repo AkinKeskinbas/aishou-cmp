@@ -7,7 +7,8 @@ data class TestResultResponse(
     val testId: String,
     val soloResult: SoloResult? = null,
     val compatibilityResults: List<CompatibilityResult> = emptyList(),
-    val resultType: String // "solo", "compatibility", "both", "none"
+    val resultType: String, // "solo", "compatibility", "both", "none"
+    val myDisplayName: String
 )
 
 @Serializable
@@ -21,53 +22,58 @@ data class SoloResult(
 
 @Serializable
 data class CompatibilityResult(
-    val compatibilityId: String,
-    val friendId: String,
-    val friendInfo: FriendInfo?, // Friend's profile information
-    val score: Int,
-    val summary: String,
-    val chemistry: String?, // New field for chemistry description
-    val explanations: List<CompatibilityExplanation>?, // Detailed explanations
-    val matchingAnalysis: MatchingAnalysis?, // MBTI and Zodiac matching details
-    val createdAt: Long
+    val compatibilityId: String? = null,
+    val testId: String? = null,
+    val friendId: String? = null,
+    val friendInfo: FriendInfo? = null, // Friend's profile information
+    val score: Int? = null,
+    val summary: String? = null,
+    val chemistry: String? = null, // New field for chemistry description
+    val explanations: List<CompatibilityExplanation>? = null, // Detailed explanations
+    val matchingAnalysis: MatchingAnalysis? = null, // MBTI and Zodiac matching details
+    val createdAt: Long? = null
 )
 
 @Serializable
 data class FriendInfo(
-    val userId: String,
-    val displayName: String?,
-    val mbtiType: String?,
-    val zodiacSign: String?
+    val userId: String? = null,
+    val displayName: String? = null,
+    val mbtiType: String? = null,
+    val zodiacSign: String? = null
 )
 
 @Serializable
 data class CompatibilityExplanation(
-    val category: String,
-    val description: String,
-    val impact: String? = null
+    val topic: String? = null,
+    val detail: String? = null,
 )
 
 @Serializable
 data class MatchingAnalysis(
-    val mbtiCompatibility: MBTICompatibility?,
-    val zodiacCompatibility: ZodiacCompatibility?,
-    val overallAnalysis: String?
+    val mbtiMatch: MBTICompatibility? = null,
+    val zodiacMatch: ZodiacCompatibility? = null,
+    val overallCompatibility: String? = null
 )
 
 @Serializable
 data class MBTICompatibility(
-    val user1Type: String,
-    val user2Type: String,
-    val compatibilityScore: Int,
-    val description: String
+    val typeA: String? = null,
+    val typeB: String? = null,
+    val compatibilityScore: Int? = null,
+    val explanation: String? = null,
+    val strengths: List<String>?,
+    val challenges: List<String>?
 )
 
 @Serializable
 data class ZodiacCompatibility(
-    val user1Sign: String,
-    val user2Sign: String,
-    val compatibilityScore: Int,
-    val description: String
+    val signA: String? = null,
+    val signB: String? = null,
+    val compatibilityScore: Int? = null,
+    val strengths: List<String>?,
+    val challenges: List<String>?,
+    val explanation: String? = null,
+    val elementInteraction: String? = null,
 )
 
 enum class ResultType(val value: String) {
@@ -78,7 +84,7 @@ enum class ResultType(val value: String) {
 
     companion object {
         fun fromString(value: String): ResultType {
-            return values().find { it.value == value } ?: NONE
+            return entries.find { it.value == value } ?: NONE
         }
     }
 }

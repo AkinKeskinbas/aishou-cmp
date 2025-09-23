@@ -37,6 +37,7 @@ import com.keak.aishou.screens.notifications.NotificationsScreen
 import com.keak.aishou.screens.invite.InviteScreen
 import com.keak.aishou.screens.matching.UserMatchScreen
 import com.keak.aishou.screens.profile.ProfileScreen
+import com.keak.aishou.screens.thankyou.ThankYouScreen
 import com.keak.aishou.data.models.UserMatch
 import com.keak.aishou.data.models.UserInfo
 import org.koin.compose.viewmodel.koinViewModel
@@ -177,12 +178,18 @@ fun NavGraphBuilder.mainRoute(
     composable(
         route = Routes.QuizScreen.route,
         arguments = listOf(
-            navArgument("quizID") { type = NavType.StringType }
+            navArgument("quizID") { type = NavType.StringType },
+            navArgument("senderId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            }
         )
     ) { backStackEntry ->
         val quizID: String = backStackEntry.savedStateHandle.get<String>("quizID") ?: ""
+        val senderId: String? = backStackEntry.savedStateHandle.get<String>("senderId")
         val quizViewModel: QuizViewModel = koinViewModel()
-        QuizScreen(router = router, quizID = quizID, viewModel = quizViewModel)
+        QuizScreen(router = router, quizID = quizID, senderId = senderId, viewModel = quizViewModel)
     }
     composable(
         route = Routes.QuickQuizScreen.route
@@ -272,6 +279,23 @@ fun NavGraphBuilder.mainRoute(
     ) {
         ProfileScreen(
             router = router
+        )
+    }
+
+    composable(
+        route = Routes.ThankYou.route,
+        arguments = listOf(
+            navArgument("isFromInvite") {
+                type = NavType.BoolType
+                defaultValue = false
+            }
+        )
+    ) { backStackEntry ->
+        val isFromInvite: Boolean = backStackEntry.savedStateHandle.get<Boolean>("isFromInvite") ?: false
+
+        ThankYouScreen(
+            router = router,
+            isFromInvite = isFromInvite
         )
     }
 }

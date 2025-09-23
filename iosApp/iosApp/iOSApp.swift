@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 import ComposeApp
 import OneSignalFramework
 
@@ -7,9 +8,42 @@ class DeepLinkHandler {
     static let shared = DeepLinkHandler()
 
     private init() {}
+    private let processingQueue = DispatchQueue.main
+    private var isProcessing = false
+    private var queuedURL: URL?
+    private var lastHandledURL: (value: String, date: Date)?
 
     func handleDeepLink(url: URL) {
-        print("DeepLinkHandler: Handling deep link: \(url.absoluteString)")
+        processingQueue.async { [weak self] in
+            self?.enqueueHandling(url: url)
+        }
+    }
+
+    private func enqueueHandling(url: URL) {
+        if isProcessing {
+            queuedURL = url
+            print("DeepLinkHandler: Queued deeplink while another is processing: \(url.absoluteString)")
+            return
+        }
+        process(url: url)
+    }
+
+    private func process(url: URL) {
+        guard shouldHandle(url: url) else {
+            print("DeepLinkHandler: Ignoring duplicate deeplink: \(url.absoluteString)")
+            return
+        }
+
+        isProcessing = true
+        defer {
+            isProcessing = false
+            if let next = queuedURL {
+                queuedURL = nil
+                enqueueHandling(url: next)
+            }
+        }
+
+        print("DeepLinkHandler: Handling deeplink: \(url.absoluteString)")
 
         // Handle different URL patterns
         let host = url.host?.lowercased()
@@ -42,10 +76,12 @@ class DeepLinkHandler {
             if let senderId = senderId, let senderName = senderName {
                 print("DeepLinkHandler: ✅ Navigating to friend request screen")
                 print("DeepLinkHandler: SenderId: \(senderId), SenderName: \(senderName)")
-                RouterBridgeIOS.shared.goToFriendRequest(senderId: senderId, senderName: senderName)
+                dispatchToRouter {
+                    RouterBridgeIOS.shared.goToFriendRequest(senderId: senderId, senderName: senderName)
+                }
             } else {
                 print("DeepLinkHandler: ⚠️ Missing friend request parameters")
-                RouterBridgeIOS.shared.goToNotifications() // Fallback to notifications
+                dispatchToRouter { RouterBridgeIOS.shared.goToNotifications() }
             }
         }
         // Handle test results: /test/something
@@ -57,9 +93,9 @@ class DeepLinkHandler {
             print("DeepLinkHandler: ✅ Navigating to test screen")
             print("DeepLinkHandler: TestId: \(testId ?? "unknown")")
             if let testId = testId {
-                RouterBridgeIOS.shared.goToTestResult(testId: testId)
+                dispatchToRouter { RouterBridgeIOS.shared.goToTestResult(testId: testId) }
             } else {
-                RouterBridgeIOS.shared.goToHome()
+                dispatchToRouter { RouterBridgeIOS.shared.goToHome() }
             }
         }
         // Handle invites: /invite/123?senderId=xxx&testId=yyy
@@ -74,16 +110,35 @@ class DeepLinkHandler {
             if let inviteId = inviteId, let senderId = senderId, let testId = testId {
                 print("DeepLinkHandler: ✅ Navigating to invite screen")
                 print("DeepLinkHandler: InviteId: \(inviteId), SenderId: \(senderId), TestId: \(testId)")
-                RouterBridgeIOS.shared.goToInvite(inviteId: inviteId, senderId: senderId, testId: testId, testTitle: testTitle ?? "Test")
+                dispatchToRouter {
+                    RouterBridgeIOS.shared.goToInvite(inviteId: inviteId, senderId: senderId, testId: testId, testTitle: testTitle ?? "Test")
+                }
             } else {
                 print("DeepLinkHandler: ⚠️ Missing invite parameters")
-                RouterBridgeIOS.shared.goToHome()
+                dispatchToRouter { RouterBridgeIOS.shared.goToHome() }
             }
         }
         else {
             print("DeepLinkHandler: Unknown path, navigating to home")
-            RouterBridgeIOS.shared.goToHome()
+            dispatchToRouter { RouterBridgeIOS.shared.goToHome() }
         }
+    }
+
+    private func dispatchToRouter(_ action: @escaping () -> Void) {
+        // Dispatch with a tiny delay to avoid re-entrancy during gesture handling
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: action)
+    }
+
+    private func shouldHandle(url: URL) -> Bool {
+        let absolute = url.absoluteString
+        if let last = lastHandledURL, last.value == absolute {
+            let elapsed = Date().timeIntervalSince(last.date)
+            if elapsed < 1.0 {
+                return false
+            }
+        }
+        lastHandledURL = (value: absolute, date: Date())
+        return true
     }
 
     private func extractURLParameter(from url: URL, parameter: String) -> String? {

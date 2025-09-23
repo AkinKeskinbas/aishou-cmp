@@ -11,19 +11,19 @@ data class UserProfileResponse(
     val zodiacSign: String? = null,
     val personalityAssessed: Boolean = false,
     val lang: String? = null,
-    val soloQuizzes: List<QuizResult> = emptyList(),
-    val matchQuizzes: List<QuizResult> = emptyList(),
+    val soloQuizzes: List<SoloQuizResult> = emptyList(),
+    val matchQuizzes: List<CompatibilityResult> = emptyList(),
     val totalQuizzes: Int = 0
 ) {
     // Helper properties to maintain compatibility with existing code
     val mbti: String? get() = mbtiType
     val zodiac: String? get() = zodiacSign
     val solvedTests: List<SolvedTest>
-        get() = (soloQuizzes.map { it.toSolvedTest("solo") } + matchQuizzes.map { it.toSolvedTest("match") }).take(3)
+        get() = (soloQuizzes.map { it.toSolvedTest("solo") } + matchQuizzes.map { it.toSolvedTest() }).take(3)
 }
 
 @Serializable
-data class QuizResult(
+data class SoloQuizResult(
     val submissionId: String? = null,
     val testId: String? = null,
     val version: Int? = null,
@@ -40,6 +40,16 @@ data class QuizResult(
         score = totalScore
     )
 }
+
+// Extension function for CompatibilityResult to convert to SolvedTest
+fun CompatibilityResult.toSolvedTest() = SolvedTest(
+    id = compatibilityId,
+    type = "match",
+    title = "Compatibility Test",  // Or use testId if available
+    description = summary ?: "Compatibility test completed",
+    solvedAt = createdAt?.toString(),
+    score = score
+)
 
 @Serializable
 data class SolvedTest(

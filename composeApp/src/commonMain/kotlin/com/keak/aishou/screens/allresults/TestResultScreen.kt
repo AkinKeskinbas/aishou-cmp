@@ -73,6 +73,7 @@ import aishou.composeapp.generated.resources.result_generate_detailed_insights
 import aishou.composeapp.generated.resources.result_premium_user_generate_analysis
 import aishou.composeapp.generated.resources.result_generating
 import aishou.composeapp.generated.resources.result_generate_insights
+import com.keak.aishou.misc.orZero
 
 @Composable
 fun TestResultScreen(
@@ -244,18 +245,18 @@ fun TestResultContent(
                 Spacer(Modifier.height(16.dp))
                 CompatibilityResultsContent(testResult = testResult)
                 Spacer(Modifier.height(16.dp))
-                SendToFriendButton(
-                    onClick = {
-                        // TODO: Remove this temporary premium bypass after testing
-                        val isPremiumForTesting = true // Always true for testing
-                        if (isPremiumForTesting || viewModel.isPremiumUser()) {
-                            viewModel.openSendToFriendBottomSheet(testID)
-                        } else {
-                            router.goToPaywall()
-                        }
-                    },
-                    isPremium = true // TODO: Change back to viewModel.isPremiumUser() after testing
-                )
+//                SendToFriendButton(
+//                    onClick = {
+//                        // TODO: Remove this temporary premium bypass after testing
+//                        val isPremiumForTesting = true // Always true for testing
+//                        if (isPremiumForTesting || viewModel.isPremiumUser()) {
+//                            viewModel.openSendToFriendBottomSheet(testID)
+//                        } else {
+//                            router.goToPaywall()
+//                        }
+//                    },
+//                    isPremium = true // TODO: Change back to viewModel.isPremiumUser() after testing
+//                )
             }
             ResultType.NONE -> {
                 // No results available
@@ -639,8 +640,8 @@ fun CompatibilityResultsContent(testResult: TestResultResponse) {
             Spacer(Modifier.height(16.dp))
 
             testResult.compatibilityResults.forEachIndexed { index, compatibility ->
-                val matchEmoji = getMatchEmoji(compatibility.score)
-                val cardColors = getMatchColors(compatibility.score)
+                val matchEmoji = getMatchEmoji(compatibility.score.orZero())
+                val cardColors = getMatchColors(compatibility.score.orZero())
 
                 NeoBrutalistCardViewWithFlexSize(
                     backgroundColor = null,
@@ -671,7 +672,7 @@ fun CompatibilityResultsContent(testResult: TestResultResponse) {
                             }
 
                             // Visual match meter
-                            MatchMeter(score = compatibility.score)
+                            MatchMeter(score = compatibility.score.orZero())
                         }
 
                         Spacer(Modifier.height(16.dp))
@@ -703,7 +704,7 @@ fun CompatibilityResultsContent(testResult: TestResultResponse) {
 
                         // Match advice
                         Text(
-                            text = getMatchAdvice(compatibility.score),
+                            text = getMatchAdvice(compatibility.score.orZero()),
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
                             color = Color.Black,

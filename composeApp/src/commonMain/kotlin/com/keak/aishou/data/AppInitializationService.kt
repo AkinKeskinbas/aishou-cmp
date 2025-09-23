@@ -43,7 +43,10 @@ class AppInitializationService(
                 println("AppInitialization: 4/5 - Checking OneSignal ID...")
                 oneSignalService.checkAndUpdateOneSignalId()
 
-                println("AppInitialization: 5/5 - All services initialized successfully! ✅")
+                // Step 6: Skip automatic permission request - will be handled in HomeScreen
+                println("AppInitialization: 5/5 - Skipping automatic permission request (handled in HomeScreen)...")
+
+                println("AppInitialization: ✅ All services initialized successfully")
 
             } catch (e: Exception) {
                 println("AppInitialization: ❌ Error during initialization: ${e.message}")

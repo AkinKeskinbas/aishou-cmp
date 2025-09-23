@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import kotlin.math.roundToInt
 
-// ============== 1) Senin panelin (aynen) ==============
 @Composable
 fun NeoBrutalistPanel(
     modifier: Modifier = Modifier,

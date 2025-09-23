@@ -8,8 +8,14 @@ import com.keak.aishou.network.ApiResult
 import com.keak.aishou.utils.Platform
 import com.keak.aishou.purchase.PlatformKeys
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 class OneSignalService(
     private val oneSignalManager: OneSignalManager,
@@ -20,6 +26,8 @@ class OneSignalService(
 ) {
 
     // OneSignal App ID is now centralized in PlatformKeys
+    private val logMutex = Mutex()
+    private var scheduledRetryJob: Job? = null
 
     /**
      * Initialize OneSignal (without user tracking - that requires token)
@@ -48,10 +56,17 @@ class OneSignalService(
      * Start user tracking after token is available
      */
     fun startUserTracking() {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             println("OneSignal: Starting user tracking (token should be available now)")
             setupUserTracking()
         }
+    }
+
+    /**
+     * Request notification permission only (without backend registration)
+     */
+    suspend fun requestNotificationPermission(): Boolean {
+        return oneSignalManager.requestNotificationPermission()
     }
 
     /**
@@ -71,38 +86,8 @@ class OneSignalService(
      * Get OneSignal ID and log it with retry mechanism
      */
     suspend fun logOneSignalId() {
-        try {
-            println("OneSignal: Starting to capture OneSignal ID on platform: ${getPlatform()}")
-
-            val (oneSignalId, userId) = retryGetIds()
-
-            if (oneSignalId != null && userId != null) {
-                println("OneSignal: ✅ Successfully captured OneSignal ID: $oneSignalId for user: $userId")
-                println("OneSignal: Platform: ${getPlatform()}")
-
-                // Set external user ID for OneSignal
-                oneSignalManager.setExternalUserId(userId)
-
-                // Add user tags
-                addUserTags()
-
-                // Send OneSignal ID to backend
-                scope.launch {
-                    registerOneSignalIdWithBackend(oneSignalId)
-                }
-            } else {
-                println("OneSignal: ❌ Failed to get required IDs after retries - OneSignalId: $oneSignalId, UserId: $userId")
-
-                // Schedule a retry for later
-                scope.launch {
-                    kotlinx.coroutines.delay(30000) // Wait 30 seconds
-                    println("OneSignal: Retrying OneSignal ID capture after delay...")
-                    logOneSignalId()
-                }
-            }
-        } catch (e: Exception) {
-            println("OneSignal: ❌ Error getting OneSignal ID: ${e.message}")
-            e.printStackTrace()
+        logMutex.withLock {
+            performLogOneSignalRegistration()
         }
     }
 
@@ -133,7 +118,7 @@ class OneSignalService(
             if (attempt < maxAttempts - 1) {
                 val delayMs = (1000L * (attempt + 1) * (attempt + 1)) // Exponential backoff: 1s, 4s, 9s, 16s
                 println("OneSignal: Waiting ${delayMs}ms before next attempt...")
-                kotlinx.coroutines.delay(delayMs)
+                delay(delayMs)
             }
         }
 
@@ -150,7 +135,7 @@ class OneSignalService(
                 println("OneSignal: 🔄 User state changed - OneSignal ID: $oneSignalId")
 
                 if (oneSignalId != null && oneSignalId.isNotBlank()) {
-                    scope.launch {
+                    scope.launch(Dispatchers.Default) {
                         val userId = userSessionManager.getUserId()?.takeIf { it.isNotBlank() }
                         if (userId != null) {
                             println("OneSignal: ✅ Auto-registering OneSignal ID from state change: $oneSignalId")
@@ -162,6 +147,7 @@ class OneSignalService(
                             registerOneSignalIdWithBackend(oneSignalId)
                         } else {
                             println("OneSignal: ⚠️ OneSignal ID available but no user ID yet")
+                            scheduleRetry()
                         }
                     }
                 } else {
@@ -174,6 +160,57 @@ class OneSignalService(
         }
     }
 
+    private suspend fun performLogOneSignalRegistration() {
+        cancelScheduledRetry()
+
+        try {
+            println("OneSignal: Starting to capture OneSignal ID on platform: ${getPlatform()}")
+            withContext(Dispatchers.Default) {
+                val (oneSignalId, userId) = retryGetIds()
+
+                if (oneSignalId != null && userId != null) {
+                    println("OneSignal: ✅ Successfully captured OneSignal ID: $oneSignalId for user: $userId")
+                    println("OneSignal: Platform: ${getPlatform()}")
+
+                    oneSignalManager.setExternalUserId(userId)
+                    addUserTags()
+
+                    scope.launch(Dispatchers.Default) {
+                        registerOneSignalIdWithBackend(oneSignalId)
+                    }
+                } else {
+                    println("OneSignal: ❌ Failed to get required IDs after retries - OneSignalId: $oneSignalId, UserId: $userId")
+                    scheduleRetry()
+                }
+            }
+        } catch (e: Exception) {
+            println("OneSignal: ❌ Error getting OneSignal ID: ${e.message}")
+            e.printStackTrace()
+            scheduleRetry()
+        }
+    }
+
+    private fun scheduleRetry(delayMillis: Long = 30000L) {
+        if (scheduledRetryJob?.isActive == true) {
+            println("OneSignal: Retry already scheduled, skipping new schedule")
+            return
+        }
+
+        scheduledRetryJob = scope.launch(Dispatchers.Default) {
+            delay(delayMillis)
+            println("OneSignal: Retrying OneSignal ID capture after delay...")
+            logOneSignalId()
+        }
+    }
+
+    private fun cancelScheduledRetry() {
+        if (scheduledRetryJob?.isActive == true) {
+            println("OneSignal: Cancelling previously scheduled retry job")
+            scheduledRetryJob?.cancel()
+        }
+        scheduledRetryJob = null
+    }
+
     /**
      * Set up user tracking and log OneSignal ID
      */
@@ -182,7 +219,7 @@ class OneSignalService(
 
         // Wait longer for OneSignal to initialize properly on different platforms
         val initialDelay = if (getPlatform().lowercase() == "android") 3000L else 5000L
-        kotlinx.coroutines.delay(initialDelay)
+        delay(initialDelay)
 
         println("OneSignal: Checking if user has been initialized...")
         val isFirstTime = userSessionManager.isUserFirstTime()
@@ -209,15 +246,15 @@ class OneSignalService(
             oneSignalManager.setExternalUserId(userId)
 
             // Wait a bit more after setting external user ID
-            kotlinx.coroutines.delay(1000)
+            delay(1000)
 
             logOneSignalId()
         } else {
             println("OneSignal: ❌ Still no user ID after initialization - will retry later")
 
             // Schedule a retry
-            scope.launch {
-                kotlinx.coroutines.delay(10000) // Wait 10 seconds
+            scope.launch(Dispatchers.Default) {
+                delay(10000) // Wait 10 seconds
                 println("OneSignal: Retrying user tracking setup...")
                 setupUserTracking()
             }
@@ -287,7 +324,9 @@ class OneSignalService(
             println("OneSignal: - Timezone: $timezone")
 
             // Send request to backend
-            val result = apiService.registerPush(pushReq)
+            val result = withContext(Dispatchers.Default) {
+                apiService.registerPush(pushReq)
+            }
 
             when (result) {
                 is ApiResult.Success -> {

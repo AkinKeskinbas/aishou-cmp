@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.keak.aishou.misc.AppStatu
 import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import org.koin.compose.viewmodel.koinViewModel
@@ -46,7 +47,7 @@ fun InviteScreen(
     // Navigate to test when invite is accepted
     LaunchedEffect(inviteAccepted) {
         if (inviteAccepted) {
-            router.goToQuizScreen(testId)
+            router.goToQuizScreenWithSender(testId, senderId)
         }
     }
 
@@ -54,7 +55,7 @@ fun InviteScreen(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(brush = BackGroundBrush.homNeoBrush)
+            .background(Color(0xFF49DC9C))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -85,7 +86,8 @@ fun InviteScreen(
                 userPremiumStatus = userPremiumStatus,
                 isAcceptingInvite = isAcceptingInvite,
                 onTakeTest = {
-                    if (userPremiumStatus == true) {
+                    //TODO:Delete AppStatus
+                    if (userPremiumStatus == true || AppStatu.appStatus == "test") {
                         // User is premium, accept invite and start test
                         viewModel.acceptInviteAndStartTest(inviteId, testId)
                     } else {
@@ -315,7 +317,7 @@ private fun InviteContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Action Buttons
-        if (userPremiumStatus == true) {
+        if (userPremiumStatus == true || AppStatu.appStatus == "test") {
             // Premium user - can take test
             ActionButton(
                 text = if (isAcceptingInvite) "Accepting Invite..." else "Take Test & Compare Results",

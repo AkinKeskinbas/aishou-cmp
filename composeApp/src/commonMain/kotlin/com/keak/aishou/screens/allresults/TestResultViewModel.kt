@@ -87,6 +87,12 @@ class TestResultViewModel(
         loadTestResults(testId)
     }
 
+    fun loadCompatibilityResult(testId: String) {
+        // All tests now use the same endpoint with testId
+        println("TestResultViewModel: Loading test result for testId: $testId")
+        loadTestResults(testId)
+    }
+
     fun getResultType(): ResultType {
         return _testResult.value?.resultType?.let { ResultType.fromString(it) } ?: ResultType.NONE
     }

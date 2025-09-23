@@ -3,16 +3,25 @@ package com.keak.aishou.notifications
 import platform.Foundation.NSLog
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.cinterop.*
-import kotlinx.coroutines.IO
+import platform.darwin.DISPATCH_TIME_NOW
+import platform.darwin.dispatch_after
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
+import platform.darwin.dispatch_time
 
 class OneSignalManagerIOS : OneSignalManager {
 
     private var onUserStateChangeListener: ((String?) -> Unit)? = null
+
+    private fun runOnMain(delayMillis: Long = 0, block: () -> Unit) {
+        val queue = dispatch_get_main_queue()
+        if (delayMillis <= 0) {
+            dispatch_async(queue) { block() }
+        } else {
+            val time = dispatch_time(DISPATCH_TIME_NOW, delayMillis * 1_000_000L)
+            dispatch_after(time, queue) { block() }
+        }
+    }
 
     private fun callSwiftHelper(methodName: String): String? {
         return try {
@@ -44,52 +53,58 @@ class OneSignalManagerIOS : OneSignalManager {
 
     override suspend fun getOneSignalId(): String? = suspendCancellableCoroutine { continuation ->
         NSLog("OneSignal iOS: Getting REAL OneSignal user ID")
-
-        try {
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(2000) // Short delay for OneSignal to initialize
-
-                // Direct call to Swift helper via objc
+        runOnMain(delayMillis = 2000) {
+            try {
                 val realPushId = callSwiftHelper("getRealPushSubscriptionId")
+                if (!continuation.isActive) {
+                    return@runOnMain
+                }
+
                 if (realPushId != null) {
                     NSLog("OneSignal iOS: ✅ Got REAL pushSubscription.id: $realPushId")
                     continuation.resume(realPushId)
-                    return@launch
+                    return@runOnMain
                 }
 
                 val realUserId = callSwiftHelper("getRealOneSignalUserId")
+                if (!continuation.isActive) {
+                    return@runOnMain
+                }
+
                 if (realUserId != null) {
                     NSLog("OneSignal iOS: ✅ Got REAL onesignalId: $realUserId")
                     continuation.resume(realUserId)
-                    return@launch
+                    return@runOnMain
                 }
 
                 NSLog("OneSignal iOS: ❌ No real IDs available")
-                continuation.resume(null)
+                if (continuation.isActive) {
+                    continuation.resume(null)
+                }
+            } catch (e: Exception) {
+                NSLog("OneSignal iOS: ❌ Error: ${e.message}")
+                if (continuation.isActive) {
+                    continuation.resume(null)
+                }
             }
-        } catch (e: Exception) {
-            NSLog("OneSignal iOS: ❌ Error: ${e.message}")
-            continuation.resume(null)
         }
     }
 
     override suspend fun requestNotificationPermission(): Boolean = suspendCancellableCoroutine { continuation ->
         NSLog("OneSignal iOS: Checking notification permission status")
-
-        try {
-            // Since permission is requested in iOS App init, check if granted
-            // In real implementation, we would check actual permission status
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(500) // Small delay to check permission status
-
-                // For now, assume permission is granted if OneSignal is initialized
+        runOnMain(delayMillis = 500) {
+            try {
                 val permissionGranted = true
                 NSLog("OneSignal iOS: Permission status: ${if (permissionGranted) "granted" else "denied"}")
-                continuation.resume(permissionGranted)
+                if (continuation.isActive) {
+                    continuation.resume(permissionGranted)
+                }
+            } catch (e: Exception) {
+                NSLog("OneSignal iOS: ❌ Error checking permission: ${e.message}")
+                if (continuation.isActive) {
+                    continuation.resume(false)
+                }
             }
-        } catch (e: Exception) {
-            NSLog("OneSignal iOS: ❌ Error checking permission: ${e.message}")
-            continuation.resume(false)
         }
     }
 
@@ -206,9 +221,7 @@ class OneSignalManagerIOS : OneSignalManager {
         onUserStateChangeListener = listener
 
         try {
-            // Call listener with real OneSignal ID when available
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(3000) // Give OneSignal time to initialize
+            runOnMain(delayMillis = 3000) {
                 val realOneSignalId = getRealOneSignalUserId()
                 NSLog("OneSignal iOS: User state change - ID: $realOneSignalId")
                 listener(realOneSignalId)
