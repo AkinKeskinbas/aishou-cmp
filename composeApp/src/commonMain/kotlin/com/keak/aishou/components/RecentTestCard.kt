@@ -135,15 +135,6 @@ fun RecentTestCard(
                     color = Color.White
                 )
             }
-            if (isMatchCard) {
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = friendName,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier,
-                )
-            }
             Spacer(Modifier.weight(1f))
             Box(
                 modifier = Modifier.background(bgColor).border(1.dp, Color.Black).wrapContentSize()

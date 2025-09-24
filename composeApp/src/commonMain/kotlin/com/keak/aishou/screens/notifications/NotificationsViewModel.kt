@@ -20,6 +20,8 @@ class NotificationsViewModel(
     private val _friendRequests = MutableStateFlow<List<RequestWithSenderInfo>>(emptyList())
     val friendRequests: StateFlow<List<RequestWithSenderInfo>> = _friendRequests.asStateFlow()
 
+    private val _testInvites = MutableStateFlow<List<TestInvite>>(emptyList())
+    val testInvites: StateFlow<List<TestInvite>> = _testInvites.asStateFlow()
 
     private val _unreadCount = MutableStateFlow(0L)
     val unreadCount: StateFlow<Long> = _unreadCount.asStateFlow()
@@ -35,6 +37,7 @@ class NotificationsViewModel(
 
     init {
         loadNotifications()
+        loadTestInvitations()
         loadUnreadCount()
     }
 
@@ -82,6 +85,49 @@ class NotificationsViewModel(
 
 
             _isLoading.value = false
+        }
+    }
+
+    fun loadTestInvitations() {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Load test invitations
+            when (val result = apiService.getReceivedInvites()) {
+                is ApiResult.Success -> {
+                    if (result.data.isSuccess()) {
+                        val allInvites = result.data.data.orEmpty()
+                        // Filter out rejected and accepted invites, only show pending ones
+                        val pendingInvites = allInvites.filter { invite ->
+                            invite.status == null || invite.status == "pending"
+                        }
+                        println("NotificationsViewModel: Loaded ${allInvites.size} total invitations, ${pendingInvites.size} pending")
+                        pendingInvites.forEachIndexed { index, invite ->
+                            println("NotificationsViewModel: Pending Invite $index:")
+                            println("  - Invite ID: ${invite.inviteId}")
+                            println("  - Test ID: ${invite.testId}")
+                            println("  - Test Title: ${invite.testTitle}")
+                            println("  - Sender: ${invite.senderName}")
+                            println("  - Status: ${invite.status}")
+                        }
+                        _testInvites.value = pendingInvites
+                    } else {
+                        println("NotificationsViewModel: Failed to load test invitations")
+                    }
+                }
+                is ApiResult.Error -> {
+                    if (result.code == 500) {
+                        // Server error - set empty list and no error message to avoid user confusion
+                        _testInvites.value = emptyList()
+                        println("NotificationsViewModel: Server error (500) loading invites - showing empty state")
+                    } else {
+                        println("NotificationsViewModel: Error loading invites: ${result.message}")
+                    }
+                }
+                is ApiResult.Exception -> {
+                    // Network exception - show empty state
+                    _testInvites.value = emptyList()
+                    println("NotificationsViewModel: Exception loading invites - showing empty state: ${result.exception.message}")
+                }
+            }
         }
     }
 
@@ -226,5 +272,15 @@ class NotificationsViewModel(
 
     fun clearError() {
         _error.value = null
+    }
+
+    fun onTestInviteClicked(testInvite: TestInvite, onNavigate: (String, String, String, String) -> Unit) {
+        // Navigate to invite screen with the test invite data
+        onNavigate(
+            testInvite.inviteId,
+            testInvite.fromUserId,
+            testInvite.testId,
+            testInvite.testTitle
+        )
     }
 }

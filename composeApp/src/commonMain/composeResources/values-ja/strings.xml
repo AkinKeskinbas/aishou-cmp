@@ -1,17 +1,242 @@
 <resources>
     //Paywall
-    <string name="weekly_premium_paywall">ウィークリーブースト</string>
-    <string name="monthly_premium_paywall">コズミックVIP</string>
-    <string name="monthly_premium_per_month">月額</string>
-    <string name="monthly_premium_per_week">週額</string>
-    <string name="paywall_go_premium">プレミアムにする</string>
-    <string name="paywall_weekly_features_daily_horoscope">デイリー占い</string>
+    <string name="weekly_premium_paywall">週間</string>
+    <string name="monthly_premium_paywall">COSMIC VIP</string>
+    <string name="monthly_premium_per_month">月ごと</string>
+    <string name="monthly_premium_per_week">週ごと</string>
+    <string name="paywall_go_premium">プレミアムへ</string>
+    <string name="paywall_weekly_features_daily_horoscope">毎日ホロスコープ</string>
     <string name="paywall_weekly_features_daily_love_compatibility">恋愛相性</string>
-    <string name="paywall_weekly_features_daily_personality_insights">性格診断</string>
+    <string name="paywall_weekly_features_daily_personality_insights">性格インサイト</string>
     <string name="paywall_popular">人気！</string>
-    <string name="paywall_join_discover">参加して運命を見つけよう！</string>
-    <string name="paywall_cancel_anytime">いつでも解約OK・追加料金なし・即アクセス</string>
+    <string name="paywall_join_discover">未来をチェックしよう！</string>
+    <string name="paywall_cancel_anytime">いつでも解約OK 隠れ料金なし</string>
+    <string name="paywall_cancel_paywall">やめる</string>
+    <string name="paywall_unlock_your_cosmic_personality">コズミック性格を解放！</string>
+    <string name="paywall_choose_your_sign">星座を選んでね</string>
+
     //Home
-    <string name="hey_text_home">HEY, %s!</string>
+    <string name="cosmic_match_home">COSMIC MATCH</string>
+    <string name="mbti_zodiac_home">MBTI × 星座</string>
+    <string name="your_cosmic_profile_home">マイコズミック</string>
+    <string name="personality_type_home">性格タイプ</string>
+    <string name="zodiac_sign_profile_home">星座</string>
+    <string name="hey_text_home">やあ、</string>
+    <string name="quick_actions_home">クイックアクション</string>
+    <string name="new_test_home">テスト選択</string>
+    <string name="view_all_home">すべて見る</string>
+    <string name="quick_quiz_home">クイックスタート</string>
+
+    <string name="recent_tests_home">最近のテスト</string>
+    <string name="your_stats_home">マイ成績</string>
+    <string name="view_all_tests_home">全テストを見る</string>
+    <string name="love_tests_home">恋テスト</string>
+    <string name="friends_tests_home">友達テスト</string>
+    <string name="best_matches_home">ベストマッチ</string>
+    <string name="avg_score_home">平均スコア</string>
+
+    //AllResults
+    <string name="screen_name_all_results">結果一覧</string>
+
+    //ResultScreen
+    <string name="match_results">マッチ結果！</string>
+    <string name="result_loading_test_results">結果読み込み中...</string>
+    <string name="result_error_loading_results">読み込みエラー</string>
+    <string name="result_unknown_error">不明なエラー</string>
+    <string name="result_retry">リトライ</string>
+    <string name="result_your_test_results">あなたの結果</string>
+    <string name="result_love_matches">恋愛マッチ</string>
+    <string name="result_complete_results">フル結果</string>
+    <string name="result_test_results">テスト結果</string>
+    <string name="result_points">ポイント</string>
+    <string name="result_personality_breakdown">🧠 性格ブレイクダウン</string>
+    <string name="result_detailed_breakdown_coming_soon">📊 詳細はもうすぐ！</string>
+    <string name="result_ai_psychologist_says">AI診断：</string>
+    <string name="result_generate_detailed_insights">詳細インサイト生成</string>
+    <string name="result_premium_user_generate_analysis">プレミアムならMBTI分析ができる！</string>
+    <string name="result_generating">生成中...</string>
+    <string name="result_generate_insights">✨ インサイト生成</string>
+    <string name="result_love_matches_title">LOVE MATCHES</string>
+    <string name="result_friend_number">👤 友達 #%1$d</string>
+    <string name="result_compatibility_analysis_coming_soon">相性分析はもうすぐ💫</string>
+    <string name="result_unlock_ai_insights">AIインサイト解放</string>
+    <string name="result_get_personalized_ai_analysis">自分専用AI分析をGET！</string>
+    <string name="result_deep_analysis">ディープ分析</string>
+    <string name="result_insights">インサイト</string>
+    <string name="result_predictions">予測</string>
+    <string name="result_upgrade_to_premium">プレミアムにアップ</string>
+    <string name="result_send_to_friend">友達に送る</string>
+    <string name="result_oops">おっと！</string>
+    <string name="result_no_results_yet">まだ結果なし</string>
+    <string name="result_test_not_completed">テスト未完了！</string>
+    <string name="result_take_test_to_discover">性格と相性を知ろう！</string>
+    <string name="result_start_test_now">今すぐ始める</string>
+    <string name="result_mbti_label">MBTI</string>
+    <string name="result_zodiac_label">星座</string>
+
+    //QuickTestScreen
+    <string name="quick_tests_screen_title">クイックテスト</string>
+    <string name="quick_tests_get_premium_for_all_tests">プレミアムで全部解放</string>
+    <string name="quick_tests_discover_your_true_self">本当の自分を暴け</string>
+    <string name="quick_tests_personality_test">性格テスト</string>
+    <string name="quick_tests_brutal">ガチ</string>
+    <string name="quick_tests_mbti_match">MBTIマッチ</string>
+    <string name="quick_tests_mbti">MBTI</string>
+    <string name="quick_tests_zodiac_match">星座マッチ</string>
+    <string name="quick_tests_zodiac">星座</string>
+
+    //QuizScreen
+    <string name="quiz_screen_title">テスト一覧へ</string>
+    <string name="quiz_screen_finish_test">テスト終了</string>
+
+    //PersonalTest
+    <string name="personal_screen_send_to_friend">友達に送る</string>
+
+    //Onboarding
+    <string name="onboarding_tired_of_fake_friend">偽友だちもう疲れた？</string>
+    <string name="onboarding_real_talk">リアルトーク</string>
+    <string name="onboarding_are_you_bored">偽友だちに飽きた？</string>
+    <string name="onboarding_yes">YES！もう無理</string>
+    <string name="onboarding_you_know_the_feelings">わかるよね…必要な時だけ来たり、急に消えたり、 vibe合わないやつ😤</string>
+
+    //Onboarding-Second
+    <string name="onboarding_second_solution">解決策</string>
+    <string name="onboarding_find_your_real_tribe">本物の仲間を探そう</string>
+    <string name="onboarding_what_if">もし本当に vibe合う友だちが見つかったら？✨</string>
+    <string name="onboarding_want_friends">わかってくれる友だち欲しい？</string>
+    <string name="onboarding_sounds_amazing">YES！最高</string>
+
+    //Onboarding-Third
+    <string name="onboarding_third_title">やり方はこれ！</string>
+    <string name="onboarding_third_subtitle">科学×友情 🧬✨</string>
+    <string name="onboarding_third_mbti_title">97%当たるMBTI</string>
+    <string name="onboarding_third_mbti_description">科学的に裏付けされた本格テスト！</string>
+    <string name="onboarding_third_mbti_badge">リアル科学 ⚡</string>
+    <string name="onboarding_third_zodiac_title">星座相性</string>
+    <string name="onboarding_third_zodiac_description">コズミック vibesで相性発見 ✨</string>
+    <string name="onboarding_third_zodiac_badge">COSMIC MATCH 🌟</string>
+    <string name="onboarding_third_matching_title">スマートマッチング</string>
+    <string name="onboarding_third_matching_description">ノリ・ユーモア・エネルギーが合う人とつながろう</string>
+    <string name="onboarding_third_matching_badge">リアルつながり 💫</string>
+    <string name="onboarding_third_question">偽友だち卒業する？🚀</string>
+    <string name="onboarding_third_lets_do_this">やろう！</string>
+    <string name="onboarding_third_maybe_later">あとで</string>
+
+    //Onboarding-Fourth
+    <string name="onboarding_fourth_perfect_title">パーフェクト！</string>
+    <string name="onboarding_fourth_perfect_ready">準備OK 🚀</string>
+    <string name="onboarding_fourth_perfect_subtitle">本物の仲間を見つけて偽友にさよなら！</string>
+    <string name="onboarding_fourth_quick_test">クイックテスト</string>
+    <string name="onboarding_fourth_accurate">正確</string>
+    <string name="onboarding_fourth_free">無料</string>
+    <string name="onboarding_fourth_always">いつでも</string>
+    <string name="onboarding_fourth_find_friends">仲間を探す</string>
+    <string name="onboarding_fourth_take_quiz">友だちとテストする</string>
+    <string name="onboarding_fourth_footer">偽友ゼロ、本物のつながり💯</string>
+
+    //MBTI Preference Screen
+    <string name="mbti_your_personality">あなたのMBTI性格</string>
+    <string name="mbti_recommended">おすすめ！</string>
+    <string name="mbti_take_full_test">フルテストを受ける</string>
+    <string name="mbti_test_duration">70問 • 15-20分</string>
+    <string name="mbti_comprehensive_assessment">包括的性格診断</string>
+    <string name="mbti_know_my_type">自分のタイプを知っている</string>
+    <string name="mbti_select_from_list">下のリストから選択</string>
+    <string name="mbti_select_your_type">MBTIタイプを選択</string>
+    <string name="mbti_start_full_test">フルテスト開始</string>
+    <string name="mbti_continue">続ける</string>
+
+    //MBTI Types
+    <string name="mbti_intj_name">建築家</string>
+    <string name="mbti_intj_description">想像力豊かで戦略的な思想家</string>
+    <string name="mbti_intp_name">思想家</string>
+    <string name="mbti_intp_description">知識への渇望が止まらない革新的発明家</string>
+    <string name="mbti_entj_name">指揮官</string>
+    <string name="mbti_entj_description">大胆で想像力豊かで強い意志のリーダー</string>
+    <string name="mbti_entp_name">討論者</string>
+    <string name="mbti_entp_description">知的挑戦を愛する賢くて好奇心旺盛な思想家</string>
+    <string name="mbti_infj_name">提唱者</string>
+    <string name="mbti_infj_description">創造的で洞察力があり、インスピレーションを受けて独立している</string>
+    <string name="mbti_infp_name">仲裁者</string>
+    <string name="mbti_infp_description">詩的で親切で利他的な人々</string>
+    <string name="mbti_enfj_name">主人公</string>
+    <string name="mbti_enfj_description">カリスマ的でインスピレーションを与えるリーダー</string>
+    <string name="mbti_enfp_name">運動家</string>
+    <string name="mbti_enfp_description">熱狂的で創造的で社交的な自由な精神</string>
+    <string name="mbti_istj_name">管理者</string>
+    <string name="mbti_istj_description">実用的で事実を重視し、信頼できる</string>
+    <string name="mbti_isfj_name">擁護者</string>
+    <string name="mbti_isfj_description">心温かく献身的</string>
+    <string name="mbti_estj_name">幹部</string>
+    <string name="mbti_estj_description">優秀な管理者、管理に優れている</string>
+    <string name="mbti_esfj_name">領事</string>
+    <string name="mbti_esfj_description">非常に思いやりがあり、社交的で人気がある</string>
+    <string name="mbti_istp_name">巨匠</string>
+    <string name="mbti_istp_description">大胆で実用的な実験者</string>
+    <string name="mbti_isfp_name">冒険家</string>
+    <string name="mbti_isfp_description">柔軟で魅力的なアーティスト</string>
+    <string name="mbti_estp_name">起業家</string>
+    <string name="mbti_estp_description">賢く、エネルギッシュで洞察力がある</string>
+    <string name="mbti_esfp_name">エンターテイナー</string>
+    <string name="mbti_esfp_description">自発的でエネルギッシュで熱狂的</string>
+
+    //Home Screen Additional
+    <string name="me">私</string>
+    <string name="unknown">不明</string>
+    <string name="welcome_to_aishou">Aishouへようこそ！ ✨</string>
+    <string name="welcome_back_with_name">おかえり、%1$s！ 👋</string>
+    <string name="welcome_back">おかえり！ 👋</string>
+    <string name="cosmic_personality_discover">あなたのコズミック性格を見つけよう！</string>
+    <string name="launch_count_days_active">起動 #%1$s • %2$s アクティブ</string>
+    <string name="launch_count_only">起動 #%1$s</string>
+    <string name="connect_with_friends">友達とつながる</string>
+    <string name="notifications_content_description">通知</string>
+    <string name="settings_content_description">設定</string>
+    <string name="user_match_home">ユーザーマッチ</string>
+
+    //Zodiac Selection Screen
+    <string name="whats_your_zodiac_sign">あなたの星座は？</string>
+    <string name="select_zodiac_to_continue">続けるには星座を選択してください</string>
+
+    //Error Messages
+    <string name="failed_to_load_profile">プロフィール読み込み失敗</string>
+    <string name="exception_loading_profile">プロフィール読み込み例外</string>
+    <string name="unexpected_error_loading_profile">プロフィール読み込み予期しないエラー</string>
+    <string name="failed_to_load_friend_requests">友達リクエスト読み込み失敗</string>
+    <string name="failed_to_load_invitation_data">招待データ読み込み失敗</string>
+    <string name="failed_to_load_test_information">テスト情報読み込み失敗</string>
+    <string name="failed_to_load_friends">友達読み込み失敗</string>
+    <string name="failed_to_load_test_results">テスト結果読み込み失敗</string>
+    <string name="exception_loading_test_results">テスト結果読み込み例外</string>
+
+    //Friends Screen
+    <string name="friend_name_label">友達の名前</string>
+    <string name="dismiss">閉じる</string>
+    <string name="unknown_error_occurred">不明なエラーが発生しました</string>
+    <string name="failed_to_send_friend_request">友達リクエスト送信失敗</string>
+    <string name="failed_to_remove_friend">友達削除失敗</string>
+
+    //Notifications Screen
+    <string name="failed_to_accept_friend_request">友達リクエスト承認失敗</string>
+    <string name="failed_to_reject_friend_request">友達リクエスト拒否失敗</string>
+
+    //Match Screen
+    <string name="error_prefix">エラー: %1$s</string>
+    <string name="test_results">テスト結果</string>
+    <string name="solo_test_results">ソロテスト結果</string>
+    <string name="match_analysis">マッチ分析</string>
+    <string name="friend_fallback">友達</string>
+    <string name="match_score">マッチスコア</string>
+    <string name="vs">VS</string>
+    <string name="your_score">あなたのスコア</string>
+    <string name="share_with_friends">友達とシェア</string>
+    <string name="send_to_friend">友達に送る</string>
+    <string name="match_summary">マッチサマリー</string>
+    <string name="mbti_compatibility">MBTI相性</string>
+    <string name="strengths">強み</string>
+    <string name="challenges">課題</string>
+    <string name="zodiac_compatibility">星座相性</string>
+    <string name="detailed_explanations">詳細説明</string>
+    <string name="detailed_analysis">詳細分析</string>
 
 </resources>

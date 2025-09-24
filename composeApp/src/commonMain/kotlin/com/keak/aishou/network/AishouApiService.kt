@@ -27,17 +27,17 @@ interface AishouApiService {
     suspend fun personalityQuickAssess(assessRequest: PersonalityAssessRequest): ApiResult<BaseResponse<PersonalityAssessResponse>>
     suspend fun getPersonalityQuickQuiz(): ApiResult<BaseResponse<List<QuizQuestion>>>
     suspend fun getUserProfile(): ApiResult<BaseResponse<UserProfileResponse>>
-    suspend fun getTestResults(testId: String): ApiResult<BaseResponse<TestResultResponse>>
+    suspend fun getTestResults(testId: String, friendId: String? = null): ApiResult<BaseResponse<TestResultResponse>>
     suspend fun reprocessTestResults(testId: String): ApiResult<BaseResponse<TestResultResponse>>
     suspend fun getTests(): ApiResult<BaseResponse<List<Test>>>
     suspend fun getQuizQuestions(testId: String, version: Int): ApiResult<BaseResponse<List<QuizQuestion>>>
-    suspend fun submitQuiz(testId: String, version: Int, submission: QuizSubmissionRequest): ApiResult<BaseResponse<Submission>>
+    suspend fun submitQuiz(testId: String, version: Int, submission: QuizSubmissionRequest, inviteId: String? = null): ApiResult<BaseResponse<Submission>>
     suspend fun createInvite(inviteRequest: InviteCreateRequest): ApiResult<InviteResponse>
     suspend fun registerPush(pushReq: PushReq): ApiResult<BaseResponse<Unit>>
 
     // Friends API endpoints
     suspend fun sendFriendRequest(request: SendFriendRequestReq): ApiResult<BaseResponse<FriendRequest>>
-    suspend fun respondToFriendRequest(requestId: String, response: RespondFriendRequestReq): ApiResult<BaseResponse<FriendRequest>>
+    suspend fun respondToFriendRequest(requestId: String, response: RespondFriendRequestReq): ApiResult<BaseResponse<RespondFriendRequestResponse>>
     suspend fun getReceivedRequests(unreadOnly: Boolean = false): ApiResult<BaseResponse<List<RequestWithSenderInfo>>>
     suspend fun getSentRequests(): ApiResult<BaseResponse<List<RequestWithReceiverInfo>>>
     suspend fun getFriendsList(): ApiResult<BaseResponse<List<FriendInfo>>>
@@ -48,6 +48,8 @@ interface AishouApiService {
 
     // Invite endpoints
     suspend fun acceptInvite(inviteId: String): ApiResult<BaseResponse<Unit>>
+    suspend fun rejectInvite(inviteId: String): ApiResult<BaseResponse<Unit>>
+    suspend fun getReceivedInvites(): ApiResult<BaseResponse<List<TestInvite>>>
 
     // Compatibility endpoints
     suspend fun computeCompatibility(request: CompatibilityRequest): ApiResult<BaseResponse<CompatibilityResult>>

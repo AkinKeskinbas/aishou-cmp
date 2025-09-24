@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
+import com.keak.aishou.utils.StringResources
 
 enum class MBTIPreferenceType {
     MANUAL_ENTRY,
@@ -33,26 +34,24 @@ fun MBTIPreferenceScreen(
     var selectedPreference by remember { mutableStateOf<MBTIPreferenceType?>(null) }
     var selectedMBTI by remember { mutableStateOf<MBTIType?>(null) }
 
-    val mbtiTypes = remember {
-        listOf(
-            MBTIType("INTJ", "Architect", "Imaginative and strategic thinkers"),
-            MBTIType("INTP", "Thinker", "Innovative inventors with unquenchable thirst for knowledge"),
-            MBTIType("ENTJ", "Commander", "Bold, imaginative and strong-willed leaders"),
-            MBTIType("ENTP", "Debater", "Smart and curious thinkers who love intellectual challenges"),
-            MBTIType("INFJ", "Advocate", "Creative and insightful, inspired and independent"),
-            MBTIType("INFP", "Mediator", "Poetic, kind and altruistic people"),
-            MBTIType("ENFJ", "Protagonist", "Charismatic and inspiring leaders"),
-            MBTIType("ENFP", "Campaigner", "Enthusiastic, creative and sociable free spirits"),
-            MBTIType("ISTJ", "Logistician", "Practical and fact-minded, reliable"),
-            MBTIType("ISFJ", "Protector", "Warm-hearted and dedicated"),
-            MBTIType("ESTJ", "Executive", "Excellent administrators, unsurpassed at managing"),
-            MBTIType("ESFJ", "Consul", "Extraordinarily caring, social and popular"),
-            MBTIType("ISTP", "Virtuoso", "Bold and practical experimenters"),
-            MBTIType("ISFP", "Adventurer", "Flexible and charming artists"),
-            MBTIType("ESTP", "Entrepreneur", "Smart, energetic and perceptive"),
-            MBTIType("ESFP", "Entertainer", "Spontaneous, energetic and enthusiastic")
-        )
-    }
+    val mbtiTypes = listOf(
+        MBTIType("INTJ", StringResources.getMbtiTypeName("INTJ"), StringResources.getMbtiTypeDescription("INTJ")),
+        MBTIType("INTP", StringResources.getMbtiTypeName("INTP"), StringResources.getMbtiTypeDescription("INTP")),
+        MBTIType("ENTJ", StringResources.getMbtiTypeName("ENTJ"), StringResources.getMbtiTypeDescription("ENTJ")),
+        MBTIType("ENTP", StringResources.getMbtiTypeName("ENTP"), StringResources.getMbtiTypeDescription("ENTP")),
+        MBTIType("INFJ", StringResources.getMbtiTypeName("INFJ"), StringResources.getMbtiTypeDescription("INFJ")),
+        MBTIType("INFP", StringResources.getMbtiTypeName("INFP"), StringResources.getMbtiTypeDescription("INFP")),
+        MBTIType("ENFJ", StringResources.getMbtiTypeName("ENFJ"), StringResources.getMbtiTypeDescription("ENFJ")),
+        MBTIType("ENFP", StringResources.getMbtiTypeName("ENFP"), StringResources.getMbtiTypeDescription("ENFP")),
+        MBTIType("ISTJ", StringResources.getMbtiTypeName("ISTJ"), StringResources.getMbtiTypeDescription("ISTJ")),
+        MBTIType("ISFJ", StringResources.getMbtiTypeName("ISFJ"), StringResources.getMbtiTypeDescription("ISFJ")),
+        MBTIType("ESTJ", StringResources.getMbtiTypeName("ESTJ"), StringResources.getMbtiTypeDescription("ESTJ")),
+        MBTIType("ESFJ", StringResources.getMbtiTypeName("ESFJ"), StringResources.getMbtiTypeDescription("ESFJ")),
+        MBTIType("ISTP", StringResources.getMbtiTypeName("ISTP"), StringResources.getMbtiTypeDescription("ISTP")),
+        MBTIType("ISFP", StringResources.getMbtiTypeName("ISFP"), StringResources.getMbtiTypeDescription("ISFP")),
+        MBTIType("ESTP", StringResources.getMbtiTypeName("ESTP"), StringResources.getMbtiTypeDescription("ESTP")),
+        MBTIType("ESFP", StringResources.getMbtiTypeName("ESFP"), StringResources.getMbtiTypeDescription("ESFP"))
+    )
 
     Column(
         modifier = Modifier
@@ -64,7 +63,7 @@ fun MBTIPreferenceScreen(
 
         // Title
         Text(
-            text = "Your MBTI Personality",
+            text = StringResources.mbtiYourPersonality(),
             fontSize = 32.sp,
             fontWeight = FontWeight.Black,
             color = Color.Black,
@@ -102,7 +101,7 @@ fun MBTIPreferenceScreen(
                 contentPadding = 8.dp,
                 contentAlignment = Alignment.Center,
                 showBadge = true,
-                badgeText = "RECOMMENDED!",
+                badgeText = StringResources.mbtiRecommended(),
                 badgeBg = Color(0xFFF87171),
                 badgeTextColor = Color.White
             ) {
@@ -123,14 +122,14 @@ fun MBTIPreferenceScreen(
                         )
 
                         Text(
-                            text = "Take a Full Test",
+                            text = StringResources.mbtiTakeFullTest(),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
 
                         Text(
-                            text = "70 questions • 15-20 minutes",
+                            text = StringResources.mbtiTestDuration(),
                             fontSize = 11.sp,
                             color = Color.Black,
                             textAlign = TextAlign.Center,
@@ -138,7 +137,7 @@ fun MBTIPreferenceScreen(
                         )
 
                         Text(
-                            text = "Comprehensive personality assessment",
+                            text = StringResources.mbtiComprehensiveAssessment(),
                             fontSize = 12.sp,
                             color = Color.Gray,
                             textAlign = TextAlign.Center
@@ -177,14 +176,14 @@ fun MBTIPreferenceScreen(
                         )
 
                         Text(
-                            text = "I Know My Type",
+                            text = StringResources.mbtiKnowMyType(),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
 
                         Text(
-                            text = "Select from the list below",
+                            text = StringResources.mbtiSelectFromList(),
                             fontSize = 14.sp,
                             color = Color.Black,
                             textAlign = TextAlign.Center
@@ -199,7 +198,7 @@ fun MBTIPreferenceScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Select Your MBTI Type",
+                text = StringResources.mbtiSelectYourType(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -256,9 +255,9 @@ fun MBTIPreferenceScreen(
             ) {
                 Text(
                     text = when (selectedPreference) {
-                        MBTIPreferenceType.TAKE_TEST -> "Start Full Test"
-                        MBTIPreferenceType.MANUAL_ENTRY -> "Continue"
-                        null -> "Continue"
+                        MBTIPreferenceType.TAKE_TEST -> StringResources.mbtiStartFullTest()
+                        MBTIPreferenceType.MANUAL_ENTRY -> StringResources.mbtiContinue()
+                        null -> StringResources.mbtiContinue()
                     },
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,

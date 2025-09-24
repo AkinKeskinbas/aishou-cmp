@@ -25,6 +25,7 @@ import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.data.models.FriendInfo
 import com.keak.aishou.data.models.FriendTag
+import com.keak.aishou.utils.StringResources
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -64,7 +65,7 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    text = "Friends",
+                    text = StringResources.friendsTitle(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black
                 )
@@ -78,7 +79,7 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
                 TextField(
                     value = addFriendDisplayName,
                     onValueChange = { addFriendDisplayName = it },
-                    placeholder = { Text("Friend Name", fontSize = 14.sp) },
+                    placeholder = { Text(StringResources.friendNameLabel(), fontSize = 14.sp) },
                     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.White,
@@ -204,7 +205,7 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
                             modifier = Modifier.weight(1f)
                         )
                         TextButton(onClick = { viewModel.clearError() }) {
-                            Text("Dismiss", fontSize = 10.sp)
+                            Text(StringResources.dismiss(), fontSize = 10.sp)
                         }
                     }
                 }
@@ -235,7 +236,7 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
                             modifier = Modifier.weight(1f)
                         )
                         TextButton(onClick = { viewModel.clearSendRequestResult() }) {
-                            Text("Dismiss", fontSize = 10.sp)
+                            Text(StringResources.dismiss(), fontSize = 10.sp)
                         }
                     }
                 }

@@ -176,4 +176,33 @@ class InviteViewModel(
             }
         }
     }
+
+    fun rejectInvite(inviteId: String) {
+        viewModelScope.launch {
+            try {
+                println("InviteViewModel: Rejecting invite $inviteId")
+
+                when (val result = apiService.rejectInvite(inviteId)) {
+                    is ApiResult.Success -> {
+                        println("InviteViewModel: Invite rejected successfully")
+                        // No need to update UI state since user will navigate back
+                    }
+                    is ApiResult.Error -> {
+                        val errorMessage = result.message ?: "Failed to reject invite"
+                        _error.value = errorMessage
+                        println("InviteViewModel: Error rejecting invite: $errorMessage")
+                    }
+                    is ApiResult.Exception -> {
+                        val errorMessage = result.exception.message ?: "Network error rejecting invite"
+                        _error.value = errorMessage
+                        println("InviteViewModel: Exception rejecting invite: $errorMessage")
+                    }
+                }
+            } catch (e: Exception) {
+                val errorMessage = e.message ?: "Unexpected error rejecting invite"
+                _error.value = errorMessage
+                println("InviteViewModel: Unexpected error: $errorMessage")
+            }
+        }
+    }
 }

@@ -45,19 +45,20 @@ class TestResultViewModel(
     private val _inviteLink = MutableStateFlow<String?>(null)
     val inviteLink: StateFlow<String?> = _inviteLink.asStateFlow()
 
-    fun loadTestResults(testId: String) {
+    fun loadTestResults(testId: String, friendId: String? = null) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
 
             try {
-                val result = apiService.getTestResults(testId)
+                val result = apiService.getTestResults(testId, friendId)
                 when (result) {
                     is ApiResult.Success -> {
                         val resultData = result.data.data
                         _testResult.value = resultData
                         _error.value = null
-                        println("TestResultViewModel: Test results loaded successfully")
+                        val friendText = if (friendId != null) "with friend $friendId" else ""
+                        println("TestResultViewModel: Test results $friendText loaded successfully")
                         println("TestResultViewModel: Result type: ${resultData?.resultType}")
                         println("TestResultViewModel: Solo result present: ${resultData?.soloResult != null}")
                         println("TestResultViewModel: Compatibility results count: ${resultData?.compatibilityResults?.size}")
@@ -232,8 +233,8 @@ class TestResultViewModel(
             val actualTestId = testId ?: _testResult.value?.testId ?: "unknown"
             val actualTestTitle = testTitle ?: "Test" // We'll get this from tests API when needed
 
-            // Create deep link URL - replace with actual production domain
-            "https://aishou.app/invite/$inviteId?senderId=$actualSenderId&testId=$actualTestId&testTitle=${actualTestTitle.replace(" ", "%20").replace("&", "%26")}"
+            // Create deep link URL - use custom scheme for reliable app opening
+            "aishou://invite/$inviteId?senderId=$actualSenderId&testId=$actualTestId&testTitle=${actualTestTitle.replace(" ", "%20").replace("&", "%26")}"
         } else {
             null
         }

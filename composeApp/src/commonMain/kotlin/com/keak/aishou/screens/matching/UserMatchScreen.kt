@@ -28,6 +28,7 @@ import com.keak.aishou.navigation.Router
 import com.keak.aishou.screens.allresults.TestResultViewModel
 import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.ResultType
+import com.keak.aishou.utils.StringResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 import com.keak.aishou.components.SendToFriendBottomSheet
@@ -37,6 +38,7 @@ import com.keak.aishou.misc.orZero
 @Composable
 fun UserMatchScreen(
     testID: String,
+    friendId: String? = null,
     router: Router,
     viewModel: TestResultViewModel = koinViewModel()
 ) {
@@ -46,13 +48,15 @@ fun UserMatchScreen(
     val showSendToFriendBottomSheet by viewModel.showSendToFriendBottomSheet.collectAsStateWithLifecycle()
     val inviteLink by viewModel.inviteLink.collectAsStateWithLifecycle()
     val resultType = ResultType.fromString(testResult?.resultType.orEmpty())
+    println("UserMatchScreen: resultType-->${testResult?.resultType}")
+    println("UserMatchScreen: TEST!-->")
 
 
     // Load test results when screen starts
-    LaunchedEffect(testID) {
-        println("UserMatchScreen: Loading test results for ID: $testID")
-        // All tests now use the same endpoint with testId
-        viewModel.loadTestResults(testID)
+    LaunchedEffect(testID, friendId) {
+        println("UserMatchScreen: Loading test results for ID: $testID, friendId: $friendId")
+        // Pass friendId to API call if available
+        viewModel.loadTestResults(testID, friendId)
     }
     Box(modifier = Modifier.fillMaxSize()) {
         when {
@@ -81,14 +85,14 @@ fun UserMatchScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Error: $error",
+                        text = StringResources.errorPrefix(error ?: "Unknown error"),
                         fontWeight = FontWeight.Bold,
                         color = Color.Red,
                         textAlign = TextAlign.Center
                     )
                     Spacer(Modifier.height(16.dp))
                     NeoBrutalButton(
-                        text = "Retry",
+                        text = StringResources.retryButton(),
                         onClick = { viewModel.loadTestResults(testID) }
                     )
                 }
@@ -101,10 +105,10 @@ fun UserMatchScreen(
 
                 // Determine display title based on available data
                 val title = when {
-                    hasSoloResult && hasCompatibilityResults -> "Test Results"
-                    hasSoloResult -> "Solo Test Results"
-                    hasCompatibilityResults -> "Match Analysis"
-                    else -> "Test Results"
+                    hasSoloResult && hasCompatibilityResults -> StringResources.testResults()
+                    hasSoloResult -> StringResources.soloTestResults()
+                    hasCompatibilityResults -> StringResources.matchAnalysis()
+                    else -> StringResources.testResults()
                 }
 
                 LazyColumn(
@@ -301,14 +305,14 @@ private fun NeobrutalistVSCard(
     // Convert FriendInfo to UserInfo for compatibility with existing components
     val currentUser = UserInfo(
         userId = "current",
-        displayName = myDisplayName,
-        mbtiType = compatibilityResult.matchingAnalysis?.mbtiMatch?.typeA,
-        zodiacSign = compatibilityResult.matchingAnalysis?.zodiacMatch?.signA
+        displayName = compatibilityResult.myInfo?.displayName,
+        mbtiType = compatibilityResult.myInfo?.mbtiType,
+        zodiacSign = compatibilityResult.myInfo?.zodiacSign
     )
 
     val friendUser = UserInfo(
         userId = compatibilityResult.friendId.orEmpty(),
-        displayName = compatibilityResult.friendInfo?.displayName ?: "Friend",
+        displayName = compatibilityResult.friendInfo?.displayName ?: StringResources.friendFallback(),
         mbtiType = compatibilityResult.friendInfo?.mbtiType,
         zodiacSign = compatibilityResult.friendInfo?.zodiacSign
     )
@@ -363,7 +367,7 @@ private fun NeobrutalistVSCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "MATCH SCORE",
+                        text = StringResources.matchScore(),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.Black
@@ -413,7 +417,7 @@ private fun NeobrutalistVSCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "VS",
+                        text = StringResources.vs(),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White
@@ -579,7 +583,7 @@ private fun NeobrutalistSoloScoreCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "YOUR SCORE",
+                        text = StringResources.yourScore(),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White
@@ -658,7 +662,7 @@ private fun NeobrutalistSendToFriendCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Share with Friends",
+                    text = StringResources.shareWithFriends(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
@@ -678,7 +682,7 @@ private fun NeobrutalistSendToFriendCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             NeoBrutalButton(
-                text = "Send to Friend",
+                text = StringResources.sendToFriend(),
                 onClick = onSendToFriendClick,
                 backgroundColor = Color(0xFFFF9800),
                 textColor = Color.White
@@ -720,7 +724,7 @@ private fun NeobrutalistScoreCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Match Summary",
+                    text = StringResources.matchSummary(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
@@ -773,7 +777,7 @@ private fun NeobrutalistMBTICompatibilityCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "MBTI Compatibility",
+                    text = StringResources.mbtiCompatibility(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
@@ -791,7 +795,7 @@ private fun NeobrutalistMBTICompatibilityCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Strengths",
+                text = StringResources.strengths(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black
@@ -808,7 +812,7 @@ private fun NeobrutalistMBTICompatibilityCard(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Challenges",
+                text = StringResources.challenges(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black
@@ -859,7 +863,7 @@ private fun NeobrutalistZodiacCompatibilityCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Zodiac Compatibility",
+                    text = StringResources.zodiacCompatibility(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
@@ -877,7 +881,7 @@ private fun NeobrutalistZodiacCompatibilityCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Strengths",
+                text = StringResources.strengths(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black
@@ -894,7 +898,7 @@ private fun NeobrutalistZodiacCompatibilityCard(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Challenges",
+                text = StringResources.challenges(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black
@@ -946,7 +950,7 @@ private fun NeobrutalistExplanationsCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Detailed Explanations",
+                    text = StringResources.detailedExplanations(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
@@ -991,7 +995,7 @@ private fun NeobrutalistAnalysisCard(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Detailed Analysis",
+                    text = StringResources.detailedAnalysis(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black

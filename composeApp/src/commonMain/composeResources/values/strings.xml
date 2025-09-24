@@ -23,9 +23,9 @@
     <string name="zodiac_sign_profile_home">ZODIAC SIGN</string>
     <string name="hey_text_home">HEY, </string>
     <string name="quick_actions_home">QUICK ACTIONS</string>
-    <string name="new_test_home">New Test</string>
+    <string name="new_test_home">Browse Tests</string>
     <string name="view_all_home">View All</string>
-    <string name="quick_quiz_home">Quick Quiz</string>
+    <string name="quick_quiz_home">Quick Start</string>
 
     <string name="recent_tests_home">RECENT TESTS</string>
     <string name="your_stats_home">YOUR STATS</string>
@@ -156,5 +156,184 @@
     <string name="thank_you_message_normal">Your test results have been saved. You can view them anytime from your profile.</string>
     <string name="thank_you_message_invite">Your test results have been saved. You will receive a notification when your compatibility results are ready!</string>
     <string name="thank_you_go_home">Go to Home</string>
+
+    //Common UI Elements
+    <string name="back_arrow">←</string>
+    <string name="retry_button">Retry</string>
+    <string name="dismiss_button">Dismiss</string>
+    <string name="back_content_description">Back</string>
+    <string name="user_fallback_name">User %1$s</string>
+
+    //Notifications Screen
+    <string name="notifications_title">🔔 Notifications</string>
+    <string name="test_invitations_count">Test Invitations (%1$d)</string>
+    <string name="no_test_invitations_title">No test invitations</string>
+    <string name="no_test_invitations_subtitle">New test invites will appear here</string>
+    <string name="friend_requests_count">Friend Requests (%1$d)</string>
+    <string name="no_friend_requests_title">No friend requests</string>
+    <string name="no_friend_requests_subtitle">New friend requests will appear here</string>
+    <string name="wants_to_be_friends">wants to be friends 👋</string>
+    <string name="loading_notifications">Loading notifications...</string>
+    <string name="test_invite_from">From: %1$s</string>
+    <string name="test_invite_mbti">MBTI: %1$s</string>
+
+    //Invite Screen
+    <string name="test_invitation_title">🎉 Test Invitation</string>
+    <string name="loading_invitation">Loading invitation...</string>
+    <string name="error_loading_invitation">Error Loading Invitation</string>
+    <string name="take_test_compare_results">Take Test &amp; Compare Results</string>
+    <string name="accepting_invite_loading">Accepting Invite...</string>
+    <string name="reject_invite">Reject Invite</string>
+    <string name="invitation_from_label">Invitation from:</string>
+    <string name="test_details_label">📋 Test Details</string>
+    <string name="premium_feature_title">Premium Feature</string>
+    <string name="premium_compare_description">%1$s wants to compare results with you on "%2$s".</string>
+    <string name="upgrade_to_premium_label">Upgrade to Premium to:</string>
+    <string name="premium_feature_take_tests">✓ Take tests from friends</string>
+    <string name="premium_feature_compare_results">✓ Compare your results</string>
+    <string name="premium_feature_unlimited_invites">✓ Send unlimited invites</string>
+    <string name="upgrade_to_premium_button">Upgrade to Premium</string>
+
+    //Friends Screen
+    <string name="friends_title">Friends</string>
+    <string name="friend_name_placeholder">Friend Name</string>
+    <string name="friends_list_count">Friends (%1$d)</string>
+    <string name="no_friends_message">No friends yet. Add friends by their ID above.</string>
+
+    //Profile Screen
+    <string name="profile_title">Profile</string>
+    <string name="profile_header">PROFILE</string>
+    <string name="pro_badge">PRO</string>
+    <string name="your_stats_title">YOUR STATS</string>
+    <string name="test_aced_label">TEST ACED!</string>
+    <string name="day_streak_label">DAY STREAK</string>
+    <string name="unlock_destiny_title">Unlock Your Destiny!</string>
+    <string name="unlimited_tests_label">UNLIMITED TESTS</string>
+    <string name="deep_insights_label">DEEP INSIGHTS</string>
+    <string name="unlock_third_eye_button">Unlock Your Third Eye!</string>
+    <string name="tests_completed_label">Tests Completed</string>
+    <string name="get_premium_label">Get Premium</string>
+    <string name="upgrade_button">Upgrade</string>
+    <string name="premium_member_status">Premium Member</string>
+    <string name="loading_profile">Loading profile...</string>
+
+    //MBTI Preference Screen
+    <string name="mbti_your_personality">Your MBTI Personality</string>
+    <string name="mbti_recommended">RECOMMENDED!</string>
+    <string name="mbti_take_full_test">Take a Full Test</string>
+    <string name="mbti_test_duration">70 questions • 15-20 minutes</string>
+    <string name="mbti_comprehensive_assessment">Comprehensive personality assessment</string>
+    <string name="mbti_know_my_type">I Know My Type</string>
+    <string name="mbti_select_from_list">Select from the list below</string>
+    <string name="mbti_select_your_type">Select Your MBTI Type</string>
+    <string name="mbti_start_full_test">Start Full Test</string>
+    <string name="mbti_continue">Continue</string>
+
+    //MBTI Types
+    <string name="mbti_intj_name">Architect</string>
+    <string name="mbti_intj_description">Imaginative and strategic thinkers</string>
+    <string name="mbti_intp_name">Thinker</string>
+    <string name="mbti_intp_description">Innovative inventors with unquenchable thirst for knowledge</string>
+    <string name="mbti_entj_name">Commander</string>
+    <string name="mbti_entj_description">Bold, imaginative and strong-willed leaders</string>
+    <string name="mbti_entp_name">Debater</string>
+    <string name="mbti_entp_description">Smart and curious thinkers who love intellectual challenges</string>
+    <string name="mbti_infj_name">Advocate</string>
+    <string name="mbti_infj_description">Creative and insightful, inspired and independent</string>
+    <string name="mbti_infp_name">Mediator</string>
+    <string name="mbti_infp_description">Poetic, kind and altruistic people</string>
+    <string name="mbti_enfj_name">Protagonist</string>
+    <string name="mbti_enfj_description">Charismatic and inspiring leaders</string>
+    <string name="mbti_enfp_name">Campaigner</string>
+    <string name="mbti_enfp_description">Enthusiastic, creative and sociable free spirits</string>
+    <string name="mbti_istj_name">Logistician</string>
+    <string name="mbti_istj_description">Practical and fact-minded, reliable</string>
+    <string name="mbti_isfj_name">Protector</string>
+    <string name="mbti_isfj_description">Warm-hearted and dedicated</string>
+    <string name="mbti_estj_name">Executive</string>
+    <string name="mbti_estj_description">Excellent administrators, unsurpassed at managing</string>
+    <string name="mbti_esfj_name">Consul</string>
+    <string name="mbti_esfj_description">Extraordinarily caring, social and popular</string>
+    <string name="mbti_istp_name">Virtuoso</string>
+    <string name="mbti_istp_description">Bold and practical experimenters</string>
+    <string name="mbti_isfp_name">Adventurer</string>
+    <string name="mbti_isfp_description">Flexible and charming artists</string>
+    <string name="mbti_estp_name">Entrepreneur</string>
+    <string name="mbti_estp_description">Smart, energetic and perceptive</string>
+    <string name="mbti_esfp_name">Entertainer</string>
+    <string name="mbti_esfp_description">Spontaneous, energetic and enthusiastic</string>
+
+    //Home Screen Additional
+    <string name="me">Me</string>
+    <string name="unknown">Unknown</string>
+    <string name="welcome_to_aishou">Welcome to Aishou! ✨</string>
+    <string name="welcome_back_with_name">Welcome back, %1$s! 👋</string>
+    <string name="welcome_back">Welcome back! 👋</string>
+    <string name="cosmic_personality_discover">Let's discover your cosmic personality!</string>
+    <string name="launch_count_days_active">Launch #%1$s • %2$s active</string>
+    <string name="launch_count_only">Launch #%1$s</string>
+    <string name="connect_with_friends">Connect with friends</string>
+    <string name="notifications_content_description">Notifications</string>
+    <string name="settings_content_description">Settings</string>
+    <string name="user_match_home">User Match</string>
+
+    //Zodiac Selection Screen
+    <string name="whats_your_zodiac_sign">What's Your Zodiac Sign?</string>
+    <string name="select_zodiac_to_continue">Please select your zodiac sign to continue</string>
+
+    //Zodiac Signs
+    <string name="zodiac_aries_dates">Mar 21 - Apr 19</string>
+    <string name="zodiac_taurus_dates">Apr 20 - May 20</string>
+    <string name="zodiac_gemini_dates">May 21 - Jun 20</string>
+    <string name="zodiac_cancer_dates">Jun 21 - Jul 22</string>
+    <string name="zodiac_leo_dates">Jul 23 - Aug 22</string>
+    <string name="zodiac_virgo_dates">Aug 23 - Sep 22</string>
+    <string name="zodiac_libra_dates">Sep 23 - Oct 22</string>
+    <string name="zodiac_scorpio_dates">Oct 23 - Nov 21</string>
+    <string name="zodiac_sagittarius_dates">Nov 22 - Dec 21</string>
+    <string name="zodiac_capricorn_dates">Dec 22 - Jan 19</string>
+    <string name="zodiac_aquarius_dates">Jan 20 - Feb 18</string>
+    <string name="zodiac_pisces_dates">Feb 19 - Mar 20</string>
+
+    //Error Messages
+    <string name="failed_to_load_profile">Failed to load profile</string>
+    <string name="exception_loading_profile">Exception loading profile</string>
+    <string name="unexpected_error_loading_profile">Unexpected error loading profile</string>
+    <string name="failed_to_load_friend_requests">Failed to load friend requests</string>
+    <string name="failed_to_load_invitation_data">Failed to load invitation data</string>
+    <string name="failed_to_load_test_information">Failed to load test information</string>
+    <string name="failed_to_load_friends">Failed to load friends</string>
+    <string name="failed_to_load_test_results">Failed to load test results</string>
+    <string name="exception_loading_test_results">Exception loading test results</string>
+
+    //Friends Screen
+    <string name="friend_name_label">Friend Name</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="unknown_error_occurred">Unknown error occurred</string>
+    <string name="failed_to_send_friend_request">Failed to send friend request</string>
+    <string name="failed_to_remove_friend">Failed to remove friend</string>
+
+    //Notifications Screen
+    <string name="failed_to_accept_friend_request">Failed to accept friend request</string>
+    <string name="failed_to_reject_friend_request">Failed to reject friend request</string>
+
+    //Match Screen
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="test_results">Test Results</string>
+    <string name="solo_test_results">Solo Test Results</string>
+    <string name="match_analysis">Match Analysis</string>
+    <string name="friend_fallback">Friend</string>
+    <string name="match_score">MATCH SCORE</string>
+    <string name="vs">VS</string>
+    <string name="your_score">YOUR SCORE</string>
+    <string name="share_with_friends">Share with Friends</string>
+    <string name="send_to_friend">Send to Friend</string>
+    <string name="match_summary">Match Summary</string>
+    <string name="mbti_compatibility">MBTI Compatibility</string>
+    <string name="strengths">Strengths</string>
+    <string name="challenges">Challenges</string>
+    <string name="zodiac_compatibility">Zodiac Compatibility</string>
+    <string name="detailed_explanations">Detailed Explanations</string>
+    <string name="detailed_analysis">Detailed Analysis</string>
 
 </resources>

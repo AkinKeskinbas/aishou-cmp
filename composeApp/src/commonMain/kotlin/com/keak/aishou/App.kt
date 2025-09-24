@@ -85,7 +85,18 @@ private fun handleDeepLinkNavigation(url: String, router: Router) {
         val normalizedUrl = url.lowercase()
         println("App: Parsing deeplink URL: $url")
 
-        if (normalizedUrl.contains("/friends")) {
+        if (normalizedUrl.contains("friends/request")) {
+            val senderId = extractUrlParameter(url, "senderId")
+            val senderName = extractUrlParameter(url, "senderName")
+
+            if (senderId != null && senderName != null) {
+                println("App: Navigating to friend request with senderId=$senderId, senderName=$senderName")
+                router.goToFriendRequest(senderId, senderName)
+            } else {
+                println("App: Invalid friend request deeplink - missing parameters, going to notifications")
+                router.goToNotifications()
+            }
+        } else if (normalizedUrl.contains("friends")) {
             println("App: Navigating to notifications from friends deeplink")
             router.goToNotifications()
         } else if (normalizedUrl.contains("/invite/")) {

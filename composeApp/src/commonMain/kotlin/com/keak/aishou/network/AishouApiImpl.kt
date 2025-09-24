@@ -2,6 +2,7 @@ package com.keak.aishou.network
 
 // import com.gyanoba.inspektor.Inspektor // Disabled due to iOS notification crash
 import com.keak.aishou.data.DataStoreManager
+import com.keak.aishou.data.language.LanguageManager
 import com.keak.aishou.data.api.QuizQuestion
 import com.keak.aishou.data.api.QuizSubmissionRequest
 import com.keak.aishou.data.api.Submission
@@ -42,10 +43,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
 class AishouApiImpl(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val languageManager: LanguageManager
 ) : AishouApiService {
 
     private val client: HttpClient by lazy {
@@ -78,6 +81,7 @@ class AishouApiImpl(
             defaultRequest {
                 url(ApiList.BASE_URL)
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
+                header(HttpHeaders.AcceptLanguage, runBlocking { getAcceptLanguageHeader() })
             }
         }
     }
@@ -85,6 +89,10 @@ class AishouApiImpl(
     private suspend fun getAuthHeader(): String? {
         val accessToken = dataStoreManager.accessToken.first()
         return if (accessToken != null) "Bearer $accessToken" else null
+    }
+
+    private suspend fun getAcceptLanguageHeader(): String {
+        return languageManager.getCurrentLocale()
     }
 
     override suspend fun getToken(): ApiResult<BaseResponse<TokenResponse>> {
@@ -199,10 +207,10 @@ class AishouApiImpl(
         return result
     }
 
-    override suspend fun getTestResults(testId: String): ApiResult<BaseResponse<TestResultResponse>> {
-        val url = ApiList.getTestResultsUrl(testId)
+    override suspend fun getTestResults(testId: String, friendId: String?): ApiResult<BaseResponse<TestResultResponse>> {
+        val url = ApiList.getTestResultsUrl(testId, friendId)
         println("AishouApiImpl: Making get test results request to ${ApiList.BASE_URL}$url")
-        println("AishouApiImpl: Test ID: $testId")
+        println("AishouApiImpl: Test ID: $testId, Friend ID: $friendId")
 
         val authHeader = getAuthHeader()
         println("AishouApiImpl: Auth header present: ${authHeader != null}")
@@ -290,13 +298,13 @@ class AishouApiImpl(
         }
     }
 
-    override suspend fun submitQuiz(testId: String, version: Int, submission: QuizSubmissionRequest): ApiResult<BaseResponse<Submission>> {
-        val url = ApiList.getQuizSubmissionUrl(testId, version)
+    override suspend fun submitQuiz(testId: String, version: Int, submission: QuizSubmissionRequest, inviteId: String?): ApiResult<BaseResponse<Submission>> {
+        val url = ApiList.getQuizSubmissionUrl(testId, version, inviteId)
         val fullUrl = "${ApiList.BASE_URL}$url"
         println("AishouApiImpl: Making submit quiz request to $fullUrl")
         println("AishouApiImpl: Generated URL path: $url")
         println("AishouApiImpl: Request body: $submission")
-        println("AishouApiImpl: testId=$testId, version=$version")
+        println("AishouApiImpl: testId=$testId, version=$version, inviteId=$inviteId")
 
         // Serialize to JSON to see the actual JSON being sent
         val json = Json { ignoreUnknownKeys = true }
@@ -373,7 +381,7 @@ class AishouApiImpl(
         }
     }
 
-    override suspend fun respondToFriendRequest(requestId: String, response: RespondFriendRequestReq): ApiResult<BaseResponse<FriendRequest>> {
+    override suspend fun respondToFriendRequest(requestId: String, response: RespondFriendRequestReq): ApiResult<BaseResponse<RespondFriendRequestResponse>> {
         val url = ApiList.getRespondFriendRequestUrl(requestId)
         println("AishouApiImpl: Making respond to friend request to ${ApiList.BASE_URL}$url")
         println("AishouApiImpl: Request body: $response")
@@ -497,6 +505,35 @@ class AishouApiImpl(
                     header(HttpHeaders.Authorization, it)
                 }
                 contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun rejectInvite(inviteId: String): ApiResult<BaseResponse<Unit>> {
+        val url = ApiList.getRejectInviteUrl(inviteId)
+        println("AishouApiImpl: Making reject invite to ${ApiList.BASE_URL}$url")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.post(url) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun getReceivedInvites(): ApiResult<BaseResponse<List<TestInvite>>> {
+        val url = ApiList.GET_RECEIVED_INVITES
+        println("AishouApiImpl: Making get received invites request to ${ApiList.BASE_URL}$url")
+
+        val authHeader = getAuthHeader()
+        return handleApi {
+            client.get(url) {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
             }
         }
     }
