@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +30,8 @@ fun InviteScreen(
     senderId: String,
     testId: String,
     testTitle: String,
+    senderName: String = "Unknown User",
+    senderMbti: String? = null,
     router: Router,
     viewModel: InviteViewModel = koinViewModel()
 ) {
@@ -40,7 +44,9 @@ fun InviteScreen(
     val inviteAccepted by viewModel.inviteAccepted.collectAsStateWithLifecycle()
 
     // Load data when screen starts
-    LaunchedEffect(senderId, testId) {
+    LaunchedEffect(senderId, testId, testTitle, senderName, senderMbti) {
+        viewModel.setTestInfo(testTitle, "Personality") // Set test info directly without API call
+        viewModel.setSenderInfo(senderId, senderName, senderMbti) // Set sender info directly without API call
         viewModel.loadInviteData(senderId, testId)
     }
 
@@ -53,6 +59,7 @@ fun InviteScreen(
 
     Column(
         modifier = Modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .background(Color(0xFF49DC9C))
@@ -468,7 +475,7 @@ private fun TestInfoCard(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = testTitle,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black
             )
@@ -515,12 +522,12 @@ private fun NonPremiumCard(
         ) {
             Text(
                 text = "⭐",
-                fontSize = 48.sp
+                fontSize = 38.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Premium Feature",
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Black
             )
@@ -596,12 +603,12 @@ private fun ActionButton(
         ) {
             Text(
                 text = emoji,
-                fontSize = 20.sp
+                fontSize = 18.sp
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = text,
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.White
             )

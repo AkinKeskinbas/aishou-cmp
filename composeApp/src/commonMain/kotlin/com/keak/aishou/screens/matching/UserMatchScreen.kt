@@ -1,15 +1,39 @@
 package com.keak.aishou.screens.matching
 
-import androidx.compose.animation.core.*
+import aishou.composeapp.generated.resources.Res
+import aishou.composeapp.generated.resources.match_great_job
+import aishou.composeapp.generated.resources.match_send_your_friend
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -20,20 +44,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.roundToInt
-import com.keak.aishou.data.models.UserMatch
-import com.keak.aishou.data.models.UserInfo
-import com.keak.aishou.misc.BackGroundBrush
-import com.keak.aishou.navigation.Router
-import com.keak.aishou.screens.allresults.TestResultViewModel
-import com.keak.aishou.data.api.TestResultResponse
-import com.keak.aishou.data.api.ResultType
-import com.keak.aishou.utils.StringResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.compose.viewmodel.koinViewModel
+import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.components.SendToFriendBottomSheet
 import com.keak.aishou.data.api.MatchingAnalysis
+import com.keak.aishou.utils.ShareableMatchResultCard
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import com.keak.aishou.data.api.ResultType
+import com.keak.aishou.data.models.UserInfo
 import com.keak.aishou.misc.orZero
+import com.keak.aishou.navigation.Router
+import com.keak.aishou.screens.allresults.TestResultViewModel
+import com.keak.aishou.utils.StringResources
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.roundToInt
 
 @Composable
 fun UserMatchScreen(
@@ -47,7 +73,10 @@ fun UserMatchScreen(
     val error by viewModel.error.collectAsStateWithLifecycle()
     val showSendToFriendBottomSheet by viewModel.showSendToFriendBottomSheet.collectAsStateWithLifecycle()
     val inviteLink by viewModel.inviteLink.collectAsStateWithLifecycle()
+    val isSharing by viewModel.isSharing.collectAsStateWithLifecycle()
     val resultType = ResultType.fromString(testResult?.resultType.orEmpty())
+    val coroutineScope = rememberCoroutineScope()
+
     println("UserMatchScreen: resultType-->${testResult?.resultType}")
     println("UserMatchScreen: TEST!-->")
 
@@ -123,7 +152,22 @@ fun UserMatchScreen(
                     item {
                         NeobrutalistHeader(
                             title = title,
-                            onBackClick = { router.goBack() }
+                            onBackClick = { router.goBack() },
+                            isSharing = isSharing,
+                            onShareClick = {
+                                // Share result as image using custom shareable card
+                                result.let { testResultData ->
+                                    val userDisplayName = testResultData.myDisplayName
+                                    coroutineScope.launch {
+                                        viewModel.shareToInstagramStory {
+                                            ShareableMatchResultCard(
+                                                testResult = testResultData,
+                                                userDisplayName = userDisplayName
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         )
                     }
                     when (resultType){
@@ -252,7 +296,9 @@ fun UserMatchScreen(
 @Composable
 private fun NeobrutalistHeader(
     title: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShareClick: (() -> Unit)? = null,
+    isSharing: Boolean = false
 ) {
     Box(
         modifier = Modifier
@@ -275,7 +321,8 @@ private fun NeobrutalistHeader(
             .padding(20.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             NeobrutalistIconButton(
                 icon = "←",
@@ -289,8 +336,19 @@ private fun NeobrutalistHeader(
                 text = title,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Black,
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.weight(1f)
             )
+
+            // Share button (only show if callback provided)
+            onShareClick?.let { shareCallback ->
+                Spacer(modifier = Modifier.width(16.dp))
+                NeobrutalistIconButton(
+                    icon = if (isSharing) "⏳" else "📤",
+                    backgroundColor = if (isSharing) Color(0xFFFFA500) else Color(0xFF4FFFB3),
+                    onClick = if (isSharing) { {} } else shareCallback
+                )
+            }
         }
     }
 }
@@ -448,24 +506,10 @@ private fun NeobrutalistUserCard(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .shadow(
-                elevation = 6.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black
-            )
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 3.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(16.dp)
-    ) {
+    NeoBrutalistCardViewWithFlexSize (
+        modifier = Modifier.size(80.dp),
+        backgroundColor = Color(0XFFFECB7F),
+    ){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -531,91 +575,46 @@ private fun NeobrutalistSoloScoreCard(
     isBoth: Boolean  = false
 ) {
     val score = soloResult?.totalScore
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = Color.Black,
-                spotColor = Color.Black
-            )
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFE8F5E8),
-                        Color(0xFFF0FFF0)
-                    )
-                ),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .border(
-                width = 4.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(24.dp)
-    ) {
+    NeoBrutalistCardViewWithFlexSize (
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = Color(0XFFFECB7F),
+        cornerRadius = 16.dp
+    ){
         Column {
             // Solo Test Title with score
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 4.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        ambientColor = Color.Black
-                    )
-                    .background(
-                        color = Color(0xFF4CAF50),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .border(
-                        width = 3.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
+            NeoBrutalistCardViewWithFlexSize(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                backgroundColor = Color(0xFFCEE977),
+                cornerRadius = 12.dp
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         text = StringResources.yourScore(),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Black,
-                        color = Color.White
+                        color = Color.Black
                     )
                     AnimatedScoreCounter(
                         targetScore = score.orZero(),
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Black,
-                        color = Color.White
+                        color = Color.Black
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             if (isBoth.not()){
                 // Achievement message
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .border(
-                            width = 2.dp,
-                            color = Color.Black,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(16.dp)
-                ) {
+                NeoBrutalistCardViewWithFlexSize (
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    backgroundColor = Color(0xFFFDFE99),
+                    cornerRadius = 12.dp
+                ){
                     Text(
-                        text = "🎉 Great job completing this test! Share your results with friends to see how compatible you are.",
+                        text = stringResource(Res.string.match_great_job),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color(0xFF333333),
@@ -627,31 +626,18 @@ private fun NeobrutalistSoloScoreCard(
 
         }
     }
+
 }
 
 @Composable
 private fun NeobrutalistSendToFriendCard(
     onSendToFriendClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 6.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black
-            )
-            .background(
-                color = Color(0xFFFFF3E0),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 3.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(20.dp)
-    ) {
+    NeoBrutalistCardViewWithFlexSize (
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = Color(0xFFB8B9DE),
+        cornerRadius = 12.dp
+    ){
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -672,7 +658,7 @@ private fun NeobrutalistSendToFriendCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Invite your friends to take this test and compare your compatibility!",
+                text = stringResource(Res.string.match_send_your_friend),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF333333),
@@ -680,13 +666,20 @@ private fun NeobrutalistSendToFriendCard(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            NeoBrutalButton(
-                text = StringResources.sendToFriend(),
-                onClick = onSendToFriendClick,
-                backgroundColor = Color(0xFFFF9800),
-                textColor = Color.White
-            )
+            NeoBrutalistCardViewWithFlexSize(
+                modifier = Modifier.width(150.dp).clickable(role = Role.Button){
+                    onSendToFriendClick.invoke()
+                },
+                backgroundColor = Color(0xFF85D0E9),
+                cornerRadius = 8.dp
+            ) {
+                Text(
+                    text = StringResources.sendToFriend(),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
         }
     }
 }

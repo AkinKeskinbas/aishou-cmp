@@ -15,6 +15,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import com.keak.aishou.utils.ImageShareHelper
+import com.keak.aishou.utils.ImageShareHelperFactory
+import com.keak.aishou.utils.captureComposableAsBitmap
+import com.keak.aishou.utils.generateShareableBitmap
+import androidx.compose.runtime.Composable
 
 class TestResultViewModel(
     private val apiService: AishouApiService,
@@ -44,6 +49,11 @@ class TestResultViewModel(
 
     private val _inviteLink = MutableStateFlow<String?>(null)
     val inviteLink: StateFlow<String?> = _inviteLink.asStateFlow()
+
+    private val _isSharing = MutableStateFlow(false)
+    val isSharing: StateFlow<Boolean> = _isSharing.asStateFlow()
+
+    private val imageShareHelper by lazy { ImageShareHelperFactory.create() }
 
     fun loadTestResults(testId: String, friendId: String? = null) {
         viewModelScope.launch {
@@ -310,6 +320,82 @@ class TestResultViewModel(
                 val errorMessage = e.message ?: "Unexpected error creating friend invite"
                 println("TestResultViewModel: Unexpected error: $errorMessage")
                 onError(errorMessage)
+            }
+        }
+    }
+
+    suspend fun shareResultAsImage(shareableContent: @Composable () -> Unit) {
+        viewModelScope.launch {
+            try {
+                _isSharing.value = true
+                _error.value = null
+
+                println("TestResultViewModel: Starting image capture for sharing")
+                var bitmap = captureComposableAsBitmap(shareableContent)
+
+                // Fallback to programmatic bitmap generation if composable capture fails
+                if (bitmap == null) {
+                    println("TestResultViewModel: Composable capture failed, trying programmatic generation")
+                    val testResult = _testResult.value
+                    if (testResult != null) {
+                        val userDisplayName = testResult.myDisplayName
+                        bitmap = generateShareableBitmap(testResult, userDisplayName)
+                    }
+                }
+
+                if (bitmap != null) {
+                    println("TestResultViewModel: Bitmap generated successfully, sharing image")
+                    imageShareHelper.shareComposableAsImage(bitmap, "aishou_result.png")
+                } else {
+                    val errorMsg = "Failed to generate shareable image"
+                    println("TestResultViewModel: $errorMsg")
+                    _error.value = errorMsg
+                }
+            } catch (e: Exception) {
+                val errorMsg = "Error sharing result: ${e.message}"
+                println("TestResultViewModel: $errorMsg")
+                _error.value = errorMsg
+                e.printStackTrace()
+            } finally {
+                _isSharing.value = false
+            }
+        }
+    }
+
+    suspend fun shareToInstagramStory(shareableContent: @Composable () -> Unit) {
+        viewModelScope.launch {
+            try {
+                _isSharing.value = true
+                _error.value = null
+
+                println("TestResultViewModel: Starting image capture for Instagram story")
+                var bitmap = captureComposableAsBitmap(shareableContent)
+
+                // Fallback to programmatic bitmap generation if composable capture fails
+                if (bitmap == null) {
+                    println("TestResultViewModel: Composable capture failed, trying programmatic generation")
+                    val testResult = _testResult.value
+                    if (testResult != null) {
+                        val userDisplayName = testResult.myDisplayName
+                        bitmap = generateShareableBitmap(testResult, userDisplayName)
+                    }
+                }
+
+                if (bitmap != null) {
+                    println("TestResultViewModel: Bitmap generated successfully, sharing to Instagram")
+                    imageShareHelper.shareToInstagramStory(bitmap, "aishou_story.png")
+                } else {
+                    val errorMsg = "Failed to generate shareable image. This feature is not yet available on this platform."
+                    println("TestResultViewModel: $errorMsg")
+                    _error.value = errorMsg
+                }
+            } catch (e: Exception) {
+                val errorMsg = "Error sharing to Instagram: ${e.message}"
+                println("TestResultViewModel: $errorMsg")
+                _error.value = errorMsg
+                e.printStackTrace()
+            } finally {
+                _isSharing.value = false
             }
         }
     }

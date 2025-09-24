@@ -97,8 +97,8 @@ fun NotificationsScreen(
                     NeobrutalistTestInviteCard(
                         testInvite = testInvite,
                         onClick = {
-                            viewModel.onTestInviteClicked(testInvite) { inviteId, senderId, testId, testTitle ->
-                                router.goToInvite(inviteId, senderId, testId, testTitle)
+                            viewModel.onTestInviteClicked(testInvite) { inviteId, senderId, testId, testTitle, senderName, senderMbti ->
+                                router.goToInvite(inviteId, senderId, testId, testTitle, senderName, senderMbti)
                             }
                         }
                     )

@@ -38,6 +38,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -88,7 +90,7 @@ fun PaywallScreen(router: Router) {
         start = true
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(
+    Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(
         Color(0xFF49DC9C)
     )) {
         if (showBottomSheet) {
@@ -385,6 +387,7 @@ fun PaywallScreen(router: Router) {
                             }
                         )
                     }
+                    Spacer(Modifier.height(8.dp))
                     //End of The Cards Block
 //                HeartFillMeter(
 //                    modifier = Modifier.size(220.dp).align(Alignment.CenterHorizontally),
