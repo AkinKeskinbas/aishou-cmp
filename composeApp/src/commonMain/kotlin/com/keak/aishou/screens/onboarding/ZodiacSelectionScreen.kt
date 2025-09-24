@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
+import com.keak.aishou.utils.StringResources
 
 data class ZodiacSign(
     val name: String,
@@ -28,22 +29,20 @@ fun ZodiacSelectionScreen(
 ) {
     var selectedZodiac by remember { mutableStateOf<ZodiacSign?>(null) }
 
-    val zodiacSigns = remember {
-        listOf(
-            ZodiacSign("Aries", "♈", "Mar 21 - Apr 19", "Fire"),
-            ZodiacSign("Taurus", "♉", "Apr 20 - May 20", "Earth"),
-            ZodiacSign("Gemini", "♊", "May 21 - Jun 20", "Air"),
-            ZodiacSign("Cancer", "♋", "Jun 21 - Jul 22", "Water"),
-            ZodiacSign("Leo", "♌", "Jul 23 - Aug 22", "Fire"),
-            ZodiacSign("Virgo", "♍", "Aug 23 - Sep 22", "Earth"),
-            ZodiacSign("Libra", "♎", "Sep 23 - Oct 22", "Air"),
-            ZodiacSign("Scorpio", "♏", "Oct 23 - Nov 21", "Water"),
-            ZodiacSign("Sagittarius", "♐", "Nov 22 - Dec 21", "Fire"),
-            ZodiacSign("Capricorn", "♑", "Dec 22 - Jan 19", "Earth"),
-            ZodiacSign("Aquarius", "♒", "Jan 20 - Feb 18", "Air"),
-            ZodiacSign("Pisces", "♓", "Feb 19 - Mar 20", "Water")
-        )
-    }
+    val zodiacSigns = listOf(
+        ZodiacSign("Aries", "♈", StringResources.getZodiacDates("Aries"), "Fire"),
+        ZodiacSign("Taurus", "♉", StringResources.getZodiacDates("Taurus"), "Earth"),
+        ZodiacSign("Gemini", "♊", StringResources.getZodiacDates("Gemini"), "Air"),
+        ZodiacSign("Cancer", "♋", StringResources.getZodiacDates("Cancer"), "Water"),
+        ZodiacSign("Leo", "♌", StringResources.getZodiacDates("Leo"), "Fire"),
+        ZodiacSign("Virgo", "♍", StringResources.getZodiacDates("Virgo"), "Earth"),
+        ZodiacSign("Libra", "♎", StringResources.getZodiacDates("Libra"), "Air"),
+        ZodiacSign("Scorpio", "♏", StringResources.getZodiacDates("Scorpio"), "Water"),
+        ZodiacSign("Sagittarius", "♐", StringResources.getZodiacDates("Sagittarius"), "Fire"),
+        ZodiacSign("Capricorn", "♑", StringResources.getZodiacDates("Capricorn"), "Earth"),
+        ZodiacSign("Aquarius", "♒", StringResources.getZodiacDates("Aquarius"), "Air"),
+        ZodiacSign("Pisces", "♓", StringResources.getZodiacDates("Pisces"), "Water")
+    )
 
     Column(
         modifier = Modifier
@@ -55,7 +54,7 @@ fun ZodiacSelectionScreen(
 
         // Title
         Text(
-            text = "What's Your Zodiac Sign?",
+            text = StringResources.whatsYourZodiacSign(),
             fontSize = 32.sp,
             fontWeight = FontWeight.Black,
             color = Color.Black,
@@ -66,7 +65,7 @@ fun ZodiacSelectionScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Please select your zodiac sign to continue",
+            text = StringResources.selectZodiacToContinue(),
             fontSize = 16.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center
@@ -113,7 +112,7 @@ fun ZodiacSelectionScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Text(
-                    text = "Continue",
+                    text = StringResources.mbtiContinue(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black

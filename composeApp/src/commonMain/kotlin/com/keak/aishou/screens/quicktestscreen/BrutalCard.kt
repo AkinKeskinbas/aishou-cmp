@@ -67,11 +67,14 @@ fun BrutalCard(
             Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(cardImage),
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
+            Box {
+                Image(
+                    painter = painterResource(cardImage),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+
+            }
             Spacer(Modifier.height(6.dp))
             Text(
                 text = title,
@@ -107,7 +110,7 @@ fun BrutalCard(
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = if (isPremium) "Start Test" else "Locked",
+                        text = if (isPremium) "Premium Test" else "Start Test",
                         fontWeight = FontWeight.Black,
                         fontSize = 12.sp,
                         modifier = Modifier,

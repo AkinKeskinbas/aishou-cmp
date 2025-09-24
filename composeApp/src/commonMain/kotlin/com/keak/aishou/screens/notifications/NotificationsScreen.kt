@@ -21,8 +21,10 @@ import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.data.models.RequestWithSenderInfo
 import com.keak.aishou.data.models.FriendTag
+import com.keak.aishou.data.models.TestInvite
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
+import com.keak.aishou.utils.StringResources
 
 @Composable
 fun NotificationsScreen(
@@ -32,9 +34,16 @@ fun NotificationsScreen(
     viewModel: NotificationsViewModel = koinViewModel()
 ) {
     val friendRequests by viewModel.friendRequests.collectAsStateWithLifecycle()
+    val testInvites by viewModel.testInvites.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val respondingToRequest by viewModel.respondingToRequest.collectAsStateWithLifecycle()
+
+    // Load notifications once when screen is first shown
+    LaunchedEffect(Unit) {
+        viewModel.loadNotifications()
+        viewModel.loadTestInvitations()
+    }
 
     Column(
         modifier = Modifier
@@ -45,16 +54,11 @@ fun NotificationsScreen(
     ) {
         // Custom Header
         NeobrutalistHeader(
-            title = "🔔 Notifications",
+            title = StringResources.notificationsTitle(),
             onBackClick = { router.goBack() }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Friend Requests Section
-        NeobrutalistSectionHeader(
-            text = "Friend Requests (${friendRequests.size})"
-        )
 
         // Error message
         error?.let { errorMessage ->
@@ -62,24 +66,60 @@ fun NotificationsScreen(
                 message = errorMessage,
                 onDismiss = { viewModel.clearError() }
             )
+            Spacer(modifier = Modifier.height(12.dp))
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Friend Requests List
+        // Combined Notifications List
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Test Invitations Section
+            item {
+                NeobrutalistSectionHeader(
+                    text = StringResources.testInvitationsCount(testInvites.size)
+                )
+            }
+
             if (isLoading) {
                 item {
                     NeobrutalistLoadingCard()
                 }
-            } else if (friendRequests.isEmpty()) {
+            } else if (testInvites.isEmpty()) {
+                item {
+                    NeobrutalistEmptyState(
+                        emoji = "📝",
+                        title = StringResources.noTestInvitationsTitle(),
+                        subtitle = StringResources.noTestInvitationsSubtitle()
+                    )
+                }
+            } else {
+                items(testInvites) { testInvite ->
+                    NeobrutalistTestInviteCard(
+                        testInvite = testInvite,
+                        onClick = {
+                            viewModel.onTestInviteClicked(testInvite) { inviteId, senderId, testId, testTitle ->
+                                router.goToInvite(inviteId, senderId, testId, testTitle)
+                            }
+                        }
+                    )
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(8.dp)) }
+
+            // Friend Requests Section
+            item {
+                NeobrutalistSectionHeader(
+                    text = StringResources.friendRequestsCount(friendRequests.size)
+                )
+            }
+
+            if (friendRequests.isEmpty() && !isLoading) {
                 item {
                     NeobrutalistEmptyState(
                         emoji = "😴",
-                        title = "All caught up!",
-                        subtitle = "No new notifications"
+                        title = StringResources.noFriendRequestsTitle(),
+                        subtitle = StringResources.noFriendRequestsSubtitle()
                     )
                 }
             } else {
@@ -166,7 +206,7 @@ private fun NeobrutalistHeader(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "←",
+                    text = StringResources.backArrow(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.White
@@ -287,7 +327,7 @@ private fun NeobrutalistFriendRequestCard(
 
                 Column {
                     Text(
-                        text = requestWithSender.sender.displayName ?: "User ${requestWithSender.sender.userId}",
+                        text = requestWithSender.sender.displayName ?: StringResources.userFallbackName(requestWithSender.sender.userId),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.Black
@@ -303,7 +343,7 @@ private fun NeobrutalistFriendRequestCard(
                         )
                     }
                     Text(
-                        text = "wants to be friends 👋",
+                        text = StringResources.wantsToBeFriends(),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color(0xFF888888)
@@ -515,10 +555,118 @@ private fun NeobrutalistLoadingCard() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Loading notifications...",
+                text = StringResources.loadingNotifications(),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+private fun NeobrutalistTestInviteCard(
+    testInvite: TestInvite,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clickable { onClick() }
+            .fillMaxWidth()
+            .shadow(
+                elevation = 6.dp,
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = Color.Black,
+                spotColor = Color.Black
+            )
+            .background(
+                color = Color(0xFFE8F5E8), // Light green background for test invites
+                shape = RoundedCornerShape(12.dp)
+            )
+            .border(
+                width = 3.dp,
+                color = Color.Black,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Test Info
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                // Test Icon
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .shadow(
+                            elevation = 3.dp,
+                            shape = RoundedCornerShape(12.dp),
+                            ambientColor = Color.Black
+                        )
+                        .background(
+                            color = Color(0xFF4CAF50),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = Color.Black,
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "📝",
+                        fontSize = 24.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column {
+                    Text(
+                        text = testInvite.testTitle,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = StringResources.testInviteFrom(testInvite.senderName),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF666666)
+                    )
+                    testInvite.senderMbti?.let { mbti ->
+                        Text(
+                            text = StringResources.testInviteMbti(mbti),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF888888)
+                        )
+                    }
+                    testInvite.message?.let { message ->
+                        Text(
+                            text = "\"$message\"",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF4CAF50),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+            }
+
+            // Take Test Button
+            NeobrutalistActionButton(
+                text = "📝",
+                backgroundColor = Color(0xFF4CAF50),
+                shadowColor = Color(0xFF2E7D32),
+                onClick = onClick
             )
         }
     }

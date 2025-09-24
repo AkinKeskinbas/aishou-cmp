@@ -32,7 +32,8 @@ data class QuizUiState(
     val personalityResult: PersonalityAssessResponse? = null,
     val isMBTITest: Boolean = false,
     val compatibilityResult: CompatibilityResult? = null,
-    val isFromInvite: Boolean = false // Indicates if test was started from invite
+    val isFromInvite: Boolean = false, // Indicates if test was started from invite
+    val inviteId: String? = null // Invite ID when started from invite
 )
 
 sealed class QuizUiEvent {
@@ -248,7 +249,7 @@ class QuizViewModel(
                 println("QuizViewModel: Submission request created: $submissionRequest")
                 println("QuizViewModel: Answers map: $answersForSubmission")
 
-                val result = apiService.submitQuiz(testId, version, submissionRequest)
+                val result = apiService.submitQuiz(testId, version, submissionRequest, currentState.inviteId)
                 when (result) {
                     is ApiResult.Success -> {
                         val submissionData = result.data.data
@@ -452,5 +453,14 @@ class QuizViewModel(
                 // Don't update submissionError since the main submission was successful
             }
         }
+    }
+
+    // Method to set invite ID when quiz is started from invite
+    fun setInviteId(inviteId: String) {
+        _uiState.value = _uiState.value.copy(
+            inviteId = inviteId,
+            isFromInvite = true
+        )
+        println("QuizViewModel: Set inviteId: $inviteId")
     }
 }

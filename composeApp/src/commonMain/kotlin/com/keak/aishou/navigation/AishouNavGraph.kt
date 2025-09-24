@@ -183,19 +183,25 @@ fun NavGraphBuilder.mainRoute(
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
+            },
+            navArgument("inviteId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
             }
         )
     ) { backStackEntry ->
         val quizID: String = backStackEntry.savedStateHandle.get<String>("quizID") ?: ""
         val senderId: String? = backStackEntry.savedStateHandle.get<String>("senderId")
+        val inviteId: String? = backStackEntry.savedStateHandle.get<String>("inviteId")
         val quizViewModel: QuizViewModel = koinViewModel()
-        QuizScreen(router = router, quizID = quizID, senderId = senderId, viewModel = quizViewModel)
+        QuizScreen(router = router, quizID = quizID, senderId = senderId, inviteId = inviteId, viewModel = quizViewModel)
     }
     composable(
         route = Routes.QuickQuizScreen.route
     ) {
         val quizViewModel: QuizViewModel = koinViewModel()
-        QuizScreen(router = router, quizID = null, viewModel = quizViewModel)
+        QuizScreen(router = router, quizID = null, senderId = null, inviteId = null, viewModel = quizViewModel)
     }
     composable(
         route = Routes.Friends.route
@@ -263,13 +269,20 @@ fun NavGraphBuilder.mainRoute(
     composable(
         route = Routes.UserMatch.route,
         arguments = listOf(
-            navArgument("testID") { type = NavType.StringType }
+            navArgument("testID") { type = NavType.StringType },
+            navArgument("friendId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            }
         )
     ) { backStackEntry ->
         val testID: String = backStackEntry.savedStateHandle.get<String>("testID") ?: ""
+        val friendId: String? = backStackEntry.savedStateHandle.get<String>("friendId")
 
         UserMatchScreen(
             testID = testID,
+            friendId = friendId,
             router = router
         )
     }

@@ -8,7 +8,9 @@ interface Router {
     fun goToPersonalResultScreen()
     fun goToQuizScreen(quizID: String)
     fun goToQuizScreenWithSender(quizID: String, senderId: String)
+    fun goToQuizScreenWithInvite(quizID: String, senderId: String, inviteId: String)
     fun goToQuickQuizScreen()
+    fun goToDefaultQuizScreen() // Quick start with default test
     fun goToTestResultScreen(testID: String)
     fun goToSplash()
     fun goToPaywall()
@@ -24,6 +26,7 @@ interface Router {
     fun goToFriendRequest(senderId: String, senderName: String)
     fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String)
     fun goToUserMatch(testID: String)
+    fun goToUserMatchWithFriend(testID: String, friendId: String)
     fun goToProfile()
     fun goToThankYou(isFromInvite: Boolean = false)
 

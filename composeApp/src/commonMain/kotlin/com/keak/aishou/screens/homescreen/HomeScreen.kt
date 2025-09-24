@@ -63,6 +63,7 @@ import com.keak.aishou.navigation.Router
 import com.keak.aishou.screenSize
 import com.keak.aishou.data.api.QuizType
 import com.keak.aishou.util.FormatUtils
+import com.keak.aishou.utils.StringResources
 import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -105,8 +106,8 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
 
         val soloTests = profile.soloQuizzes.map { soloQuiz ->
             RecentTestsData(
-                testerName = "Me",
-                testerMbti = profile.mbti ?: "Unknown",
+                testerName = StringResources.me(),
+                testerMbti = profile.mbti ?: StringResources.unknown(),
                 testResult = soloQuiz.totalScore?.toString() ?: "N/A",
                 testerType = TesterType.MYSELF,
                 testerUserId = soloQuiz.submissionId ?: "",
@@ -119,13 +120,14 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
 
         val matchTests = profile.matchQuizzes.map { matchQuiz ->
             RecentTestsData(
-                testerName = "Me",
-                testerMbti = profile.mbti ?: "Unknown",
+                testerName = StringResources.me(),
+                testerMbti = profile.mbti ?: StringResources.unknown(),
                 testResult = matchQuiz.score?.toString() ?: "N/A",
                 testerType = TesterType.PARTNER,
                 testerUserId = matchQuiz.compatibilityId ?: "",
                 resultBg = Color(0xFFFFA726), // Orange for match tests
-                testID = matchQuiz.testId ?: "", // Use testId for endpoint, store compatibilityId in testerUserId
+                testID = matchQuiz.testId
+                    ?: "", // Use testId for endpoint, store compatibilityId in testerUserId
                 friendInfo = matchQuiz.friendInfo,
                 testType = QuizType.Compat
             )
@@ -173,18 +175,25 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
             Spacer(Modifier.height(16.dp))
         }
         item {
+            val browseTestsText = stringResource(Res.string.new_test_home)
+            val quickStartText = stringResource(Res.string.quick_quiz_home)
+            val userMatchText = StringResources.userMatchHome()
+
             UserActions(
-                onClickAction = { actionName->
-                    when(actionName){
-                        "New Test"->{
+                onClickAction = { actionName ->
+                    when (actionName) {
+                        browseTestsText -> { // "Browse Tests"
                             router.goToQuickTestScreen()
                         }
-                        "Quick Quiz" -> {
-                            router.goToQuickQuizScreen()
-                        }
-                        "User Match" -> {
 
+                        quickStartText -> { // "Quick Start"
+                            router.goToDefaultQuizScreen()
                         }
+
+                        userMatchText -> {
+                            // TODO: Implement user match functionality
+                        }
+
                         else -> {
 
                         }
@@ -210,6 +219,7 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
             Spacer(Modifier.height(16.dp))
         }
         items(testResultList) { recentTestsData ->
+            println("RecentTestData-->TestType-->${recentTestsData.testType}")
             RecentTestCard(
                 testerName = recentTestsData.testerName,
                 friendName = recentTestsData.friendInfo?.displayName ?: "",
@@ -220,7 +230,15 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
                 bgColor = recentTestsData.resultBg,
                 testType = if (recentTestsData.testType == QuizType.Compat) "match" else "solo",
                 clickAction = {
-                    router.goToUserMatch(recentTestsData.testID)
+                    if (recentTestsData.testType == QuizType.Compat) {
+                        router.goToUserMatchWithFriend(
+                            recentTestsData.testID,
+                            recentTestsData.friendInfo?.userId.orEmpty()
+                        )
+                    } else {
+                        router.goToUserMatch(recentTestsData.testID)
+                    }
+
 //                    if (recentTestsData.testType == QuizType.Single){
 //                        router.goToTestResultScreen(recentTestsData.testID)
 //                    }else{
@@ -277,7 +295,7 @@ private fun UserActions(
             backgroundColor = Color(0xFF66BB6A),
             image = Res.drawable.star,
             actionText = stringResource(Res.string.quick_quiz_home),
-            onClickAction=onClickAction
+            onClickAction = onClickAction
         )
     }
     Spacer(Modifier.height(8.dp))
@@ -335,13 +353,13 @@ private fun QuickActionsCard(
     actionText: String,
     textColor: Color = Color.Black,
     imageColor: Color = Color.Black,
-    onClickAction:(actionId: String)-> Unit
+    onClickAction: (actionId: String) -> Unit
 ) {
     val screenSize = screenSize()
     val cardWidth = screenSize.width / 2.2
     NeoBrutalistCardViewWithFlexSize(
         backgroundColor = backgroundColor,
-        modifier = Modifier.width(cardWidth.dp).clickable(){
+        modifier = Modifier.width(cardWidth.dp).clickable() {
             onClickAction.invoke(actionText)
         }
     ) {
@@ -392,13 +410,13 @@ private fun UserCard(
         ) {
             Text(
                 text = if (userState.isFirstTimeUser) {
-                    "Welcome to Aishou! ✨"
+                    StringResources.welcomeToAishou()
                 } else {
                     val displayName = userProfile?.displayName
                     if (!displayName.isNullOrBlank()) {
-                        "Welcome back, $displayName! 👋"
+                        StringResources.welcomeBackWithName(displayName)
                     } else {
-                        "Welcome back! 👋"
+                        StringResources.welcomeBack()
                     }
                 },
                 fontSize = 18.sp,
@@ -407,15 +425,16 @@ private fun UserCard(
             )
             Text(
                 text = if (userState.isFirstTimeUser) {
-                    "Let's discover your cosmic personality!"
+                    StringResources.cosmicPersonalityDiscover()
                 } else {
                     val days = userState.daysSinceFirstLaunch ?: 0
-                    val formattedLaunchCount = FormatUtils.formatLaunchCount(userState.appLaunchCount)
+                    val formattedLaunchCount =
+                        FormatUtils.formatLaunchCount(userState.appLaunchCount)
                     if (days > 0) {
                         val formattedDays = FormatUtils.formatDaysActive(days)
-                        "Launch #$formattedLaunchCount • $formattedDays active"
+                        StringResources.launchCountDaysActive(formattedLaunchCount, formattedDays)
                     } else {
-                        "Launch #$formattedLaunchCount"
+                        StringResources.launchCountOnly(formattedLaunchCount)
                     }
                 },
                 fontSize = 16.sp,
@@ -448,7 +467,7 @@ private fun UserCard(
                                 )
                             } else {
                                 Text(
-                                    text = userProfile?.mbti ?: "Unknown",
+                                    text = userProfile?.mbti ?: StringResources.unknown(),
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Black,
                                     modifier = Modifier.padding(vertical = 8.dp)
@@ -490,7 +509,7 @@ private fun UserCard(
                             )
                         } else {
                             Text(
-                                text = userProfile?.zodiac ?: "Unknown",
+                                text = userProfile?.zodiac ?: StringResources.unknown(),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Black,
                                 modifier = Modifier,
@@ -548,7 +567,7 @@ private fun FriendsSection(
                         color = Color.White
                     )
                     Text(
-                        text = "Connect with friends",
+                        text = StringResources.connectWithFriends(),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White.copy(alpha = 0.8f)
@@ -618,7 +637,7 @@ private fun HomeHeader(
                 Box {
                     Image(
                         painter = painterResource(Res.drawable.bell),
-                        contentDescription = "Notifications",
+                        contentDescription = StringResources.notificationsContentDescription(),
                         modifier = Modifier
                             .size(24.dp)
                             .clickable(role = Role.Button) {
@@ -641,7 +660,8 @@ private fun HomeHeader(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = if (notificationCount > 9) "9+" else notificationCount.toInt().toString(),
+                                text = if (notificationCount > 9) "9+" else notificationCount.toInt()
+                                    .toString(),
                                 fontSize = 8.sp,
                                 fontWeight = FontWeight.Black,
                                 color = Color.White
@@ -663,7 +683,7 @@ private fun HomeHeader(
                 // Settings Button
                 Image(
                     painter = painterResource(Res.drawable.settings_home),
-                    contentDescription = "Settings",
+                    contentDescription = StringResources.settingsContentDescription(),
                     alignment = Alignment.Center,
                     modifier = Modifier.size(24.dp)
                 )

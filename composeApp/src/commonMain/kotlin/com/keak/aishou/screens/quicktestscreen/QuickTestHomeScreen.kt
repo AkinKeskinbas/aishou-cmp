@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.components.ScreenHeader
 import com.keak.aishou.navigation.Router
+import com.keak.aishou.purchase.PremiumChecker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -105,7 +106,12 @@ fun QuickTestHomeScreen(
                     isPremium = test.isPremium,
                     cardImage = mapCategoryToIcon(test.category),
                     onClick = {
-                        router.goToQuizScreen(quizID = test.id)
+                        // Check if test is premium and user is not premium
+                        if (test.isPremium && !PremiumChecker.isPremium) {
+                            router.goToPaywall()
+                        } else {
+                            router.goToQuizScreen(quizID = test.id)
+                        }
                     }
                 )
                 Spacer(Modifier.height(8.dp))

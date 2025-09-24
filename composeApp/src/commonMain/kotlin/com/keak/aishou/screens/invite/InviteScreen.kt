@@ -47,7 +47,7 @@ fun InviteScreen(
     // Navigate to test when invite is accepted
     LaunchedEffect(inviteAccepted) {
         if (inviteAccepted) {
-            router.goToQuizScreenWithSender(testId, senderId)
+            router.goToQuizScreenWithInvite(testId, senderId, inviteId)
         }
     }
 
@@ -86,8 +86,7 @@ fun InviteScreen(
                 userPremiumStatus = userPremiumStatus,
                 isAcceptingInvite = isAcceptingInvite,
                 onTakeTest = {
-                    //TODO:Delete AppStatus
-                    if (userPremiumStatus == true || AppStatu.appStatus == "test") {
+                    if (userPremiumStatus == true) {
                         // User is premium, accept invite and start test
                         viewModel.acceptInviteAndStartTest(inviteId, testId)
                     } else {
@@ -95,7 +94,11 @@ fun InviteScreen(
                         router.goToPaywall()
                     }
                 },
-                onUpgradeToPremium = { router.goToPaywall() }
+                onUpgradeToPremium = { router.goToPaywall() },
+                onReject = {
+                    viewModel.rejectInvite(inviteId)
+                    router.goBack()
+                }
             )
         }
     }
@@ -296,7 +299,8 @@ private fun InviteContent(
     userPremiumStatus: Boolean?,
     isAcceptingInvite: Boolean,
     onTakeTest: () -> Unit,
-    onUpgradeToPremium: () -> Unit
+    onUpgradeToPremium: () -> Unit,
+    onReject: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -317,7 +321,7 @@ private fun InviteContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Action Buttons
-        if (userPremiumStatus == true || AppStatu.appStatus == "test") {
+        if (userPremiumStatus == true) {
             // Premium user - can take test
             ActionButton(
                 text = if (isAcceptingInvite) "Accepting Invite..." else "Take Test & Compare Results",
@@ -334,6 +338,17 @@ private fun InviteContent(
                 onUpgrade = onUpgradeToPremium
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Reject Button (for all users)
+        ActionButton(
+            text = "Reject Invite",
+            backgroundColor = Color(0xFFFF5722),
+            emoji = "❌",
+            onClick = onReject,
+            enabled = !isAcceptingInvite
+        )
     }
 }
 

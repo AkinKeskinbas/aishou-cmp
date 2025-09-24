@@ -19,6 +19,10 @@ data class FriendRequest(
     // Helper to get actual ID from either field
     fun getRequestId(): String? = _id ?: id
 }
+@Serializable
+data class RespondFriendRequestResponse(
+    val accept: Boolean? = null
+)
 
 @Serializable
 data class Friendship(
@@ -106,6 +110,23 @@ data class ReceiverInfo(
 @Serializable
 data class UnreadCount(
     val count: Long
+)
+
+// Test Invitation Models
+@Serializable
+data class TestInvite(
+    val inviteId: String,
+    val testId: String,
+    val testTitle: String,
+    val testCategory: String,
+    val version: Int,
+    val fromUserId: String,
+    val senderName: String,
+    val senderMbti: String? = null,
+    val message: String? = null,
+    val createdAt: Long,
+    val expiresAt: Long,
+    val status: String? = "pending" // pending, accepted, rejected
 )
 
 // These response models now use BaseResponse wrapper pattern

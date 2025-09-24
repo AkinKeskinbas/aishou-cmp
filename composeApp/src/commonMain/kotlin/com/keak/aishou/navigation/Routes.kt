@@ -17,13 +17,17 @@ sealed class Routes(val route: String = "") {
             return "TestResults/$testID"
         }
     }
-    data object QuizScreen : Routes("QuizScreen/{quizID}?senderId={senderId}") {
+    data object QuizScreen : Routes("QuizScreen/{quizID}?senderId={senderId}&inviteId={inviteId}") {
         fun passQuizID(quizID: String): String {
             return "QuizScreen/$quizID"
         }
 
         fun passQuizIDWithSender(quizID: String, senderId: String): String {
             return "QuizScreen/$quizID?senderId=$senderId"
+        }
+
+        fun passQuizIDWithInvite(quizID: String, senderId: String, inviteId: String): String {
+            return "QuizScreen/$quizID?senderId=$senderId&inviteId=$inviteId"
         }
     }
     data object QuickQuizScreen : Routes("QuickQuizScreen")
@@ -45,9 +49,13 @@ sealed class Routes(val route: String = "") {
     }
 
     data object Paywall : Routes("Paywall")
-    data object UserMatch : Routes("UserMatch/{testID}") {
+    data object UserMatch : Routes("UserMatch/{testID}?friendId={friendId}") {
         fun passTestID(testID: String): String {
             return "UserMatch/$testID"
+        }
+
+        fun passTestIDWithFriend(testID: String, friendId: String): String {
+            return "UserMatch/$testID?friendId=$friendId"
         }
     }
     data object Profile : Routes("Profile")

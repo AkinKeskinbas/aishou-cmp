@@ -3,6 +3,28 @@ import Foundation
 import ComposeApp
 import OneSignalFramework
 
+// Global utility function for URL conversion
+func convertToCustomSchemeIfNeeded(url: URL) -> URL {
+    // If it's already custom scheme, return as-is
+    if url.scheme == "aishou" {
+        return url
+    }
+
+    // Convert HTTPS URLs to custom scheme
+    if url.scheme == "https" && (url.host == "aishou.site" || url.host == "aishou.app") {
+        let path = url.path.hasPrefix("/") ? String(url.path.dropFirst()) : url.path
+        let query = url.query.map { "?\($0)" } ?? ""
+
+        if let customURL = URL(string: "aishou://\(path)\(query)") {
+            print("URL Converter: Converted \(url.absoluteString) to \(customURL.absoluteString)")
+            return customURL
+        }
+    }
+
+    // Return original if conversion fails
+    return url
+}
+
 // Deep Link Handler - Shared between notification clicks and URL schemes
 class DeepLinkHandler {
     static let shared = DeepLinkHandler()
@@ -65,62 +87,11 @@ class DeepLinkHandler {
 
     private func handleAishouPath(url: URL, path: String) {
         print("DeepLinkHandler: Handling Aishou path: \(path)")
+        print("DeepLinkHandler: Full URL: \(url.absoluteString)")
 
-        // Handle friends request: /friends/request?senderId=xxx&senderName=John%20Doe
-        if path.contains("/friends/request") || path.contains("friends/request") {
-            print("DeepLinkHandler: Friends request detected")
-
-            let senderId = extractURLParameter(from: url, parameter: "senderId")
-            let senderName = extractURLParameter(from: url, parameter: "senderName")
-
-            if let senderId = senderId, let senderName = senderName {
-                print("DeepLinkHandler: ✅ Navigating to friend request screen")
-                print("DeepLinkHandler: SenderId: \(senderId), SenderName: \(senderName)")
-                dispatchToRouter {
-                    RouterBridgeIOS.shared.goToFriendRequest(senderId: senderId, senderName: senderName)
-                }
-            } else {
-                print("DeepLinkHandler: ⚠️ Missing friend request parameters")
-                dispatchToRouter { RouterBridgeIOS.shared.goToNotifications() }
-            }
-        }
-        // Handle test results: /test/something
-        else if path.contains("/test/") {
-            print("DeepLinkHandler: Test result detected")
-
-            // Extract test ID or other parameters if needed
-            let testId = extractPathParameter(from: path, after: "/test/")
-            print("DeepLinkHandler: ✅ Navigating to test screen")
-            print("DeepLinkHandler: TestId: \(testId ?? "unknown")")
-            if let testId = testId {
-                dispatchToRouter { RouterBridgeIOS.shared.goToTestResult(testId: testId) }
-            } else {
-                dispatchToRouter { RouterBridgeIOS.shared.goToHome() }
-            }
-        }
-        // Handle invites: /invite/123?senderId=xxx&testId=yyy
-        else if path.contains("/invite/") {
-            print("DeepLinkHandler: Invite detected")
-
-            let inviteId = extractPathParameter(from: path, after: "/invite/")
-            let senderId = extractURLParameter(from: url, parameter: "senderId")
-            let testId = extractURLParameter(from: url, parameter: "testId")
-            let testTitle = extractURLParameter(from: url, parameter: "testTitle")
-
-            if let inviteId = inviteId, let senderId = senderId, let testId = testId {
-                print("DeepLinkHandler: ✅ Navigating to invite screen")
-                print("DeepLinkHandler: InviteId: \(inviteId), SenderId: \(senderId), TestId: \(testId)")
-                dispatchToRouter {
-                    RouterBridgeIOS.shared.goToInvite(inviteId: inviteId, senderId: senderId, testId: testId, testTitle: testTitle ?? "Test")
-                }
-            } else {
-                print("DeepLinkHandler: ⚠️ Missing invite parameters")
-                dispatchToRouter { RouterBridgeIOS.shared.goToHome() }
-            }
-        }
-        else {
-            print("DeepLinkHandler: Unknown path, navigating to home")
-            dispatchToRouter { RouterBridgeIOS.shared.goToHome() }
+        // Use the new unified approach - send URL to DeepLinkCoordinator
+        dispatchToRouter {
+            RouterBridgeIOS.shared.handleDeepLink(url: url.absoluteString)
         }
     }
 
@@ -182,9 +153,15 @@ class NotificationClickListener: NSObject, OSNotificationClickListener {
 
     private func handleDeepLinkFromNotification(url: URL) {
         print("OneSignal iOS: Processing notification deeplink: \(url.absoluteString)")
+
+        // Convert HTTPS URLs to custom scheme for consistent handling
+        let processedURL = convertToCustomSchemeIfNeeded(url: url)
+        print("OneSignal iOS: Processed URL: \(processedURL.absoluteString)")
+
         // Call the shared deep link handler
-        DeepLinkHandler.shared.handleDeepLink(url: url)
+        DeepLinkHandler.shared.handleDeepLink(url: processedURL)
     }
+
 }
 
 // OneSignal User State Observer
@@ -292,7 +269,12 @@ struct iOSApp: App {
             ContentView()
                 .onOpenURL { url in
                     print("iOS App: Received deep link: \(url)")
-                    DeepLinkHandler.shared.handleDeepLink(url: url)
+
+                    // Convert HTTPS URLs to custom scheme for consistent handling
+                    let processedURL = convertToCustomSchemeIfNeeded(url: url)
+                    print("iOS App: Processed URL: \(processedURL.absoluteString)")
+
+                    DeepLinkHandler.shared.handleDeepLink(url: processedURL)
                 }
         }
     }

@@ -48,6 +48,7 @@ fun QuizScreen(
     router: Router,
     quizID: String?,
     senderId: String? = null,
+    inviteId: String? = null,
     viewModel: QuizViewModel
 ) {
     val screenWidth = screenSize().width
@@ -55,9 +56,14 @@ fun QuizScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(quizID, senderId) {
+    LaunchedEffect(quizID, senderId, inviteId) {
         // Set sender info first
         viewModel.setSenderInfo(senderId)
+
+        // Set invite ID if available
+        inviteId?.let {
+            viewModel.setInviteId(it)
+        }
 
         if (quizID != null) {
             viewModel.onEvent(QuizUiEvent.LoadQuestions(quizID, 1))

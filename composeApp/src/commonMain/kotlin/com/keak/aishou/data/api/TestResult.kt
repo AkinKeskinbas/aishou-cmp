@@ -26,6 +26,7 @@ data class CompatibilityResult(
     val testId: String? = null,
     val friendId: String? = null,
     val friendInfo: FriendInfo? = null, // Friend's profile information
+    val myInfo: FriendInfo? = null, // Current user's profile information
     val score: Int? = null,
     val summary: String? = null,
     val chemistry: String? = null, // New field for chemistry description

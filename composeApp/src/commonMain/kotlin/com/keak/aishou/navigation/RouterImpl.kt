@@ -36,8 +36,20 @@ class RouterImpl(
         navigateArg(Routes.QuizScreen.passQuizIDWithSender(quizID, senderId))
     }
 
+    override fun goToQuizScreenWithInvite(quizID: String, senderId: String, inviteId: String) {
+        navigateArg(Routes.QuizScreen.passQuizIDWithInvite(quizID, senderId, inviteId))
+    }
+
     override fun goToQuickQuizScreen() {
         navigate(Routes.QuickQuizScreen)
+    }
+
+    override fun goToDefaultQuizScreen() {
+        // Quick start with a predefined popular test
+        // Using a specific test ID for the most popular/default test
+        // This could be made configurable via remote config in the future
+        val defaultTestId = "674f6a8ee53de6825e45d2ce" // Default popular test ID
+        navigateArg(Routes.QuizScreen.passQuizID(defaultTestId))
     }
 
     override fun goToTestResultScreen(testID: String) {
@@ -98,6 +110,10 @@ class RouterImpl(
 
     override fun goToUserMatch(testID: String) {
         navigateArg(Routes.UserMatch.passTestID(testID))
+    }
+
+    override fun goToUserMatchWithFriend(testID: String, friendId: String) {
+        navigateArg(Routes.UserMatch.passTestIDWithFriend(testID, friendId))
     }
 
     override fun goToProfile() {

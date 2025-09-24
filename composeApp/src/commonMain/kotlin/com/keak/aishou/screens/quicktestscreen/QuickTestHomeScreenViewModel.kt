@@ -35,13 +35,15 @@ class QuickTestHomeScreenViewModel(
                 val result = quickTestHomeUseCase.getTests()
                 when (result) {
                     is ApiResult.Success -> {
-                        val tests = result.data.data ?: emptyList()
+                        val allTests = result.data.data ?: emptyList()
+                        // Sort tests: free tests first, then premium tests
+                        val sortedTests = allTests.sortedBy { it.isPremium }
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            tests = tests,
+                            tests = sortedTests,
                             error = null
                         )
-                        println("QuickTestHomeScreenViewModel: Successfully loaded ${tests.size} tests")
+                        println("QuickTestHomeScreenViewModel: Successfully loaded ${allTests.size} tests (${allTests.count { !it.isPremium }} free, ${allTests.count { it.isPremium }} premium)")
                     }
                     is ApiResult.Error -> {
                         val errorMessage = result.message ?: "Unknown error occurred"
