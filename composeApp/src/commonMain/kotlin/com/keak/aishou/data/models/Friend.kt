@@ -127,7 +127,8 @@ data class TestInvite(
     val message: String? = null,
     val createdAt: Long,
     val expiresAt: Long,
-    val status: String? = "pending" // pending, accepted, rejected
+    val status: String? = "pending", // pending, accepted, rejected
+    val locale: String? = null // API'den gelen locale alanı
 )
 
 // These response models now use BaseResponse wrapper pattern

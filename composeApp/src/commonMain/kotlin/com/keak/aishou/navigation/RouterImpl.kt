@@ -112,8 +112,8 @@ class RouterImpl(
         navigateArg(Routes.FriendRequest.passFriendRequestData(senderId, senderName))
     }
 
-    override fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String) {
-        navigateArg(Routes.Invite.passInviteData(inviteId, senderId, testId, testTitle))
+    override fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String, senderName: String, senderMbti: String?) {
+        navigateArg(Routes.Invite.passInviteData(inviteId, senderId, testId, testTitle, senderName, senderMbti))
     }
 
     override fun goToUserMatch(testID: String) {

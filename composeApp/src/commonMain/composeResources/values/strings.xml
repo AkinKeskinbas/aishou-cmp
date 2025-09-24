@@ -322,7 +322,7 @@
     //Match Screen
     <string name="error_prefix">Error: %1$s</string>
     <string name="test_results">Test Results</string>
-    <string name="solo_test_results">Solo Test Results</string>
+    <string name="solo_test_results">Test Results</string>
     <string name="match_analysis">Match Analysis</string>
     <string name="friend_fallback">Friend</string>
     <string name="match_score">MATCH SCORE</string>
@@ -375,6 +375,7 @@
 
     //extra
     <string name="match_great_job">🎉 Great job completing this test! Share your results with friends to see how compatible you are.</string>
+    <string name="match_send_your_friend">Invite your friends to take this test and compare your compatibility!</string>
 
 
 

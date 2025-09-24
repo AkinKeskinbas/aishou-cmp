@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.keak.aishou.screens.invite.SenderInfo
+import com.keak.aishou.screens.invite.TestInfo
 
 class InviteViewModel(
     private val apiService: AishouApiService
@@ -47,13 +49,9 @@ class InviteViewModel(
             _error.value = null
 
             try {
-                // Load sender info and test info in parallel
-                val senderJob = launch { loadSenderInfo(senderId) }
-                val testJob = launch { loadTestInfo(testId) }
-
-                // Wait for both to complete
-                senderJob.join()
-                testJob.join()
+                // All info should be set via setSenderInfo() and setTestInfo()
+                // This function now only exists for compatibility
+                println("InviteViewModel: Invite data should be set via setSenderInfo() and setTestInfo()")
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to load invitation data"
@@ -89,40 +87,29 @@ class InviteViewModel(
         }
     }
 
-    private suspend fun loadTestInfo(testId: String) {
-        try {
-            println("InviteViewModel: Loading test info for $testId")
+    fun setTestInfo(testTitle: String, testCategory: String) {
+        // Use test info from invitation instead of making API call
+        _testInfo.value = TestInfo(
+            id = "", // Not needed for display
+            title = testTitle,
+            description = "Take this test to discover more about yourself",
+            isPremium = true // Assume all invited tests are premium for now
+        )
+    }
 
-            // Get test information from tests API
-            when (val result = apiService.getTests()) {
-                is ApiResult.Success -> {
-                    if (result.data.isSuccess()) {
-                        val test = result.data.data?.find { it.id == testId }
-                        if (test != null) {
-                            _testInfo.value = TestInfo(
-                                id = test.id,
-                                title = test.title,
-                                description = "Take this test to discover more about yourself", // Default description
-                                isPremium = test.isPremium
-                            )
-                        } else {
-                            _error.value = "Test not found"
-                        }
-                    } else {
-                        _error.value = "Failed to load test information"
-                    }
-                }
-                is ApiResult.Error -> {
-                    _error.value = "Error loading test: ${result.message}"
-                }
-                is ApiResult.Exception -> {
-                    _error.value = "Network error: ${result.exception.message}"
-                }
-            }
-        } catch (e: Exception) {
-            println("InviteViewModel: Error loading test info: ${e.message}")
-            _error.value = "Failed to load test information"
-        }
+    fun setSenderInfo(senderId: String, senderName: String?, senderMbti: String?) {
+        // Use sender info from invitation instead of making API call
+        _senderInfo.value = SenderInfo(
+            userId = senderId,
+            displayName = senderName ?: "Unknown User",
+            mbtiType = senderMbti,
+            zodiacSign = null // We don't have zodiac info from test invite
+        )
+    }
+
+    private suspend fun loadTestInfo(testId: String) {
+        // No longer makes API calls - test info should be set via setTestInfo()
+        println("InviteViewModel: Test info should be set via setTestInfo() to avoid unnecessary API calls")
     }
 
     private fun checkPremiumStatus() {

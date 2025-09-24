@@ -104,10 +104,12 @@ private fun handleDeepLinkNavigation(url: String, router: Router) {
             val senderId = extractUrlParameter(url, "senderId")
             val testId = extractUrlParameter(url, "testId")
             val testTitle = extractUrlParameter(url, "testTitle") ?: "Test"
+            val senderName = extractUrlParameter(url, "senderName") ?: "Unknown User"
+            val senderMbti = extractUrlParameter(url, "senderMbti")
 
             if (inviteId != null && senderId != null && testId != null) {
-                println("App: Navigating to invite with inviteId=$inviteId")
-                router.goToInvite(inviteId, senderId, testId, testTitle)
+                println("App: Navigating to invite with inviteId=$inviteId, senderName=$senderName")
+                router.goToInvite(inviteId, senderId, testId, testTitle, senderName, senderMbti)
             } else {
                 println("App: Invalid invite deeplink - missing parameters")
                 router.goToHome()

@@ -42,11 +42,13 @@ sealed class Routes(val route: String = "") {
             return "Friends/Request?senderId=$senderId&senderName=$encodedName"
         }
     }
-    data object Invite : Routes("Invite/{inviteId}?senderId={senderId}&testId={testId}&testTitle={testTitle}") {
-        fun passInviteData(inviteId: String, senderId: String, testId: String, testTitle: String): String {
-            // URL encode test title for safe passing
+    data object Invite : Routes("Invite/{inviteId}?senderId={senderId}&testId={testId}&testTitle={testTitle}&senderName={senderName}&senderMbti={senderMbti}") {
+        fun passInviteData(inviteId: String, senderId: String, testId: String, testTitle: String, senderName: String = "Unknown User", senderMbti: String? = null): String {
+            // URL encode parameters for safe passing
             val encodedTitle = testTitle.replace(" ", "%20").replace("&", "%26")
-            return "Invite/$inviteId?senderId=$senderId&testId=$testId&testTitle=$encodedTitle"
+            val encodedSenderName = senderName.replace(" ", "%20").replace("&", "%26")
+            val mbtiParam = senderMbti?.let { "&senderMbti=$it" } ?: "&senderMbti="
+            return "Invite/$inviteId?senderId=$senderId&testId=$testId&testTitle=$encodedTitle&senderName=$encodedSenderName$mbtiParam"
         }
     }
 

@@ -32,9 +32,9 @@ object RouterBridgeIOS {
         router?.goToFriendRequest(senderId, senderName) ?: NSLog("RouterBridge iOS: ⚠️ Router not set")
     }
 
-    fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String) {
-        NSLog("RouterBridge iOS: Navigating to invite - inviteId: $inviteId")
-        router?.goToInvite(inviteId, senderId, testId, testTitle) ?: NSLog("RouterBridge iOS: ⚠️ Router not set")
+    fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String, senderName: String = "Unknown User", senderMbti: String? = null) {
+        NSLog("RouterBridge iOS: Navigating to invite - inviteId: $inviteId, senderName: $senderName")
+        router?.goToInvite(inviteId, senderId, testId, testTitle, senderName, senderMbti) ?: NSLog("RouterBridge iOS: ⚠️ Router not set")
     }
 
     fun goToTestResult(testId: String) {

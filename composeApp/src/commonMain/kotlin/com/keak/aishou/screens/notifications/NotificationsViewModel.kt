@@ -274,13 +274,15 @@ class NotificationsViewModel(
         _error.value = null
     }
 
-    fun onTestInviteClicked(testInvite: TestInvite, onNavigate: (String, String, String, String) -> Unit) {
+    fun onTestInviteClicked(testInvite: TestInvite, onNavigate: (String, String, String, String, String, String?) -> Unit) {
         // Navigate to invite screen with the test invite data
         onNavigate(
             testInvite.inviteId,
             testInvite.fromUserId,
             testInvite.testId,
-            testInvite.testTitle
+            testInvite.testTitle,
+            testInvite.senderName,
+            testInvite.senderMbti
         )
     }
 }

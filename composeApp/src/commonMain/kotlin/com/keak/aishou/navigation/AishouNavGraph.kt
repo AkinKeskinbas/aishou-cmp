@@ -264,6 +264,15 @@ fun NavGraphBuilder.mainRoute(
             navArgument("testTitle") {
                 type = NavType.StringType
                 defaultValue = ""
+            },
+            navArgument("senderName") {
+                type = NavType.StringType
+                defaultValue = "Unknown User"
+            },
+            navArgument("senderMbti") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
             }
         )
     ) { backStackEntry ->
@@ -272,15 +281,20 @@ fun NavGraphBuilder.mainRoute(
         val senderId = backStackEntry.savedStateHandle.get<String>("senderId") ?: ""
         val testId = backStackEntry.savedStateHandle.get<String>("testId") ?: ""
         val testTitle = backStackEntry.savedStateHandle.get<String>("testTitle") ?: ""
+        val senderName = backStackEntry.savedStateHandle.get<String>("senderName") ?: "Unknown User"
+        val senderMbti = backStackEntry.savedStateHandle.get<String>("senderMbti")
 
-        // URL decode test title
+        // URL decode parameters
         val decodedTitle = testTitle.replace("%20", " ").replace("%26", "&")
+        val decodedSenderName = senderName.replace("%20", " ").replace("%26", "&")
 
         InviteScreen(
             inviteId = inviteId,
             senderId = senderId,
             testId = testId,
             testTitle = decodedTitle,
+            senderName = decodedSenderName,
+            senderMbti = senderMbti,
             router = router
         )
     }

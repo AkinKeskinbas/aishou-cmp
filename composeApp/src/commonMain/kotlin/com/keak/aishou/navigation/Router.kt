@@ -26,7 +26,7 @@ interface Router {
     fun goToFriends()
     fun goToNotifications()
     fun goToFriendRequest(senderId: String, senderName: String)
-    fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String)
+    fun goToInvite(inviteId: String, senderId: String, testId: String, testTitle: String, senderName: String = "Unknown User", senderMbti: String? = null)
     fun goToUserMatch(testID: String)
     fun goToUserMatchWithFriend(testID: String, friendId: String)
     fun goToProfile()
