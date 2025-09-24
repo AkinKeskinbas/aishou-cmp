@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
+import com.keak.aishou.components.NeoBrutalistCircleButton
 import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.data.models.FriendInfo
@@ -75,31 +76,36 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
         // Add Friend Section
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // Friend Name TextField
-                TextField(
-                    value = addFriendDisplayName,
-                    onValueChange = { addFriendDisplayName = it },
-                    placeholder = { Text(StringResources.friendNameLabel(), fontSize = 14.sp) },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp)
-                )
-
+                NeoBrutalistCardViewWithFlexSize(
+                    modifier = Modifier.fillMaxWidth(),
+                    backgroundColor = Color.White
+                ) {
+                    // Friend Name TextField
+                    TextField(
+                        value = addFriendDisplayName,
+                        onValueChange = { addFriendDisplayName = it },
+                        placeholder = { Text(StringResources.friendNameLabel(), fontSize = 14.sp) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp)
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    Button(
-                        onClick = { showTagSelector = !showTagSelector },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C27B0)),
-                        modifier = Modifier.height(56.dp)
+                    NeoBrutalistCardViewWithFlexSize(
+                        modifier = Modifier.width(100.dp).clickable(role = Role.Button){
+                            showTagSelector = !showTagSelector
+                        },
+                        backgroundColor = Color(0xFFffb3F1)
                     ) {
                         Text(
                             text = selectedTag.name.lowercase().replaceFirstChar { it.uppercase() },
@@ -107,20 +113,16 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
                             fontSize = 12.sp
                         )
                     }
-
-                    Button(
-                        onClick = {
-                            if (addFriendDisplayName.isNotBlank()) {
+                    NeoBrutalistCircleButton(
+                        onMainClick = {
+                            if (!sendRequestLoading && addFriendDisplayName.isNotBlank()){
                                 viewModel.sendFriendRequest(
                                     displayName = addFriendDisplayName,
                                     tag = selectedTag
                                 )
                                 addFriendDisplayName = ""
                             }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                        enabled = !sendRequestLoading && addFriendDisplayName.isNotBlank(),
-                        modifier = Modifier.size(56.dp)
+                        }
                     ) {
                         if (sendRequestLoading) {
                             CircularProgressIndicator(
@@ -269,45 +271,51 @@ fun FriendsScreen(router: Router, viewModel: FriendsViewModel = koinViewModel())
             }
         } else {
             items(friendsList) { friend ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White, RoundedCornerShape(8.dp))
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                NeoBrutalistCardViewWithFlexSize(
+                    modifier = Modifier.fillMaxWidth(),
+                    backgroundColor = Color(0xFFCEE977),
+                    cornerRadius = 8.dp
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = friend.displayName ?: "User ${friend.userId}",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        val info = listOfNotNull(friend.mbtiType, friend.zodiacSign)
-                            .joinToString(" • ")
-                        if (info.isNotBlank()) {
-                            Text(text = info, fontSize = 12.sp, color = Color.Gray)
-                        }
-                        friend.tag?.let { tag ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = tag.lowercase().replaceFirstChar { it.uppercase() },
-                                fontSize = 10.sp,
-                                color = Color(0xFF9C27B0),
+                                text = friend.displayName ?: "User ${friend.userId}",
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold
                             )
+                            val info = listOfNotNull(friend.mbtiType, friend.zodiacSign)
+                                .joinToString(" • ")
+                            if (info.isNotBlank()) {
+                                Text(text = info, fontSize = 12.sp, color = Color.Gray)
+                            }
+                            friend.tag?.let { tag ->
+                                Text(
+                                    text = tag.lowercase().replaceFirstChar { it.uppercase() },
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF9C27B0),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Button(
+                            onClick = { viewModel.removeFriend(friend.userId) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)),
+                            modifier = Modifier.size(32.dp),
+                            contentPadding = PaddingValues(0.dp),
+                            enabled = !isLoading
+                        ) {
+                            Text("×", color = Color.White, fontSize = 14.sp)
                         }
                     }
-
-                    Button(
-                        onClick = { viewModel.removeFriend(friend.userId) },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)),
-                        modifier = Modifier.size(32.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        enabled = !isLoading
-                    ) {
-                        Text("×", color = Color.White, fontSize = 14.sp)
-                    }
                 }
+
             }
         }
     }

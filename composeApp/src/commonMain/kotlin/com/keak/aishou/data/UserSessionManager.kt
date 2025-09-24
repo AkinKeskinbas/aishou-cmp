@@ -98,6 +98,59 @@ class UserSessionManager(
         return null
     }
 
+    /**
+     * Handle unauthorized user - clear tokens and trigger re-registration
+     */
+    suspend fun handleUnauthorizedUser() {
+        println("UserSessionManager: Handling unauthorized user - clearing auth data")
+        dataStoreManager.markUnauthorizedEncounter()
+        dataStoreManager.clearAuthData()
+        println("UserSessionManager: Auth data cleared, user will be re-registered")
+    }
+
+    /**
+     * Check if user has valid authentication
+     */
+    suspend fun hasValidAuthentication(): Boolean {
+        return dataStoreManager.hasTokens() && !isUserFirstTime()
+    }
+
+    /**
+     * Check if we should attempt re-authentication
+     */
+    suspend fun shouldAttemptReauth(): Boolean {
+        val retryCount = dataStoreManager.getAuthRetryCount()
+        val shouldRetry = dataStoreManager.shouldRetryAuth()
+
+        println("UserSessionManager: Auth retry check - count: $retryCount, shouldRetry: $shouldRetry")
+
+        return retryCount < 3 && shouldRetry
+    }
+
+    /**
+     * Mark an auth attempt
+     */
+    suspend fun markAuthAttempt() {
+        dataStoreManager.updateLastAuthCheck()
+        val newCount = dataStoreManager.incrementAuthRetryCount()
+        println("UserSessionManager: Auth attempt #$newCount recorded")
+    }
+
+    /**
+     * Reset auth attempts after successful authentication
+     */
+    suspend fun resetAuthAttempts() {
+        dataStoreManager.resetAuthRetryCount()
+        println("UserSessionManager: Auth attempts reset after successful authentication")
+    }
+
+    /**
+     * Get current auth retry count
+     */
+    suspend fun getAuthRetryCount(): Long {
+        return dataStoreManager.getAuthRetryCount()
+    }
+
     companion object {
         private var INSTANCE: UserSessionManager? = null
 

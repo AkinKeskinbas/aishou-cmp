@@ -1,27 +1,31 @@
 package com.keak.aishou.data.language
 
-import platform.Foundation.NSLocale
-import platform.Foundation.NSString
+import platform.Foundation.NSUserDefaults
 
 actual class LanguageDetector {
 
     actual fun getCurrentSystemLanguage(): AppLanguage {
-        // Use a simple approach - get system language from NSLocale
-        // For iOS, we'll detect common languages and provide defaults
-        val systemLanguage = getSystemLanguageCode()
-        return createAppLanguageFromCode(systemLanguage)
+        val identifier = getPreferredLocaleIdentifier()
+        return createAppLanguageFromIdentifier(identifier)
     }
 
     actual fun getAvailableLanguages(): List<AppLanguage> {
-        // Return a list of commonly supported languages
+        val preferredLanguages = getPreferredLanguageIdentifiers()
+            .map(::createAppLanguageFromIdentifier)
+
+        if (preferredLanguages.isNotEmpty()) {
+            return preferredLanguages.distinctBy { it.languageCode }
+        }
+
+        // Fallback to common languages when preferred list is unavailable
         return listOf(
-            AppLanguage.DEFAULT, // English
+            AppLanguage.DEFAULT,
             AppLanguage.TURKISH,
             AppLanguage.SPANISH,
-            createAppLanguageFromCode("fr"), // French
-            createAppLanguageFromCode("de"), // German
-            createAppLanguageFromCode("it"), // Italian
-            createAppLanguageFromCode("pt"), // Portuguese
+            createAppLanguageFromIdentifier("fr_FR"),
+            createAppLanguageFromIdentifier("de_DE"),
+            createAppLanguageFromIdentifier("it_IT"),
+            createAppLanguageFromIdentifier("pt_PT"),
         )
     }
 
@@ -29,21 +33,27 @@ actual class LanguageDetector {
         return getAvailableLanguages().any { it.languageCode == languageCode }
     }
 
-    private fun getSystemLanguageCode(): String {
-        // Try to get system language - fallback to English if not available
-        return try {
-            // This is a simplified approach for iOS
-            // In a real implementation, you might use platform-specific APIs
-            "en" // Default to English for now
-        } catch (e: Exception) {
-            "en"
-        }
+    private fun getPreferredLocaleIdentifier(): String {
+        return getPreferredLanguageIdentifiers().firstOrNull()
+            ?: AppLanguage.DEFAULT.locale
     }
 
-    private fun createAppLanguageFromCode(languageCode: String): AppLanguage {
-        val displayName = getLanguageDisplayName(languageCode)
-        val countryCode = getDefaultCountryCode(languageCode)
+    private fun createAppLanguageFromIdentifier(identifier: String): AppLanguage {
+        val normalized = identifier.replace('-', '_')
+        val parts = normalized.split('_')
+        val languageCode = parts.firstOrNull()?.lowercase() ?: AppLanguage.DEFAULT.languageCode
 
+        val countryCode = parts
+            .asSequence()
+            .drop(1)
+            .firstOrNull { part ->
+                part.length == 2 && part.all { it.isLetter() } ||
+                    part.length == 3 && part.all { it.isDigit() }
+            }
+            ?.uppercase()
+            ?: getDefaultCountryCode(languageCode)
+
+        val displayName = getLanguageDisplayName(languageCode)
         val localeString = if (countryCode != null) {
             "${languageCode}_${countryCode}"
         } else {
@@ -87,6 +97,11 @@ actual class LanguageDetector {
             "ar" -> "العربية"
             else -> languageCode.uppercase()
         }
+    }
+
+    private fun getPreferredLanguageIdentifiers(): List<String> {
+        val languages = NSUserDefaults.standardUserDefaults.arrayForKey("AppleLanguages")
+        return (languages as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
     }
 
 }

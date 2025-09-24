@@ -14,6 +14,8 @@
     <string name="paywall_cancel_paywall">Cancel</string>
     <string name="paywall_unlock_your_cosmic_personality">Unlock Your Cosmic Personality!</string>
     <string name="paywall_choose_your_sign">Choose Your Sign</string>
+    <string name="paywall_restore_purchase_text">Restore Purchases</string>
+
 
     //Home
     <string name="cosmic_match_home">COSMIC MATCH</string>
@@ -335,5 +337,45 @@
     <string name="zodiac_compatibility">Zodiac Compatibility</string>
     <string name="detailed_explanations">Detailed Explanations</string>
     <string name="detailed_analysis">Detailed Analysis</string>
+
+    //Re-Authentication Screen
+    <string name="reauth_checking_account">Checking Your Account</string>
+    <string name="reauth_please_wait">Please wait...</string>
+    <string name="reauth_session_renewing">Session Renewing</string>
+    <string name="reauth_security_renewal">We're refreshing your account info for security</string>
+    <string name="reauth_connection_problem">Connection Problem</string>
+    <string name="reauth_check_internet">Please check your internet connection</string>
+    <string name="reauth_try_again">Try Again</string>
+    <string name="reauth_contact_support">Contact Support</string>
+    <string name="reauth_success">Success!</string>
+    <string name="reauth_account_renewed">Your account has been successfully renewed</string>
+    <string name="reauth_too_many_attempts">Too many attempts. Please try again later.</string>
+    <string name="reauth_recent_attempt">Recent attempt too close. Please wait.</string>
+    <string name="reauth_unknown_error">An unknown error occurred</string>
+
+    //Settings Bottom Sheet
+    <string name="settings_title">Settings</string>
+    <string name="settings_upgrade_to_premium">Upgrade to Premium</string>
+    <string name="settings_change_name">Change Name</string>
+    <string name="settings_can_change_name_once">You can change your name once</string>
+    <string name="settings_already_changed_name">You have already changed your name once</string>
+    <string name="settings_contact_us">Contact Us</string>
+    <string name="settings_rate_us">Rate Us</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_terms_conditions">Terms &amp; Conditions</string>
+    <string name="settings_change_name_dialog_title">Change Name</string>
+    <string name="settings_enter_new_name">Enter your new name:</string>
+    <string name="settings_name_max_chars_label">Name (max 13 chars)</string>
+    <string name="settings_character_counter">%1$d/13 characters</string>
+    <string name="settings_name_change_warning">⚠️ You can only change your name once!</string>
+    <string name="settings_save_button">Save</string>
+    <string name="settings_cancel_button">Cancel</string>
+    <string name="settings_email_subject">Aishou App Feedback</string>
+    <string name="settings_email_body">Hi Aishou,\n\nI would like to share my feedback about the Aishou app:\n\n</string>
+
+    //extra
+    <string name="match_great_job">🎉 Great job completing this test! Share your results with friends to see how compatible you are.</string>
+
+
 
 </resources>

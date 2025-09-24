@@ -21,7 +21,8 @@ data class FriendRequest(
 }
 @Serializable
 data class RespondFriendRequestResponse(
-    val accept: Boolean? = null
+    val accept: Boolean? = null,
+    val accepted: Boolean? = null
 )
 
 @Serializable

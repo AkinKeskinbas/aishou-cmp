@@ -2,6 +2,8 @@ package com.keak.aishou.navigation
 
 sealed class Routes(val route: String = "") {
     data object Splash : Routes("Splash")
+    data object ReAuth : Routes("ReAuth")
+    data object ReAuthTest : Routes("ReAuthTest") // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
     data object OnBoarding : Routes("OnBoarding")
     data object OnBoardingSecond : Routes("OnBoardingSecond")
     data object OnBoardingThird : Routes("OnBoardingThird")

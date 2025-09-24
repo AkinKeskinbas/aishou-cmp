@@ -39,8 +39,20 @@ suspend inline fun <reified T : Any> handleApi(request: suspend () -> HttpRespon
         val response = request()
         println("SafeCall: Response status: ${response.status.value} - ${response.status.description}")
         if (response.status.value in 200..299) {
-            val body = response.body<T>()
-            println("SafeCall: Response body parsed successfully")
+            val rawResponse = response.body<String>()
+            println("SafeCall: Raw response body: $rawResponse")
+
+            // Parse the response as the expected type
+            val body = try {
+                // Re-parse the raw response as the expected type T with ignoreUnknownKeys
+                val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+                json.decodeFromString<T>(rawResponse)
+            } catch (e: Exception) {
+                println("SafeCall: Failed to parse response: ${e.message}")
+                throw e
+            }
+
+            println("SafeCall: Response body parsed successfully: $body")
             ApiResult.Success(body)
         } else {
             println("SafeCall: Error response - Status: ${response.status.value}, Description: ${response.status.description}")

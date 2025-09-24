@@ -14,6 +14,8 @@ class PremiumPresenter(
     fun onAppStart() = scope.launch { repo.refresh(CacheFetchPolicy.FETCH_CURRENT) }
     fun onRestoreOrPurchase() = scope.launch { repo.refresh(CacheFetchPolicy.FETCH_CURRENT) }
     fun softRefresh() = scope.launch { repo.refresh() }
+    fun restorePuchases() = scope.launch { repo.restore()
+    repo.refresh(CacheFetchPolicy.FETCH_CURRENT)}
     fun buyProduct(
         product: Package,
         onSuccessEvent: (product: Package) -> Unit,

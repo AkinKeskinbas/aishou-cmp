@@ -60,6 +60,14 @@ class RouterImpl(
         navigate(Routes.Splash, removeFromHistory = true, singleTop = true)
     }
 
+    override fun goToReAuth() {
+        navigate(Routes.ReAuth, removeFromHistory = true, singleTop = true)
+    }
+
+    override fun goToReAuthTest() { // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
+        navigate(Routes.ReAuthTest)
+    }
+
     override fun goToPaywall() {
         navigate(Routes.Paywall)
     }

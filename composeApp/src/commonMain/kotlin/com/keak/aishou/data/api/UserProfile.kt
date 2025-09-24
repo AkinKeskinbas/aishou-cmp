@@ -1,6 +1,7 @@
 package com.keak.aishou.data.api
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 @Serializable
 data class UserProfileResponse(
@@ -13,7 +14,8 @@ data class UserProfileResponse(
     val lang: String? = null,
     val soloQuizzes: List<SoloQuizResult> = emptyList(),
     val matchQuizzes: List<CompatibilityResult> = emptyList(),
-    val totalQuizzes: Int = 0
+    val totalQuizzes: Int = 0,
+    val hasChangedName: Boolean = false
 ) {
     // Helper properties to maintain compatibility with existing code
     val mbti: String? get() = mbtiType

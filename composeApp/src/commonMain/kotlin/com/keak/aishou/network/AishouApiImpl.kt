@@ -2,6 +2,7 @@ package com.keak.aishou.network
 
 // import com.gyanoba.inspektor.Inspektor // Disabled due to iOS notification crash
 import com.keak.aishou.data.DataStoreManager
+import com.keak.aishou.data.language.AppLanguage
 import com.keak.aishou.data.language.LanguageManager
 import com.keak.aishou.data.api.QuizQuestion
 import com.keak.aishou.data.api.QuizSubmissionRequest
@@ -12,6 +13,7 @@ import com.keak.aishou.data.api.PersonalityUpdateRequest
 import com.keak.aishou.data.api.PersonalityAssessRequest
 import com.keak.aishou.data.api.PersonalityAssessResponse
 import com.keak.aishou.data.api.UserProfileResponse
+import com.keak.aishou.data.api.ProfileUpdateRequest
 import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.data.api.InviteResponse
@@ -92,7 +94,28 @@ class AishouApiImpl(
     }
 
     private suspend fun getAcceptLanguageHeader(): String {
-        return languageManager.getCurrentLocale()
+        val locale = languageManager.getCurrentLocale().ifBlank { AppLanguage.DEFAULT.locale }
+        val normalizedLocale = normalizeLocaleForHeader(locale)
+        val defaultLocale = normalizeLocaleForHeader(AppLanguage.DEFAULT.locale)
+
+        return buildString {
+            append(normalizedLocale)
+            if (!normalizedLocale.startsWith(AppLanguage.DEFAULT.languageCode)) {
+                append(",")
+                append(defaultLocale)
+                append(";q=0.8")
+            }
+        }
+    }
+
+    private fun normalizeLocaleForHeader(locale: String): String {
+        val parts = locale.replace('-', '_').split('_')
+        val language = parts.firstOrNull()?.lowercase() ?: AppLanguage.DEFAULT.languageCode
+        val region = parts.getOrNull(1)
+            ?.takeIf { it.length == 2 && it.all { ch -> ch.isLetter() } }
+            ?.uppercase()
+
+        return if (region != null) "$language-$region" else language
     }
 
     override suspend fun getToken(): ApiResult<BaseResponse<TokenResponse>> {
@@ -190,6 +213,8 @@ class AishouApiImpl(
             is ApiResult.Success -> {
                 println("AishouApiImpl: Profile response successful: ${result.data}")
                 println("AishouApiImpl: Profile data: ${result.data.data}")
+                println("AishouApiImpl: hasChangedName from API: ${result.data.data?.hasChangedName}")
+                println("AishouApiImpl: displayName from API: ${result.data.data?.displayName}")
                 println("AishouApiImpl: Solo quizzes count: ${result.data.data?.soloQuizzes?.size}")
                 println("AishouApiImpl: Match quizzes count: ${result.data.data?.matchQuizzes?.size}")
                 result.data.data?.soloQuizzes?.forEachIndexed { index, quiz ->
@@ -205,6 +230,22 @@ class AishouApiImpl(
         }
 
         return result
+    }
+
+    override suspend fun updateProfile(profileUpdate: ProfileUpdateRequest): ApiResult<BaseResponse<Unit>> {
+        println("AishouApiImpl: Updating profile with displayName: ${profileUpdate.displayName}")
+        val authHeader = getAuthHeader()
+        println("AishouApiImpl: Auth header present: ${authHeader != null}")
+
+        return handleApi<BaseResponse<Unit>> {
+            client.put("/v1/auth/profile") {
+                authHeader?.let {
+                    header(HttpHeaders.Authorization, it)
+                }
+                contentType(ContentType.Application.Json)
+                setBody(profileUpdate)
+            }
+        }
     }
 
     override suspend fun getTestResults(testId: String, friendId: String?): ApiResult<BaseResponse<TestResultResponse>> {

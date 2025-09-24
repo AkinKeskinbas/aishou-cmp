@@ -13,6 +13,8 @@ interface Router {
     fun goToDefaultQuizScreen() // Quick start with default test
     fun goToTestResultScreen(testID: String)
     fun goToSplash()
+    fun goToReAuth()
+    fun goToReAuthTest() // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
     fun goToPaywall()
     fun goToOnBoarding()
     fun goToOnBoardingSecond()

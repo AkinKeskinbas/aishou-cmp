@@ -32,6 +32,8 @@ import com.keak.aishou.screens.quicktestscreen.QuizScreen
 import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashScreen
 import com.keak.aishou.screens.splashscreen.SplashViewModel
+import com.keak.aishou.screens.reauth.ReAuthScreen
+import com.keak.aishou.screens.reauth.ReAuthTestScreen
 import com.keak.aishou.screens.friends.FriendsScreen
 import com.keak.aishou.screens.notifications.NotificationsScreen
 import com.keak.aishou.screens.invite.InviteScreen
@@ -69,6 +71,22 @@ fun NavGraphBuilder.mainRoute(
     ) {
         val splashViewModel: SplashViewModel = koinViewModel()
         SplashScreen(router = router, viewModel = splashViewModel)
+    }
+    composable(
+        route = Routes.ReAuth.route
+    ) {
+        ReAuthScreen(
+            onNavigateToHome = { router.goToHome() },
+            onNavigateToSupport = {
+                // TODO: Navigate to support screen or open support URL
+                router.goToHome()
+            }
+        )
+    }
+    composable( // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
+        route = Routes.ReAuthTest.route
+    ) {
+        ReAuthTestScreen(router = router)
     }
     composable(
         route = Routes.OnBoarding.route
@@ -111,7 +129,7 @@ fun NavGraphBuilder.mainRoute(
                 when (preferenceType) {
                     MBTIPreferenceType.TAKE_TEST -> {
                         // Navigate to MBTI test using existing quiz system
-                        router.goToQuizScreen("personality-full-v1")
+                        router.goToQuizScreen("personality")
                     }
                     MBTIPreferenceType.MANUAL_ENTRY -> {
                         mbtiType?.let {

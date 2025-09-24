@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.keak.aishou.navigation.DeepLinkCoordinator
 import com.keak.aishou.utils.ImageShareHelperFactory
 import com.keak.aishou.utils.ShareHelperFactory
+import com.keak.aishou.utils.PlatformActions
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
 
         ShareHelperFactory.initialize(this)
         ImageShareHelperFactory.initialize(this)
+        PlatformActions.initialize(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {

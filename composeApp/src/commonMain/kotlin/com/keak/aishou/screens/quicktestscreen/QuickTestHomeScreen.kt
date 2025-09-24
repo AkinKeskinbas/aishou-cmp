@@ -110,7 +110,7 @@ fun QuickTestHomeScreen(
                         if (test.isPremium && !PremiumChecker.isPremium) {
                             router.goToPaywall()
                         } else {
-                            router.goToQuizScreen(quizID = test.id)
+                            router.goToQuizScreen(quizID = test.testId)
                         }
                     }
                 )

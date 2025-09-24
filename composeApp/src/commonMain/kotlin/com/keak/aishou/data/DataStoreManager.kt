@@ -8,7 +8,9 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.keak.aishou.data.language.AppLanguage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Clock
 
 class DataStoreManager(private val dataStore: DataStore<Preferences>) {
 
@@ -21,9 +23,15 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
         private val APP_LANGUAGE_COUNTRY = stringPreferencesKey("app_language_country")
         private val APP_LANGUAGE_DISPLAY_NAME = stringPreferencesKey("app_language_display_name")
         private val APP_LANGUAGE_LOCALE = stringPreferencesKey("app_language_locale")
+        private val APP_LANGUAGE_MANUAL = booleanPreferencesKey("app_language_manual")
         private val ACCESS_TOKEN = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
         private val ONE_SIGNAL_ID = stringPreferencesKey("one_signal_id")
+
+        // Auth status and re-registration prevention
+        private val LAST_AUTH_CHECK = longPreferencesKey("last_auth_check")
+        private val AUTH_RETRY_COUNT = longPreferencesKey("auth_retry_count")
+        private val LAST_UNAUTHORIZED_TIME = longPreferencesKey("last_unauthorized_time")
     }
 
     val isFirstTimeUser: Flow<Boolean> = dataStore.data.map { preferences ->
@@ -58,6 +66,10 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
         } else {
             null
         }
+    }
+
+    val isAppLanguageManual: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[APP_LANGUAGE_MANUAL] ?: false
     }
 
     val accessToken: Flow<String?> = dataStore.data.map { preferences ->
@@ -107,12 +119,18 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun setAppLanguage(language: AppLanguage) {
+    suspend fun setAppLanguage(language: AppLanguage, manuallySelected: Boolean = false) {
         dataStore.edit { preferences ->
             preferences[APP_LANGUAGE_CODE] = language.languageCode
-            language.countryCode?.let { preferences[APP_LANGUAGE_COUNTRY] = it }
+            val countryCode = language.countryCode
+            if (countryCode != null) {
+                preferences[APP_LANGUAGE_COUNTRY] = countryCode
+            } else {
+                preferences.remove(APP_LANGUAGE_COUNTRY)
+            }
             preferences[APP_LANGUAGE_DISPLAY_NAME] = language.displayName
             preferences[APP_LANGUAGE_LOCALE] = language.locale
+            preferences[APP_LANGUAGE_MANUAL] = manuallySelected
         }
     }
 
@@ -122,6 +140,7 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
             preferences.remove(APP_LANGUAGE_COUNTRY)
             preferences.remove(APP_LANGUAGE_DISPLAY_NAME)
             preferences.remove(APP_LANGUAGE_LOCALE)
+            preferences.remove(APP_LANGUAGE_MANUAL)
         }
     }
 
@@ -161,6 +180,79 @@ class DataStoreManager(private val dataStore: DataStore<Preferences>) {
     suspend fun clearOneSignalId() {
         dataStore.edit { preferences ->
             preferences.remove(ONE_SIGNAL_ID)
+        }
+    }
+
+    // Auth status and loop prevention methods
+    suspend fun updateLastAuthCheck() {
+        dataStore.edit { preferences ->
+            preferences[LAST_AUTH_CHECK] = Clock.System.now().toEpochMilliseconds()
+        }
+    }
+
+    suspend fun getLastAuthCheck(): Long {
+        return dataStore.data.map { preferences ->
+            preferences[LAST_AUTH_CHECK] ?: 0L
+        }.first()
+    }
+
+    suspend fun shouldRetryAuth(): Boolean {
+        val lastCheck = getLastAuthCheck()
+        val currentTime = Clock.System.now().toEpochMilliseconds()
+        val fiveMinutesInMillis = 5 * 60 * 1000L
+
+        return (currentTime - lastCheck) > fiveMinutesInMillis
+    }
+
+    suspend fun incrementAuthRetryCount(): Long {
+        var newCount = 0L
+        dataStore.edit { preferences ->
+            val currentCount = preferences[AUTH_RETRY_COUNT] ?: 0L
+            newCount = currentCount + 1
+            preferences[AUTH_RETRY_COUNT] = newCount
+        }
+        return newCount
+    }
+
+    suspend fun getAuthRetryCount(): Long {
+        return dataStore.data.map { preferences ->
+            preferences[AUTH_RETRY_COUNT] ?: 0L
+        }.first()
+    }
+
+    suspend fun resetAuthRetryCount() {
+        dataStore.edit { preferences ->
+            preferences[AUTH_RETRY_COUNT] = 0L
+        }
+    }
+
+    suspend fun hasTokens(): Boolean {
+        return dataStore.data.map { preferences ->
+            val accessToken = preferences[ACCESS_TOKEN]
+            val refreshToken = preferences[REFRESH_TOKEN]
+            !accessToken.isNullOrBlank() && !refreshToken.isNullOrBlank()
+        }.first()
+    }
+
+    suspend fun markUnauthorizedEncounter() {
+        dataStore.edit { preferences ->
+            preferences[LAST_UNAUTHORIZED_TIME] = Clock.System.now().toEpochMilliseconds()
+        }
+    }
+
+    suspend fun getLastUnauthorizedTime(): Long {
+        return dataStore.data.map { preferences ->
+            preferences[LAST_UNAUTHORIZED_TIME] ?: 0L
+        }.first()
+    }
+
+    // Clear all auth-related data for fresh re-registration
+    suspend fun clearAuthData() {
+        dataStore.edit { preferences ->
+            preferences.remove(ACCESS_TOKEN)
+            preferences.remove(REFRESH_TOKEN)
+            preferences[IS_FIRST_TIME_USER] = true
+            preferences[AUTH_RETRY_COUNT] = 0L
         }
     }
 }
