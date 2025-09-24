@@ -211,6 +211,11 @@ struct iOSApp: App {
 			// Initialize OneSignal with App ID from PlatformKeys
 			OneSignal.initialize(oneSignalAppId, withLaunchOptions: nil)
 
+			// Set notification customization for iOS
+			// Note: iOS automatically uses the app icon for notifications
+			// but we can customize the badge behavior
+			print("OneSignal iOS: ✅ Notification icon will use app icon automatically")
+
 			// Request notification permission with safer handling and delay
 			DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
 				OneSignal.Notifications.requestPermission({ accepted in

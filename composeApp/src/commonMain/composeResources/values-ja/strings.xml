@@ -14,6 +14,8 @@
     <string name="paywall_cancel_paywall">やめる</string>
     <string name="paywall_unlock_your_cosmic_personality">コズミック性格を解放！</string>
     <string name="paywall_choose_your_sign">星座を選んでね</string>
+    <string name="paywall_restore_purchase_text">購入を復元する</string>
+
 
     //Home
     <string name="cosmic_match_home">COSMIC MATCH</string>

@@ -6,6 +6,7 @@ import com.keak.aishou.data.UserSessionManager
 import com.keak.aishou.data.UserState
 import com.keak.aishou.data.api.UserProfileResponse
 import com.keak.aishou.data.api.SolvedTest
+import com.keak.aishou.data.api.ProfileUpdateRequest
 import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
 import com.keak.aishou.notifications.OneSignalService
@@ -79,6 +80,7 @@ class HomeViewModel(
                         println("HomeViewModel: User profile loaded successfully")
                         println("HomeViewModel: User Name:${profileData?.displayName}")
                         println("HomeViewModel: MBTI: ${profileData?.mbti}, Zodiac: ${profileData?.zodiac}")
+                        println("HomeViewModel: hasChangedName: ${profileData?.hasChangedName}")
                         println("HomeViewModel: Solo quizzes: ${profileData?.soloQuizzes?.size}")
                         println("HomeViewModel: Match quizzes: ${profileData?.matchQuizzes?.size}")
                         println("HomeViewModel: Solved tests: ${profileData?.solvedTests?.size}")
@@ -157,5 +159,40 @@ class HomeViewModel(
                 println("HomeViewModel: Error requesting notification permission: ${e.message}")
             }
         }
+    }
+
+    fun updateProfile(newDisplayName: String): Boolean {
+        // Check character limit
+        if (newDisplayName.length > 13) {
+            println("HomeViewModel: Display name too long: ${newDisplayName.length} characters")
+            return false
+        }
+
+        if (newDisplayName.isBlank()) {
+            println("HomeViewModel: Display name is blank")
+            return false
+        }
+
+        viewModelScope.launch {
+            try {
+                val request = ProfileUpdateRequest(displayName = newDisplayName)
+                when (val result = apiService.updateProfile(request)) {
+                    is ApiResult.Success -> {
+                        println("HomeViewModel: Profile updated successfully")
+                        // Reload profile to get updated data
+                        loadUserProfile()
+                    }
+                    is ApiResult.Error -> {
+                        println("HomeViewModel: Error updating profile: ${result.message}")
+                    }
+                    is ApiResult.Exception -> {
+                        println("HomeViewModel: Exception updating profile: ${result.exception.message}")
+                    }
+                }
+            } catch (e: Exception) {
+                println("HomeViewModel: Unexpected error updating profile: ${e.message}")
+            }
+        }
+        return true
     }
 }

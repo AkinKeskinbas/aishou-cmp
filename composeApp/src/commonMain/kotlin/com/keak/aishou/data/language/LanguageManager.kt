@@ -28,15 +28,19 @@ class LanguageManager(
         scope.launch {
             // Check if we have a stored language
             val storedLanguage = dataStoreManager.appLanguage.first()
+            val isManualSelection = dataStoreManager.isAppLanguageManual.first()
+            val systemLanguage = languageDetector.getCurrentSystemLanguage()
 
             if (storedLanguage == null) {
                 // First time - detect and store system language
-                val systemLanguage = languageDetector.getCurrentSystemLanguage()
                 dataStoreManager.setAppLanguage(systemLanguage)
 
                 println("LanguageManager: First time initialization - detected system language: ${systemLanguage.displayName} (${systemLanguage.locale})")
+            } else if (!isManualSelection && storedLanguage.locale != systemLanguage.locale) {
+                dataStoreManager.setAppLanguage(systemLanguage)
+                println("LanguageManager: Detected system language change - updated to: ${systemLanguage.displayName} (${systemLanguage.locale})")
             } else {
-                println("LanguageManager: Using stored language: ${storedLanguage.displayName} (${storedLanguage.locale})")
+                println("LanguageManager: Using stored language: ${storedLanguage.displayName} (${storedLanguage.locale}) (manualSelection=$isManualSelection)")
             }
         }
     }
@@ -45,14 +49,31 @@ class LanguageManager(
      * Get current language synchronously (use with caution - prefer Flow)
      */
     suspend fun getCurrentLanguageSync(): AppLanguage {
-        return currentLanguage.first() ?: languageDetector.getCurrentSystemLanguage()
+        val storedLanguage = dataStoreManager.appLanguage.first()
+        val isManualSelection = dataStoreManager.isAppLanguageManual.first()
+
+        if (storedLanguage == null) {
+            val systemLanguage = languageDetector.getCurrentSystemLanguage()
+            dataStoreManager.setAppLanguage(systemLanguage)
+            return systemLanguage
+        }
+
+        if (!isManualSelection) {
+            val systemLanguage = languageDetector.getCurrentSystemLanguage()
+            if (storedLanguage.locale != systemLanguage.locale) {
+                dataStoreManager.setAppLanguage(systemLanguage)
+                return systemLanguage
+            }
+        }
+
+        return storedLanguage
     }
 
     /**
      * Set app language manually
      */
     suspend fun setLanguage(language: AppLanguage) {
-        dataStoreManager.setAppLanguage(language)
+        dataStoreManager.setAppLanguage(language, manuallySelected = true)
         println("LanguageManager: Language changed to: ${language.displayName} (${language.locale})")
     }
 

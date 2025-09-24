@@ -18,6 +18,8 @@ interface PremiumRepository {
         onSuccessEvent: (product: Package) -> Unit,
         onErrorEvent: (error: String, userCancelled: Boolean) -> Unit
     )
+
+    suspend fun restore()
 }
 
 sealed interface PremiumState {

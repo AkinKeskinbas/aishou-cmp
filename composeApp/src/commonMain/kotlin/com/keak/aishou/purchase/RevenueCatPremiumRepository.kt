@@ -52,4 +52,21 @@ class RevenueCatPremiumRepository(
 
         )
     }
+
+    override suspend fun restore() {
+        try {
+            purchases.restorePurchases(
+                onSuccess = { customerInfo ->
+                    println("AKN-Purchase-->Purchase Success ${customerInfo.entitlements.all}")
+
+                },
+                onError = { e->
+                    _state.value = PremiumState.Error(e.message ?: "Unknown error")
+                }
+            )
+        }catch (t: Throwable){
+            _state.value = PremiumState.Error(t.message ?: "Unknown error")
+
+        }
+    }
 }

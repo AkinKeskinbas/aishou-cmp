@@ -38,9 +38,7 @@ import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.components.NeoBrutalistProgressBar
 import com.keak.aishou.components.ScreenHeader
 import com.keak.aishou.components.MBTILoadingOverlay
-import com.keak.aishou.screens.results.MBTIResultScreen
 import com.keak.aishou.navigation.Router
-import com.keak.aishou.screenSize
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -51,9 +49,6 @@ fun QuizScreen(
     inviteId: String? = null,
     viewModel: QuizViewModel
 ) {
-    val screenWidth = screenSize().width
-    val desiredWidth = screenWidth / 1.5
-
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(quizID, senderId, inviteId) {
@@ -72,19 +67,20 @@ fun QuizScreen(
         }
     }
 
-    val progress = viewModel.getProgress()
-    val totalQuestions = uiState.questions.size
-
-    // Show MBTI Result Screen if personality test is completed
-    if (uiState.isMBTITest && uiState.submissionSuccess && uiState.personalityResult != null) {
-        MBTIResultScreen(
-            personalityResult = uiState.personalityResult!!,
-            router = router
-        )
-        return
+    // Handle immediate navigation to ThankYou screen
+    LaunchedEffect(uiState.shouldNavigateToThankYou) {
+        if (uiState.shouldNavigateToThankYou) {
+            viewModel.onEvent(QuizUiEvent.NavigationHandled)
+            if (uiState.isFromInvite) {
+                router.goToThankYou(isFromInvite = true)
+            } else {
+                router.goToThankYou(isFromInvite = false)
+            }
+        }
     }
 
-
+    val progress = viewModel.getProgress()
+    val totalQuestions = uiState.questions.size
 
     Box(
         Modifier
@@ -157,7 +153,7 @@ fun QuizScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "Question ${question.index}",
+                                text = "Question ${question.index.plus(1)}",
                                 color = Color.White,
                                 fontWeight = FontWeight.Black,
                                 fontSize = 26.sp

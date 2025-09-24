@@ -17,6 +17,8 @@ data class TestDisplay(
 data class Test(
     @SerialName("_id")
     val id: String,
+    @SerialName("testId")
+    val testId: String,
     @SerialName("title")
     val title: String,
     @SerialName("category")

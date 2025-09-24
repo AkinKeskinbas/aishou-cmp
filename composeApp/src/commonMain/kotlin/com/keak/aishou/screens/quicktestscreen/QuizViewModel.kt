@@ -33,7 +33,8 @@ data class QuizUiState(
     val isMBTITest: Boolean = false,
     val compatibilityResult: CompatibilityResult? = null,
     val isFromInvite: Boolean = false, // Indicates if test was started from invite
-    val inviteId: String? = null // Invite ID when started from invite
+    val inviteId: String? = null, // Invite ID when started from invite
+    val shouldNavigateToThankYou: Boolean = false // Navigate immediately to ThankYou
 )
 
 sealed class QuizUiEvent {
@@ -47,6 +48,7 @@ sealed class QuizUiEvent {
     object RetryLoad : QuizUiEvent()
     object DismissIncompleteWarning : QuizUiEvent()
     object ResetSubmissionState : QuizUiEvent()
+    object NavigationHandled : QuizUiEvent()
 }
 
 class QuizViewModel(
@@ -106,6 +108,9 @@ class QuizViewModel(
                     submissionResult = null,
                     personalityResult = null
                 )
+            }
+            is QuizUiEvent.NavigationHandled -> {
+                _uiState.value = _uiState.value.copy(shouldNavigateToThankYou = false)
             }
         }
     }
@@ -235,9 +240,15 @@ class QuizViewModel(
     }
 
     private fun submitQuiz(testId: String, version: Int) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isSubmitting = true, submissionError = null)
+        // Immediately trigger navigation to ThankYou screen
+        _uiState.value = _uiState.value.copy(
+            shouldNavigateToThankYou = true,
+            isSubmitting = true
+        )
 
+        println("QuizViewModel: Navigating to ThankYou screen, starting background submission")
+
+        viewModelScope.launch {
             try {
                 val currentState = _uiState.value
 
@@ -246,7 +257,7 @@ class QuizViewModel(
                 val answersForSubmission = currentState.answers.mapKeys { it.key.toString() }
 
                 val submissionRequest = QuizSubmissionRequest.create(answersForSubmission)
-                println("QuizViewModel: Submission request created: $submissionRequest")
+                println("QuizViewModel: Background submission request created: $submissionRequest")
                 println("QuizViewModel: Answers map: $answersForSubmission")
 
                 val result = apiService.submitQuiz(testId, version, submissionRequest, currentState.inviteId)
@@ -259,7 +270,7 @@ class QuizViewModel(
                             isFinished = true,
                             submissionResult = submissionData
                         )
-                        println("QuizViewModel: Quiz submitted successfully. Submission ID: ${submissionData?.id}")
+                        println("QuizViewModel: Background quiz submitted successfully. Submission ID: ${submissionData?.id}")
 
                         // If this is the MBTI personality test, use different endpoint
                         if (testId == "personality-full-v1") {
@@ -268,7 +279,7 @@ class QuizViewModel(
 
                         // If this test was started from an invite, compute compatibility
                         currentSenderId?.let { senderId ->
-                            println("QuizViewModel: Computing compatibility with sender: $senderId")
+                            println("QuizViewModel: Background computing compatibility with sender: $senderId")
                             computeCompatibility(testId, version, senderId)
                         }
                     }
@@ -278,7 +289,7 @@ class QuizViewModel(
                             isSubmitting = false,
                             submissionError = errorMessage
                         )
-                        println("QuizViewModel: Error submitting quiz: $errorMessage")
+                        println("QuizViewModel: Background error submitting quiz: $errorMessage")
                     }
                     is ApiResult.Exception -> {
                         val errorMessage = result.exception.message ?: "Exception during submission"
@@ -286,7 +297,7 @@ class QuizViewModel(
                             isSubmitting = false,
                             submissionError = errorMessage
                         )
-                        println("QuizViewModel: Exception submitting quiz: $errorMessage")
+                        println("QuizViewModel: Background exception submitting quiz: $errorMessage")
                     }
                 }
             } catch (e: Exception) {
@@ -300,12 +311,19 @@ class QuizViewModel(
     }
 
     private fun submitQuickQuiz() {
+        // Immediately trigger navigation to ThankYou screen
+        _uiState.value = _uiState.value.copy(
+            shouldNavigateToThankYou = true,
+            isSubmitting = true
+        )
+
+        println("QuizViewModel: Navigating to ThankYou screen, starting background submission")
+
+        // Launch background API submission
         viewModelScope.launch {
             try {
-                _uiState.value = _uiState.value.copy(isSubmitting = true, submissionError = null)
-
                 val currentState = _uiState.value
-                println("QuizViewModel: Submitting quick quiz with ${currentState.answers.size} answers")
+                println("QuizViewModel: Background submitting quick quiz with ${currentState.answers.size} answers")
 
                 // Convert answers from Map<Int, String> to Map<String, String>
                 val answersForSubmission = currentState.answers.mapKeys { it.key.toString() }
@@ -328,7 +346,7 @@ class QuizViewModel(
                             isFinished = true,
                             personalityResult = personalityResult
                         )
-                        println("QuizViewModel: Quick quiz submitted successfully. MBTI: ${personalityResult?.mbtiType}")
+                        println("QuizViewModel: Background quick quiz submitted successfully. MBTI: ${personalityResult?.mbtiType}")
                     }
                     is ApiResult.Error -> {
                         val errorMessage = result.message ?: "Quick quiz submission failed"
@@ -336,7 +354,7 @@ class QuizViewModel(
                             isSubmitting = false,
                             submissionError = errorMessage
                         )
-                        println("QuizViewModel: Error submitting quick quiz: $errorMessage")
+                        println("QuizViewModel: Background error submitting quick quiz: $errorMessage")
                     }
                     is ApiResult.Exception -> {
                         val errorMessage = result.exception.message ?: "Exception during quick quiz submission"
@@ -344,7 +362,7 @@ class QuizViewModel(
                             isSubmitting = false,
                             submissionError = errorMessage
                         )
-                        println("QuizViewModel: Exception submitting quick quiz: $errorMessage")
+                        println("QuizViewModel: Background exception submitting quick quiz: $errorMessage")
                     }
                 }
             } catch (e: Exception) {
@@ -352,7 +370,7 @@ class QuizViewModel(
                     isSubmitting = false,
                     submissionError = e.message ?: "Unexpected error during quick quiz submission"
                 )
-                println("QuizViewModel: Unexpected error in quick quiz: ${e.message}")
+                println("QuizViewModel: Background unexpected error in quick quiz: ${e.message}")
             }
         }
     }

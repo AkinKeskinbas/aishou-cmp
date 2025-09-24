@@ -2,7 +2,6 @@ package com.keak.aishou.purchase
 
 import com.keak.aishou.purchase.model.RevenueCatPackage
 import com.revenuecat.purchases.kmp.Purchases
-import com.revenuecat.purchases.kmp.ktx.awaitOfferings
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

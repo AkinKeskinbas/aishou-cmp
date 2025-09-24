@@ -26,6 +26,7 @@ class OneSignalManagerAndroid(
             // OneSignal Initialization
             OneSignal.initWithContext(context, appId)
             println("OneSignal Android: ✅ OneSignal.initWithContext() completed")
+            println("OneSignal Android: ✅ Notification icon configured via AndroidManifest.xml")
 
             // Check initial state
             println("OneSignal Android: Checking initial state after initialization...")

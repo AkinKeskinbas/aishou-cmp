@@ -9,6 +9,7 @@ import com.keak.aishou.data.api.PersonalityUpdateRequest
 import com.keak.aishou.data.api.PersonalityAssessRequest
 import com.keak.aishou.data.api.PersonalityAssessResponse
 import com.keak.aishou.data.api.UserProfileResponse
+import com.keak.aishou.data.api.ProfileUpdateRequest
 import com.keak.aishou.data.api.TestResultResponse
 import com.keak.aishou.data.api.InviteCreateRequest
 import com.keak.aishou.data.api.InviteResponse
@@ -27,6 +28,7 @@ interface AishouApiService {
     suspend fun personalityQuickAssess(assessRequest: PersonalityAssessRequest): ApiResult<BaseResponse<PersonalityAssessResponse>>
     suspend fun getPersonalityQuickQuiz(): ApiResult<BaseResponse<List<QuizQuestion>>>
     suspend fun getUserProfile(): ApiResult<BaseResponse<UserProfileResponse>>
+    suspend fun updateProfile(profileUpdate: ProfileUpdateRequest): ApiResult<BaseResponse<Unit>>
     suspend fun getTestResults(testId: String, friendId: String? = null): ApiResult<BaseResponse<TestResultResponse>>
     suspend fun reprocessTestResults(testId: String): ApiResult<BaseResponse<TestResultResponse>>
     suspend fun getTests(): ApiResult<BaseResponse<List<Test>>>

@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 class AppInitializationService(
     private val languageManager: LanguageManager,
     private val userRegistrationService: UserRegistrationService,
+    private val userSessionManager: UserSessionManager,
     private val oneSignalService: OneSignalService,
     private val scope: CoroutineScope
 ) {
@@ -61,4 +62,44 @@ class AppInitializationService(
     suspend fun reinitializeUserRegistration() {
         userRegistrationService.forceReregister()
     }
+
+    /**
+     * Check if user needs re-authentication and return appropriate result
+     */
+    suspend fun checkAuthStatus(): AuthStatus {
+        return try {
+            if (userSessionManager.hasValidAuthentication()) {
+                AuthStatus.Authenticated
+            } else {
+                if (userSessionManager.shouldAttemptReauth()) {
+                    AuthStatus.NeedsReauth
+                } else {
+                    AuthStatus.ReauthBlocked
+                }
+            }
+        } catch (e: Exception) {
+            println("AppInitialization: Error checking auth status: ${e.message}")
+            AuthStatus.Error(e.message ?: "Unknown error")
+        }
+    }
+
+    /**
+     * Handle unauthorized user response
+     */
+    suspend fun handleUnauthorizedUser(): Boolean {
+        return try {
+            userSessionManager.handleUnauthorizedUser()
+            true
+        } catch (e: Exception) {
+            println("AppInitialization: Error handling unauthorized user: ${e.message}")
+            false
+        }
+    }
+}
+
+sealed class AuthStatus {
+    object Authenticated : AuthStatus()
+    object NeedsReauth : AuthStatus()
+    object ReauthBlocked : AuthStatus()
+    data class Error(val message: String) : AuthStatus()
 }

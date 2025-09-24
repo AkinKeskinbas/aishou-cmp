@@ -103,6 +103,7 @@ kotlin {
             implementation(libs.androidx.datastore.preferences)
 
             implementation("com.gyanoba.inspektor:inspektor:0.3.9")
+            api("io.github.kevinnzou:compose-webview-multiplatform:1.8.4")
 
 
         }

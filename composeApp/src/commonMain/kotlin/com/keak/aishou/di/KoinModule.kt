@@ -24,6 +24,7 @@ import com.keak.aishou.screens.homescreen.HomeViewModel
 import com.keak.aishou.screens.quicktestscreen.QuickTestHomeScreenViewModel
 import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashViewModel
+import com.keak.aishou.screens.reauth.ReAuthViewModel
 import com.keak.aishou.screens.friends.FriendsViewModel
 import com.keak.aishou.screens.notifications.NotificationsViewModel
 import com.keak.aishou.screens.invite.InviteViewModel
@@ -57,7 +58,7 @@ val dataModules = module {
     single { UserRegistrationService(get(), get(), get(), get(), get(), get()) }
 
     // App Initialization Service
-    single { AppInitializationService(get(), get(), get(), get()) }
+    single { AppInitializationService(get(), get(), get(), get(), get()) }
 
     // Personality Data Manager
     single { PersonalityDataManager(get()) }
@@ -90,6 +91,7 @@ val viewModelModule = module {
     viewModelOf(::QuickTestHomeScreenViewModel)
     factory { QuizViewModel(get(), get()) }
     factory { SplashViewModel(get(), get()) }
+    factory { ReAuthViewModel(get(), get()) }
     factory { FriendsViewModel(get()) }
     factory { NotificationsViewModel(get()) }
     factory { InviteViewModel(get()) }

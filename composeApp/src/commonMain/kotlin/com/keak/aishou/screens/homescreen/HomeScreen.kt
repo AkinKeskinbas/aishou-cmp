@@ -42,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,6 +63,8 @@ import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.screenSize
 import com.keak.aishou.data.api.QuizType
+import com.keak.aishou.misc.orFalse
+import com.keak.aishou.purchase.PremiumChecker
 import com.keak.aishou.util.FormatUtils
 import com.keak.aishou.utils.StringResources
 import org.koin.compose.viewmodel.koinViewModel
@@ -76,12 +79,15 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
     val isLoadingProfile by vm.isLoadingProfile.collectAsStateWithLifecycle()
     val profileError by vm.profileError.collectAsStateWithLifecycle()
 
+    var showSettingsSheet by remember { mutableStateOf(false) }
+
     // Load user profile and notification count when HomeScreen opens or reopens
     LaunchedEffect(Unit) {
         println("HomeScreen: LaunchedEffect triggered - loading user profile and notification count")
         vm.loadUserProfile()
         vm.loadUnreadNotificationCount()
     }
+
 
     // Request notification permission when HomeScreen is ready
     LaunchedEffect(userState) {
@@ -155,14 +161,22 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
                 },
                 onProfileClick = {
                     router.goToProfile()
+                },
+                onSettingsClick = {
+                    showSettingsSheet = true
                 }
             )
         }
         item {
+            // Remember stable values to prevent unnecessary recompositions
+            val stableUserState = remember(userState.isFirstTimeUser, userState.appLaunchCount, userState.daysSinceFirstLaunch) { userState }
+            val stableUserProfile = remember(userProfile?.displayName, userProfile?.mbti, userProfile?.zodiac) { userProfile }
+            val stableIsLoading = remember(isLoadingProfile) { isLoadingProfile }
+
             UserCard(
-                userState = userState,
-                userProfile = userProfile,
-                isLoadingProfile = isLoadingProfile,
+                userState = stableUserState,
+                userProfile = stableUserProfile,
+                isLoadingProfile = stableIsLoading,
                 onRetryProfile = { vm.retryLoadProfile() }
             )
             Spacer(Modifier.height(16.dp))
@@ -266,6 +280,30 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
                 Spacer(Modifier.height(8.dp))
             }
         }
+    }
+
+    // Settings Bottom Sheet
+    if (showSettingsSheet) {
+        println("HomeScreen: User.hasChangedName-->${userProfile?.hasChangedName}")
+        SettingsBottomSheet(
+            router = router,
+            isPremium = PremiumChecker.isPremium,
+            currentName = userProfile?.displayName ?: "User",
+            hasChangedName = userProfile?.hasChangedName.orFalse(),
+            onDismiss = {
+                showSettingsSheet = false
+            },
+            onNameChange = { newName ->
+                val success = vm.updateProfile(newName)
+                if (success) {
+                    showSettingsSheet = false
+                }
+            },
+            onUpgradeTapped = {
+                router.goToPaywall()
+                showSettingsSheet = false
+            }
+        )
     }
 }
 
@@ -393,6 +431,15 @@ private fun UserCard(
     isLoadingProfile: Boolean,
     onRetryProfile: () -> Unit
 ) {
+    // Remember stable text values to prevent flicker - use actual string values as keys
+    val mbtiValue = userProfile?.mbti
+    val zodiacValue = userProfile?.zodiac
+    val displayNameValue = userProfile?.displayName
+
+    val stableMbti = remember(mbtiValue) { mbtiValue }
+    val stableZodiac = remember(zodiacValue) { zodiacValue }
+    val stableDisplayName = remember(displayNameValue) { displayNameValue }
+
     val phoneScreenSize = screenSize()
     val screenWidth = phoneScreenSize.width / 2.2
     NeoBrutalistCardViewWithFlexSize(
@@ -412,9 +459,8 @@ private fun UserCard(
                 text = if (userState.isFirstTimeUser) {
                     StringResources.welcomeToAishou()
                 } else {
-                    val displayName = userProfile?.displayName
-                    if (!displayName.isNullOrBlank()) {
-                        StringResources.welcomeBackWithName(displayName)
+                    if (!stableDisplayName.isNullOrBlank()) {
+                        StringResources.welcomeBackWithName(stableDisplayName)
                     } else {
                         StringResources.welcomeBack()
                     }
@@ -467,7 +513,7 @@ private fun UserCard(
                                 )
                             } else {
                                 Text(
-                                    text = userProfile?.mbti ?: StringResources.unknown(),
+                                    text = stableMbti ?: StringResources.unknown(),
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Black,
                                     modifier = Modifier.padding(vertical = 8.dp)
@@ -509,7 +555,7 @@ private fun UserCard(
                             )
                         } else {
                             Text(
-                                text = userProfile?.zodiac ?: StringResources.unknown(),
+                                text = stableZodiac ?: StringResources.unknown(),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Black,
                                 modifier = Modifier,
@@ -589,6 +635,7 @@ private fun HomeHeader(
     vm: HomeViewModel,
     onNotificationClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
 ) {
     val notificationCount by vm.unreadNotificationCount.collectAsStateWithLifecycle()
 
@@ -686,6 +733,10 @@ private fun HomeHeader(
                     contentDescription = StringResources.settingsContentDescription(),
                     alignment = Alignment.Center,
                     modifier = Modifier.size(24.dp)
+                        .clickable(role = Role.Button) {
+                            onSettingsClick()
+                        }
+                        .padding(2.dp)
                 )
             }
         }

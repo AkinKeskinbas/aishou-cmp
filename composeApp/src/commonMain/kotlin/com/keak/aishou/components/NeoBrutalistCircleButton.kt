@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -31,7 +32,7 @@ fun NeoBrutalistCircleButton(
 ) {
     Box(
         modifier = modifier
-            .size(60.dp)
+            .size(50.dp)
             .offset(x = shadowOffset, y = shadowOffset)
             .background(shadowColor, shape = CircleShape)
     ) {
@@ -41,27 +42,27 @@ fun NeoBrutalistCircleButton(
                 .offset(x = -shadowOffset, y = -shadowOffset)
                 .background(backgroundColor, shape = CircleShape)
                 .border(borderWith, borderColor, shape = CircleShape)
-                .clickable { onMainClick() },
+                .clickable(role = Role.Button) { onMainClick() },
             contentAlignment = Alignment.Center
         ) {
             content()
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 8.dp, y = 8.dp)
-                    .size(28.dp)
-                    .background(Color.Black, shape = CircleShape)
-                    .clickable { onAddClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
-                    tint = Color.White,
-                    modifier = Modifier.size(14.dp)
-                )
-            }
+//            Box(
+//                modifier = Modifier
+//                    .align(Alignment.BottomEnd)
+//                    .offset(x = 8.dp, y = 8.dp)
+//                    .size(28.dp)
+//                    .background(Color.Black, shape = CircleShape)
+//                    .clickable { onAddClick() },
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Add,
+//                    contentDescription = "Add",
+//                    tint = Color.White,
+//                    modifier = Modifier.size(14.dp)
+//                )
+//            }
         }
     }
 }

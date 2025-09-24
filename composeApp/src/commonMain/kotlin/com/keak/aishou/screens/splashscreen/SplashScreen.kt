@@ -9,6 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -48,6 +52,9 @@ fun SplashScreen(
     val navigationEvent by viewModel.navigationEvent.collectAsState()
     val screenWidth = screenSize().width
     val cardWidth = (screenWidth * 0.7f).dp
+
+    // 🧪 DEBUG: Multi-tap counter for test access
+    var debugTapCount by remember { mutableIntStateOf(0) }
 
     // Animation for floating effect
     val infiniteTransition = rememberInfiniteTransition()
@@ -145,13 +152,20 @@ fun SplashScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Tagline
+                    // Tagline (🧪 DEBUG: Tap 3 times for test access)
                     Text(
                         text = "Find Your Real Tribe",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF424242),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.clickable {
+                            debugTapCount++
+                            if (debugTapCount >= 3) {
+                                debugTapCount = 0
+                                router.goToReAuthTest()
+                            }
+                        }
                     )
                 }
             }
