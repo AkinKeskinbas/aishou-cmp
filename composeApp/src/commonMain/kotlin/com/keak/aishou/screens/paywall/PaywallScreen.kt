@@ -60,7 +60,9 @@ import androidx.compose.ui.unit.sp
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.misc.CommonLinks
 import com.keak.aishou.navigation.Router
+import com.keak.aishou.navigation.Routes
 import com.keak.aishou.purchase.PremiumPresenter
+import com.keak.aishou.purchase.PremiumState
 import com.keak.aishou.purchase.ProductsRepository
 import com.keak.aishou.purchase.ProductsState
 import com.keak.aishou.purchase.model.Periods.MONTHLY_PERIOD
@@ -75,7 +77,10 @@ import org.koin.compose.koinInject
 
 
 @Composable
-fun PaywallScreen(router: Router) {
+fun PaywallScreen(
+    router: Router,
+    returnTo: String? = null
+) {
     val repo: ProductsRepository = koinInject()
     val presenter: PremiumPresenter = koinInject()
     var bottomSheetChosenScreen by remember { mutableStateOf(PremiumBottomSheetScreen.None) }
@@ -88,6 +93,29 @@ fun PaywallScreen(router: Router) {
     LaunchedEffect(Unit) {
         repo.getProducts()
         start = true
+    }
+
+    // Handle premium upgrade navigation
+    LaunchedEffect(state, returnTo) {
+        if (state is PremiumState.Premium && !returnTo.isNullOrEmpty()) {
+            // User became premium and we have a return destination
+            try {
+                // URL decode the return path
+                val decodedReturn = returnTo
+                    .replace("%2F", "/")
+                    .replace("%3F", "?")
+                    .replace("%26", "&")
+
+                println("PaywallScreen: Premium upgrade detected, navigating back to: $decodedReturn")
+
+                // Navigate back to the original destination
+                router.navigateToRoute(decodedReturn)
+            } catch (e: Exception) {
+                println("PaywallScreen: Error navigating to return destination: ${e.message}")
+                // Fallback to going back
+                router.goBack()
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(

@@ -241,4 +241,30 @@
     <string name="detailed_explanations">詳細説明</string>
     <string name="detailed_analysis">詳細分析</string>
 
+    <!-- 設定ボトムシート -->
+    <string name="settings_title">設定</string>
+    <string name="settings_upgrade_to_premium">プレミアムにアップグレード</string>
+    <string name="settings_change_name">名前を変更</string>
+    <string name="settings_can_change_name_once">名前は1回だけ変更できます</string>
+    <string name="settings_already_changed_name">すでに名前を1回変更しました</string>
+    <string name="settings_contact_us">お問い合わせ</string>
+    <string name="settings_rate_us">アプリを評価する</string>
+    <string name="settings_privacy_policy">プライバシーポリシー</string>
+    <string name="settings_terms_conditions">利用規約</string>
+    <string name="settings_change_name_dialog_title">名前を変更</string>
+    <string name="settings_enter_new_name">新しい名前を入力してください：</string>
+    <string name="settings_name_max_chars_label">名前（最大13文字）</string>
+    <string name="settings_character_counter">%1$d/13 文字</string>
+    <string name="settings_name_change_warning">⚠️ 名前は1回しか変更できません！</string>
+    <string name="settings_save_button">保存</string>
+    <string name="settings_cancel_button">キャンセル</string>
+    <string name="settings_email_subject">Aishou アプリのフィードバック</string>
+    <string name="settings_email_body">Aishouさんへ\n\nアプリについてフィードバックを送りたいです：\n\n</string>
+
+    <!-- 追加メッセージ -->
+    <string name="match_great_job">🎉 テストお疲れさま！ 結果を友だちとシェアして相性をチェックしよう！</string>
+    <string name="match_send_your_friend">友だちを招待して一緒にテストして相性を比べよう！</string>
+    <string name="match_share_on_instagram">Instagramでシェア</string>
+
+
 </resources>

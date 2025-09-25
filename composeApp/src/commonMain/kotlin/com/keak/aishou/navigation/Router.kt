@@ -14,8 +14,9 @@ interface Router {
     fun goToTestResultScreen(testID: String)
     fun goToSplash()
     fun goToReAuth()
-    fun goToReAuthTest() // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
     fun goToPaywall()
+    fun goToPaywallWithReturn(returnTo: String)
+    fun navigateToRoute(route: String)
     fun goToOnBoarding()
     fun goToOnBoardingSecond()
     fun goToOnBoardingThird()

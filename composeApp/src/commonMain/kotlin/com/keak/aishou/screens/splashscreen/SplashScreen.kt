@@ -53,8 +53,6 @@ fun SplashScreen(
     val screenWidth = screenSize().width
     val cardWidth = (screenWidth * 0.7f).dp
 
-    // 🧪 DEBUG: Multi-tap counter for test access
-    var debugTapCount by remember { mutableIntStateOf(0) }
 
     // Animation for floating effect
     val infiniteTransition = rememberInfiniteTransition()
@@ -158,14 +156,7 @@ fun SplashScreen(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF424242),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.clickable {
-                            debugTapCount++
-                            if (debugTapCount >= 3) {
-                                debugTapCount = 0
-                                router.goToReAuthTest()
-                            }
-                        }
+                        textAlign = TextAlign.Center
                     )
                 }
             }
