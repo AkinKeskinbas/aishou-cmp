@@ -64,12 +64,22 @@ class RouterImpl(
         navigate(Routes.ReAuth, removeFromHistory = true, singleTop = true)
     }
 
-    override fun goToReAuthTest() { // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
-        navigate(Routes.ReAuthTest)
-    }
 
     override fun goToPaywall() {
         navigate(Routes.Paywall)
+    }
+
+    override fun goToPaywallWithReturn(returnTo: String) {
+        navHostController.navigate(Routes.Paywall.withReturnTo(returnTo))
+    }
+
+    override fun navigateToRoute(route: String) {
+        navHostController.navigate(route) {
+            // Remove paywall from back stack
+            popUpTo(Routes.Paywall.route) {
+                inclusive = true
+            }
+        }
     }
 
     override fun goToOnBoarding() {

@@ -33,7 +33,6 @@ import com.keak.aishou.screens.quicktestscreen.QuizViewModel
 import com.keak.aishou.screens.splashscreen.SplashScreen
 import com.keak.aishou.screens.splashscreen.SplashViewModel
 import com.keak.aishou.screens.reauth.ReAuthScreen
-import com.keak.aishou.screens.reauth.ReAuthTestScreen
 import com.keak.aishou.screens.friends.FriendsScreen
 import com.keak.aishou.screens.notifications.NotificationsScreen
 import com.keak.aishou.screens.invite.InviteScreen
@@ -82,11 +81,6 @@ fun NavGraphBuilder.mainRoute(
                 router.goToHome()
             }
         )
-    }
-    composable( // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
-        route = Routes.ReAuthTest.route
-    ) {
-        ReAuthTestScreen(router = router)
     }
     composable(
         route = Routes.OnBoarding.route
@@ -156,9 +150,20 @@ fun NavGraphBuilder.mainRoute(
         )
     }
     composable(
-        route = Routes.Paywall.route
-    ) {
-        PaywallScreen(router = router)
+        route = Routes.Paywall.route,
+        arguments = listOf(
+            navArgument("returnTo") {
+                type = NavType.StringType
+                defaultValue = ""
+                nullable = true
+            }
+        )
+    ) { backStackEntry ->
+        val returnTo: String? = backStackEntry.savedStateHandle.get<String>("returnTo")
+        PaywallScreen(
+            router = router,
+            returnTo = returnTo
+        )
     }
     composable(
         route = Routes.Home.route

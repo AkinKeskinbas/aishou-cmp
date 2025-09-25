@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.keak.aishou.misc.AppStatu
 import com.keak.aishou.misc.BackGroundBrush
 import com.keak.aishou.navigation.Router
+import com.keak.aishou.navigation.Routes
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -42,6 +43,11 @@ fun InviteScreen(
     val userPremiumStatus by viewModel.userPremiumStatus.collectAsStateWithLifecycle()
     val isAcceptingInvite by viewModel.isAcceptingInvite.collectAsStateWithLifecycle()
     val inviteAccepted by viewModel.inviteAccepted.collectAsStateWithLifecycle()
+
+    // Current route for return navigation
+    val currentRoute: String = remember {
+        Routes.Invite.passInviteData(inviteId, senderId, testId, testTitle, senderName, senderMbti)
+    }
 
     // Load data when screen starts
     LaunchedEffect(senderId, testId, testTitle, senderName, senderMbti) {
@@ -97,11 +103,14 @@ fun InviteScreen(
                         // User is premium, accept invite and start test
                         viewModel.acceptInviteAndStartTest(inviteId, testId)
                     } else {
-                        // User is not premium, go to paywall
-                        router.goToPaywall()
+                        // User is not premium, go to paywall with return path
+                        router.goToPaywallWithReturn(currentRoute)
                     }
                 },
-                onUpgradeToPremium = { router.goToPaywall() },
+                onUpgradeToPremium = {
+                    // Go to paywall with return path
+                    router.goToPaywallWithReturn(currentRoute)
+                },
                 onReject = {
                     viewModel.rejectInvite(inviteId)
                     router.goBack()

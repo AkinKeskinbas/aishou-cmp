@@ -3,7 +3,6 @@ package com.keak.aishou.navigation
 sealed class Routes(val route: String = "") {
     data object Splash : Routes("Splash")
     data object ReAuth : Routes("ReAuth")
-    data object ReAuthTest : Routes("ReAuthTest") // 🧪 DEBUG ONLY - REMOVE IN PRODUCTION
     data object OnBoarding : Routes("OnBoarding")
     data object OnBoardingSecond : Routes("OnBoardingSecond")
     data object OnBoardingThird : Routes("OnBoardingThird")
@@ -52,7 +51,13 @@ sealed class Routes(val route: String = "") {
         }
     }
 
-    data object Paywall : Routes("Paywall")
+    data object Paywall : Routes("Paywall?returnTo={returnTo}") {
+        fun withReturnTo(returnTo: String): String {
+            // URL encode return path for safe passing
+            val encodedReturn = returnTo.replace("/", "%2F").replace("?", "%3F").replace("&", "%26")
+            return "Paywall?returnTo=$encodedReturn"
+        }
+    }
     data object UserMatch : Routes("UserMatch/{testID}?friendId={friendId}") {
         fun passTestID(testID: String): String {
             return "UserMatch/$testID"

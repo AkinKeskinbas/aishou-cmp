@@ -218,15 +218,13 @@ fun TestResultContent(
                 Spacer(Modifier.height(16.dp))
                 SendToFriendButton(
                     onClick = {
-                        // TODO: Remove this temporary premium bypass after testing
-                        val isPremiumForTesting = true // Always true for testing
-                        if (isPremiumForTesting || viewModel.isPremiumUser()) {
+                        if (viewModel.isPremiumUser()) {
                             viewModel.openSendToFriendBottomSheet(testID)
                         } else {
                             router.goToPaywall()
                         }
                     },
-                    isPremium = true // TODO: Change back to viewModel.isPremiumUser() after testing
+                    isPremium = viewModel.isPremiumUser()
                 )
             }
             ResultType.COMPATIBILITY -> {
@@ -245,18 +243,6 @@ fun TestResultContent(
                 Spacer(Modifier.height(16.dp))
                 CompatibilityResultsContent(testResult = testResult)
                 Spacer(Modifier.height(16.dp))
-//                SendToFriendButton(
-//                    onClick = {
-//                        // TODO: Remove this temporary premium bypass after testing
-//                        val isPremiumForTesting = true // Always true for testing
-//                        if (isPremiumForTesting || viewModel.isPremiumUser()) {
-//                            viewModel.openSendToFriendBottomSheet(testID)
-//                        } else {
-//                            router.goToPaywall()
-//                        }
-//                    },
-//                    isPremium = true // TODO: Change back to viewModel.isPremiumUser() after testing
-//                )
             }
             ResultType.NONE -> {
                 // No results available

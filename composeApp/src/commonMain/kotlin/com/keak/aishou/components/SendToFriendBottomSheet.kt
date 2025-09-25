@@ -183,16 +183,16 @@ fun SendToFriendBottomSheet(
                         )
 
                         // Instagram Story Share (with visual)
-                        ShareOptionButton(
-                            emoji = "📷",
-                            label = "Instagram",
-                            color = Color(0xFFE4405F),
-                            onClick = {
-                                if (soloResult != null && inviteLink != null) {
-                                    showInstagramShareCard = true
-                                }
-                            }
-                        )
+//                        ShareOptionButton(
+//                            emoji = "📷",
+//                            label = "Instagram",
+//                            color = Color(0xFFE4405F),
+//                            onClick = {
+//                                if (soloResult != null && inviteLink != null) {
+//                                    showInstagramShareCard = true
+//                                }
+//                            }
+//                        )
 
                         // More Options
                         ShareOptionButton(

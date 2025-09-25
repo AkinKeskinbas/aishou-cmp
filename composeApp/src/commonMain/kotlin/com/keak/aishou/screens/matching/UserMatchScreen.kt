@@ -1,11 +1,17 @@
 package com.keak.aishou.screens.matching
 
 import aishou.composeapp.generated.resources.Res
+import aishou.composeapp.generated.resources.cat
+import aishou.composeapp.generated.resources.instagram
 import aishou.composeapp.generated.resources.match_great_job
 import aishou.composeapp.generated.resources.match_send_your_friend
+import aishou.composeapp.generated.resources.match_share_on_instagram
+import aishou.composeapp.generated.resources.unicorn
+import aishou.composeapp.generated.resources.unicorn_fish
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +32,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,15 +56,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.components.SendToFriendBottomSheet
 import com.keak.aishou.data.api.MatchingAnalysis
-import com.keak.aishou.utils.ShareableMatchResultCard
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
 import com.keak.aishou.data.api.ResultType
 import com.keak.aishou.data.models.UserInfo
 import com.keak.aishou.misc.orZero
 import com.keak.aishou.navigation.Router
 import com.keak.aishou.screens.allresults.TestResultViewModel
+import com.keak.aishou.utils.ShareableMatchResultCard
 import com.keak.aishou.utils.StringResources
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -126,6 +134,7 @@ fun UserMatchScreen(
                     )
                 }
             }
+
             testResult != null -> {
 
                 val result = testResult!!
@@ -153,24 +162,9 @@ fun UserMatchScreen(
                         NeobrutalistHeader(
                             title = title,
                             onBackClick = { router.goBack() },
-                            isSharing = isSharing,
-                            onShareClick = {
-                                // Share result as image using custom shareable card
-                                result.let { testResultData ->
-                                    val userDisplayName = testResultData.myDisplayName
-                                    coroutineScope.launch {
-                                        viewModel.shareToInstagramStory {
-                                            ShareableMatchResultCard(
-                                                testResult = testResultData,
-                                                userDisplayName = userDisplayName
-                                            )
-                                        }
-                                    }
-                                }
-                            }
                         )
                     }
-                    when (resultType){
+                    when (resultType) {
                         ResultType.SOLO -> {
                             item {
                                 NeobrutalistSoloScoreCard(
@@ -191,11 +185,16 @@ fun UserMatchScreen(
                             if (viewModel.shouldShowSendToFriendButton()) {
                                 item {
                                     NeobrutalistSendToFriendCard(
-                                        onSendToFriendClick = { viewModel.openSendToFriendBottomSheet(testID) }
+                                        onSendToFriendClick = {
+                                            viewModel.openSendToFriendBottomSheet(
+                                                testID
+                                            )
+                                        }
                                     )
                                 }
                             }
                         }
+
                         ResultType.COMPATIBILITY -> {
                             items(result.compatibilityResults) { compatibilityResult ->
                                 // VS Section - Main comparison
@@ -224,8 +223,36 @@ fun UserMatchScreen(
                                         matchingAnalysis = analysis
                                     )
                                 }
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                NeoBrutalistCardViewWithFlexSize(
+                                    modifier = Modifier.fillMaxWidth().clickable(role = Role.Button){
+                                        result.let { testResultData ->
+                                            val userDisplayName = testResultData.myDisplayName
+                                            coroutineScope.launch {
+                                                viewModel.shareToInstagramStory {
+                                                    ShareableMatchResultCard(
+                                                        testResult = testResultData,
+                                                        userDisplayName = userDisplayName
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    },
+                                    backgroundColor = Color(0xFFFECC00),
+                                    cornerRadius = 8.dp
+                                ) {
+                                    Text(
+                                        text = stringResource(Res.string.match_share_on_instagram),
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 18.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = Color.Black
+                                    )
+                                }
                             }
                         }
+
                         ResultType.BOTH -> {
                             item {
                                 NeobrutalistSoloScoreCard(
@@ -271,6 +298,7 @@ fun UserMatchScreen(
                                 }
                             }
                         }
+
                         ResultType.NONE -> {}
                     }
                     item {
@@ -296,9 +324,7 @@ fun UserMatchScreen(
 @Composable
 private fun NeobrutalistHeader(
     title: String,
-    onBackClick: () -> Unit,
-    onShareClick: (() -> Unit)? = null,
-    isSharing: Boolean = false
+    onBackClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -341,14 +367,18 @@ private fun NeobrutalistHeader(
             )
 
             // Share button (only show if callback provided)
-            onShareClick?.let { shareCallback ->
-                Spacer(modifier = Modifier.width(16.dp))
-                NeobrutalistIconButton(
-                    icon = if (isSharing) "⏳" else "📤",
-                    backgroundColor = if (isSharing) Color(0xFFFFA500) else Color(0xFF4FFFB3),
-                    onClick = if (isSharing) { {} } else shareCallback
-                )
-            }
+//            onShareClick?.let { shareCallback ->
+//                Spacer(modifier = Modifier.width(16.dp))
+//                Image(
+//                    painter = painterResource(Res.drawable.instagram),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(45.dp).clickable() {
+//                        if (isSharing) {
+//                            {}
+//                        } else shareCallback
+//                    }
+//                )
+//            }
         }
     }
 }
@@ -370,7 +400,8 @@ private fun NeobrutalistVSCard(
 
     val friendUser = UserInfo(
         userId = compatibilityResult.friendId.orEmpty(),
-        displayName = compatibilityResult.friendInfo?.displayName ?: StringResources.friendFallback(),
+        displayName = compatibilityResult.friendInfo?.displayName
+            ?: StringResources.friendFallback(),
         mbtiType = compatibilityResult.friendInfo?.mbtiType,
         zodiacSign = compatibilityResult.friendInfo?.zodiacSign
     )
@@ -401,25 +432,10 @@ private fun NeobrutalistVSCard(
     ) {
         Column {
             // VS Title with score
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 4.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        ambientColor = Color.Black
-                    )
-                    .background(
-                        color = Color(0xFFFFEB3B),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .border(
-                        width = 3.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
+            NeoBrutalistCardViewWithFlexSize(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color(0XFFFECB7F),
+                cornerRadius = 16.dp
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -438,6 +454,7 @@ private fun NeobrutalistVSCard(
                     )
                 }
             }
+
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -490,12 +507,20 @@ private fun NeobrutalistVSCard(
                 )
             }
             Spacer(Modifier.height(8.dp))
-            Text(
-                text = compatibilityResult.chemistry.orEmpty(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.Black
-            )
+            NeoBrutalistCardViewWithFlexSize(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color(0xFFFD7B5E)
+            ) {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = compatibilityResult.chemistry.orEmpty(),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.Black
+                    )
+                }
+            }
+
         }
     }
 }
@@ -506,10 +531,10 @@ private fun NeobrutalistUserCard(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    NeoBrutalistCardViewWithFlexSize (
-        modifier = Modifier.size(80.dp),
+    NeoBrutalistCardViewWithFlexSize(
+        modifier = Modifier.width(150.dp),
         backgroundColor = Color(0XFFFECB7F),
-    ){
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -572,14 +597,14 @@ private fun NeobrutalistUserCard(
 @Composable
 private fun NeobrutalistSoloScoreCard(
     soloResult: com.keak.aishou.data.api.SoloResult?,
-    isBoth: Boolean  = false
+    isBoth: Boolean = false
 ) {
     val score = soloResult?.totalScore
-    NeoBrutalistCardViewWithFlexSize (
+    NeoBrutalistCardViewWithFlexSize(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = Color(0XFFFECB7F),
         cornerRadius = 16.dp
-    ){
+    ) {
         Column {
             // Solo Test Title with score
             NeoBrutalistCardViewWithFlexSize(
@@ -606,13 +631,13 @@ private fun NeobrutalistSoloScoreCard(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            if (isBoth.not()){
+            if (isBoth.not()) {
                 // Achievement message
-                NeoBrutalistCardViewWithFlexSize (
+                NeoBrutalistCardViewWithFlexSize(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     backgroundColor = Color(0xFFFDFE99),
                     cornerRadius = 12.dp
-                ){
+                ) {
                     Text(
                         text = stringResource(Res.string.match_great_job),
                         fontSize = 14.sp,
@@ -633,11 +658,11 @@ private fun NeobrutalistSoloScoreCard(
 private fun NeobrutalistSendToFriendCard(
     onSendToFriendClick: () -> Unit
 ) {
-    NeoBrutalistCardViewWithFlexSize (
+    NeoBrutalistCardViewWithFlexSize(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = Color(0xFFB8B9DE),
         cornerRadius = 12.dp
-    ){
+    ) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -667,7 +692,7 @@ private fun NeobrutalistSendToFriendCard(
 
             Spacer(modifier = Modifier.height(16.dp))
             NeoBrutalistCardViewWithFlexSize(
-                modifier = Modifier.width(150.dp).clickable(role = Role.Button){
+                modifier = Modifier.width(150.dp).clickable(role = Role.Button) {
                     onSendToFriendClick.invoke()
                 },
                 backgroundColor = Color(0xFF85D0E9),
@@ -688,32 +713,19 @@ private fun NeobrutalistSendToFriendCard(
 private fun NeobrutalistScoreCard(
     summary: String
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 6.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black
-            )
-            .background(
-                color = Color(0xFFE8F5E8),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 3.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(20.dp)
+    NeoBrutalistCardViewWithFlexSize(
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = Color(0xFFADFF86),
+        cornerRadius = 12.dp
     ) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "📊",
-                    fontSize = 24.sp
+                Image(
+                    painter = painterResource(Res.drawable.cat),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -741,32 +753,19 @@ private fun NeobrutalistScoreCard(
 private fun NeobrutalistMBTICompatibilityCard(
     matchingAnalysis: MatchingAnalysis
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 6.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black
-            )
-            .background(
-                color = Color(0xFFFFF3E0),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 3.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(20.dp)
+    NeoBrutalistCardViewWithFlexSize(
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = Color(0xFFFF73B4),
+        cornerRadius = 12.dp
     ) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "🧪",
-                    fontSize = 24.sp
+                Image(
+                    painter = painterResource(Res.drawable.unicorn),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -794,7 +793,7 @@ private fun NeobrutalistMBTICompatibilityCard(
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
-            matchingAnalysis.mbtiMatch?.strengths?.forEach { strength->
+            matchingAnalysis.mbtiMatch?.strengths?.forEach { strength ->
                 Text(
                     text = strength,
                     fontSize = 14.sp,
@@ -811,7 +810,7 @@ private fun NeobrutalistMBTICompatibilityCard(
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
-            matchingAnalysis.mbtiMatch?.challenges?.forEach { strength->
+            matchingAnalysis.mbtiMatch?.challenges?.forEach { strength ->
                 Text(
                     text = strength,
                     fontSize = 14.sp,
@@ -822,37 +821,26 @@ private fun NeobrutalistMBTICompatibilityCard(
             }
         }
     }
+
 }
+
 @Composable
 private fun NeobrutalistZodiacCompatibilityCard(
     matchingAnalysis: MatchingAnalysis
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 6.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black
-            )
-            .background(
-                color = Color(0xFFFFF3E0),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 3.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(20.dp)
+    NeoBrutalistCardViewWithFlexSize(
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = Color(0xFFB8B9DE),
+        cornerRadius = 12.dp
     ) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "🧪",
-                    fontSize = 24.sp
+                Image(
+                    painter = painterResource(Res.drawable.unicorn_fish),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -880,7 +868,7 @@ private fun NeobrutalistZodiacCompatibilityCard(
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
-            matchingAnalysis.zodiacMatch?.strengths?.forEach { strength->
+            matchingAnalysis.zodiacMatch?.strengths?.forEach { strength ->
                 Text(
                     text = strength,
                     fontSize = 14.sp,
@@ -897,7 +885,7 @@ private fun NeobrutalistZodiacCompatibilityCard(
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
-            matchingAnalysis.zodiacMatch?.challenges?.forEach { strength->
+            matchingAnalysis.zodiacMatch?.challenges?.forEach { strength ->
                 Text(
                     text = strength,
                     fontSize = 14.sp,
