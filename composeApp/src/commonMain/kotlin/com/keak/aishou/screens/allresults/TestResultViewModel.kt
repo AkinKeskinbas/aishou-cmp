@@ -18,7 +18,7 @@ import kotlinx.coroutines.runBlocking
 import com.keak.aishou.utils.ImageShareHelper
 import com.keak.aishou.utils.ImageShareHelperFactory
 import com.keak.aishou.utils.captureComposableAsBitmap
-import com.keak.aishou.utils.generateShareableBitmap
+import com.keak.aishou.utils.ShareableMatchResultCard
 import androidx.compose.runtime.Composable
 
 class TestResultViewModel(
@@ -52,6 +52,10 @@ class TestResultViewModel(
 
     private val _isSharing = MutableStateFlow(false)
     val isSharing: StateFlow<Boolean> = _isSharing.asStateFlow()
+
+    fun resetSharingState() {
+        _isSharing.value = false
+    }
 
     private val imageShareHelper by lazy { ImageShareHelperFactory.create() }
 
@@ -324,7 +328,7 @@ class TestResultViewModel(
         }
     }
 
-    suspend fun shareResultAsImage(shareableContent: @Composable () -> Unit) {
+    fun shareResultAsImage(shareableContent: @Composable () -> Unit) {
         viewModelScope.launch {
             try {
                 _isSharing.value = true
@@ -333,13 +337,21 @@ class TestResultViewModel(
                 println("TestResultViewModel: Starting image capture for sharing")
                 var bitmap = captureComposableAsBitmap(shareableContent)
 
-                // Fallback to programmatic bitmap generation if composable capture fails
+                // Use ShareableMatchResultCard as fallback instead of manual generation
                 if (bitmap == null) {
-                    println("TestResultViewModel: Composable capture failed, trying programmatic generation")
+                    println("TestResultViewModel: JetCapture failed, using ShareableMatchResultCard as fallback")
                     val testResult = _testResult.value
-                    if (testResult != null) {
+                    if (testResult != null && testResult.compatibilityResults?.isNotEmpty() == true) {
+                        val compatibilityResult = testResult.compatibilityResults.first()
                         val userDisplayName = testResult.myDisplayName
-                        bitmap = generateShareableBitmap(testResult, userDisplayName)
+                        kotlinx.coroutines.delay(100)
+                        bitmap = captureComposableAsBitmap {
+                            ShareableMatchResultCard(
+                                testResult = testResult,
+                                userDisplayName = userDisplayName,
+                                compatibilityResult = compatibilityResult
+                            )
+                        }
                     }
                 }
 
@@ -362,22 +374,33 @@ class TestResultViewModel(
         }
     }
 
-    suspend fun shareToInstagramStory(shareableContent: @Composable () -> Unit) {
+    fun shareToInstagramStory(shareableContent: @Composable () -> Unit) {
         viewModelScope.launch {
             try {
                 _isSharing.value = true
                 _error.value = null
 
-                println("TestResultViewModel: Starting image capture for Instagram story")
+                println("TestResultViewModel: Starting ENHANCED JetCapture approach for Instagram story")
                 var bitmap = captureComposableAsBitmap(shareableContent)
 
-                // Fallback to programmatic bitmap generation if composable capture fails
-                if (bitmap == null) {
-                    println("TestResultViewModel: Composable capture failed, trying programmatic generation")
+                if (bitmap != null) {
+                    println("TestResultViewModel: SUCCESS - JetCapture captured ShareableMatchResultCard! Using Compose capture.")
+                } else {
+                    println("TestResultViewModel: JetCapture failed, using ShareableMatchResultCard as fallback")
+                    // Use ShareableMatchResultCard again as fallback instead of manual generation
                     val testResult = _testResult.value
-                    if (testResult != null) {
+                    if (testResult != null && testResult.compatibilityResults?.isNotEmpty() == true) {
+                        val compatibilityResult = testResult.compatibilityResults.first()
                         val userDisplayName = testResult.myDisplayName
-                        bitmap = generateShareableBitmap(testResult, userDisplayName)
+                        // Try once more with a delay to ensure proper composition
+                        kotlinx.coroutines.delay(100)
+                        bitmap = captureComposableAsBitmap {
+                            ShareableMatchResultCard(
+                                testResult = testResult,
+                                userDisplayName = userDisplayName,
+                                compatibilityResult = compatibilityResult
+                            )
+                        }
                     }
                 }
 

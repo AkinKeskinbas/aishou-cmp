@@ -1,0 +1,374 @@
+<resources>
+    <!-- Paywall -->
+    <string name="weekly_premium_paywall">每周订阅</string>
+    <string name="monthly_premium_paywall">宇宙VIP</string>
+    <string name="monthly_premium_per_month">每月</string>
+    <string name="monthly_premium_per_week">每周</string>
+    <string name="paywall_go_premium">升级高级版</string>
+    <string name="paywall_weekly_features_daily_horoscope">每日星座运势</string>
+    <string name="paywall_weekly_features_daily_love_compatibility">爱情匹配</string>
+    <string name="paywall_weekly_features_daily_personality_insights">性格洞察</string>
+    <string name="paywall_popular">最受欢迎！</string>
+    <string name="paywall_join_discover">加入并发现你的命运！</string>
+    <string name="paywall_cancel_anytime">随时取消，无隐藏费用</string>
+    <string name="paywall_cancel_paywall">取消</string>
+    <string name="paywall_unlock_your_cosmic_personality">解锁你的宇宙人格！</string>
+    <string name="paywall_choose_your_sign">选择你的星座</string>
+    <string name="paywall_restore_purchase_text">恢复购买</string>
+
+    <!-- Home -->
+    <string name="cosmic_match_home">宇宙匹配</string>
+    <string name="mbti_zodiac_home">MBTI × 星座</string>
+    <string name="your_cosmic_profile_home">你的宇宙档案</string>
+    <string name="personality_type_home">人格类型</string>
+    <string name="zodiac_sign_profile_home">星座</string>
+    <string name="hey_text_home">嗨，</string>
+    <string name="quick_actions_home">快速操作</string>
+    <string name="new_test_home">浏览测试</string>
+    <string name="view_all_home">查看全部</string>
+    <string name="quick_quiz_home">快速开始</string>
+
+    <string name="recent_tests_home">最近测试</string>
+    <string name="your_stats_home">你的数据</string>
+    <string name="view_all_tests_home">查看所有测试</string>
+    <string name="love_tests_home">爱情测试</string>
+    <string name="friends_tests_home">友情测试</string>
+    <string name="best_matches_home">最佳匹配</string>
+    <string name="avg_score_home">平均分</string>
+
+    <!-- AllResults -->
+    <string name="screen_name_all_results">所有结果</string>
+
+    <!-- ResultScreen -->
+    <string name="match_results">匹配结果！</string>
+    <string name="result_loading_test_results">正在加载测试结果...</string>
+    <string name="result_error_loading_results">加载结果出错</string>
+    <string name="result_unknown_error">未知错误</string>
+    <string name="result_retry">重试</string>
+    <string name="result_your_test_results">你的测试结果</string>
+    <string name="result_love_matches">爱情匹配</string>
+    <string name="result_complete_results">完整结果</string>
+    <string name="result_test_results">测试结果</string>
+    <string name="result_points">分数</string>
+    <string name="result_personality_breakdown">🧠 人格解析</string>
+    <string name="result_detailed_breakdown_coming_soon">📊 详细解析即将上线！</string>
+    <string name="result_ai_psychologist_says">AI心理学家说：</string>
+    <string name="result_generate_detailed_insights">生成详细洞察</string>
+    <string name="result_premium_user_generate_analysis">高级用户可生成个性化 MBTI 分析</string>
+    <string name="result_generating">生成中...</string>
+    <string name="result_generate_insights">✨ 生成洞察</string>
+    <string name="result_love_matches_title">爱情匹配</string>
+    <string name="result_friend_number">👤 好友 #%1$d</string>
+    <string name="result_compatibility_analysis_coming_soon">兼容性分析即将上线！💫</string>
+    <string name="result_unlock_ai_insights">解锁 AI 洞察</string>
+    <string name="result_get_personalized_ai_analysis">获取你的专属 AI 人格分析！</string>
+    <string name="result_deep_analysis">深度解析</string>
+    <string name="result_insights">洞察</string>
+    <string name="result_predictions">预测</string>
+    <string name="result_upgrade_to_premium">升级高级版</string>
+    <string name="result_send_to_friend">发送给好友</string>
+    <string name="result_oops">哎呀！</string>
+    <string name="result_no_results_yet">暂无结果</string>
+    <string name="result_test_not_completed">你还没有完成此测试！</string>
+    <string name="result_take_test_to_discover">完成测试，发现你的性格洞察与匹配！</string>
+    <string name="result_start_test_now">立即开始</string>
+    <string name="result_mbti_label">MBTI</string>
+    <string name="result_zodiac_label">星座</string>
+
+    <!-- QuickTestScreen -->
+    <string name="quick_tests_screen_title">快速测试</string>
+    <string name="quick_tests_get_premium_for_all_tests">解锁所有测试需高级版</string>
+    <string name="quick_tests_discover_your_true_self">零妥协发现真实的你</string>
+    <string name="quick_tests_personality_test">人格测试</string>
+    <string name="quick_tests_brutal">硬核</string>
+    <string name="quick_tests_mbti_match">MBTI 匹配</string>
+    <string name="quick_tests_mbti">MBTI</string>
+    <string name="quick_tests_zodiac_match">星座匹配</string>
+    <string name="quick_tests_zodiac">星座</string>
+
+    <!-- QuizScreen -->
+    <string name="quiz_screen_title">返回测试</string>
+    <string name="quiz_screen_finish_test">完成测试</string>
+
+    <!-- PersonalTest -->
+    <string name="personal_screen_send_to_friend">发送给好友</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_tired_of_fake_friend">厌倦了虚假的朋友吗？</string>
+    <string name="onboarding_real_talk">真实交流</string>
+    <string name="onboarding_are_you_bored">对“假朋友”已经腻了吗？</string>
+    <string name="onboarding_yes">是的！受够了</string>
+    <string name="onboarding_you_know_the_feelings">你懂那种感觉……只在需要时找你、动不动就消失、完全不懂你 vibe 的人 😤</string>
+
+    <!-- Onboarding-Second -->
+    <string name="onboarding_second_solution">解决方案</string>
+    <string name="onboarding_find_your_real_tribe">找到真正的圈子</string>
+    <string name="onboarding_what_if">如果能找到真正匹配你能量、懂你幽默、并且真心在乎你的朋友呢？✨</string>
+    <string name="onboarding_want_friends">想要真正懂你的朋友吗？✨</string>
+    <string name="onboarding_sounds_amazing">没错！听起来超棒</string>
+
+    <!-- Onboarding-Third -->
+    <string name="onboarding_third_title">我们这样做到</string>
+    <string name="onboarding_third_subtitle">科学 × 友情 🧬✨</string>
+    <string name="onboarding_third_mbti_title">97% 准确的 MBTI</string>
+    <string name="onboarding_third_mbti_description">我们的性格测试有科学依据，不是随便的小测验</string>
+    <string name="onboarding_third_mbti_badge">真·科学 ⚡</string>
+    <string name="onboarding_third_zodiac_title">星座兼容度</string>
+    <string name="onboarding_third_zodiac_description">加点宇宙氛围，找到完美友情 ✨</string>
+    <string name="onboarding_third_zodiac_badge">宇宙匹配 🌟</string>
+    <string name="onboarding_third_matching_title">智能匹配</string>
+    <string name="onboarding_third_matching_description">连接与您在思维、幽默与能量上同频的人</string>
+    <string name="onboarding_third_matching_badge">真实连接 💫</string>
+    <string name="onboarding_third_question">准备好和“假朋友”说再见了吗？🚀</string>
+    <string name="onboarding_third_lets_do_this">开整！</string>
+    <string name="onboarding_third_maybe_later">稍后再说</string>
+
+    <!-- Onboarding-Fourth -->
+    <string name="onboarding_fourth_perfect_title">完美！</string>
+    <string name="onboarding_fourth_perfect_ready">准备就绪！🚀</string>
+    <string name="onboarding_fourth_perfect_subtitle">是时候找到真正的伙伴，把假朋友留在过去！✨</string>
+    <string name="onboarding_fourth_quick_test">快速测试</string>
+    <string name="onboarding_fourth_accurate">准确</string>
+    <string name="onboarding_fourth_free">免费</string>
+    <string name="onboarding_fourth_always">随时</string>
+    <string name="onboarding_fourth_find_friends">找到我的真朋友</string>
+    <string name="onboarding_fourth_take_quiz">和朋友一起做题</string>
+    <string name="onboarding_fourth_footer">告别假朋友，只要真连接 💯</string>
+
+    <!-- Instagram Story Share -->
+    <string name="instagram_story_app_title">🎯 AISHOU</string>
+    <string name="instagram_story_points_label">分</string>
+    <string name="instagram_story_key_insight_title">💡 关键洞察</string>
+    <string name="instagram_story_call_to_action">🚀 一起来测！</string>
+    <string name="instagram_story_app_name">AISHOU.APP</string>
+    <string name="instagram_story_insight_perfect">完美的人格！兼具理性与共情。</string>
+    <string name="instagram_story_insight_strong">你很有气场！领导力在线。</string>
+    <string name="instagram_story_insight_balanced">性格均衡，人际关系拿捏住了。</string>
+    <string name="instagram_story_insight_creative">创意满满，社交力也很强。</string>
+    <string name="instagram_story_insight_unique">你独特的潜力正等着被发现！</string>
+
+    <!-- Thank You Screen -->
+    <string name="thank_you_title">感谢完成！</string>
+    <string name="thank_you_message_normal">你的测试结果已保存。可随时在个人资料中查看。</string>
+    <string name="thank_you_message_invite">你的测试结果已保存。兼容性结果准备好后我们会通知你！</string>
+    <string name="thank_you_go_home">返回首页</string>
+
+    <!-- Common UI Elements -->
+    <string name="back_arrow">←</string>
+    <string name="retry_button">重试</string>
+    <string name="dismiss_button">关闭</string>
+    <string name="back_content_description">返回</string>
+    <string name="user_fallback_name">用户 %1$s</string>
+
+    <!-- Notifications Screen -->
+    <string name="notifications_title">🔔 通知</string>
+    <string name="test_invitations_count">测试邀请（%1$d）</string>
+    <string name="no_test_invitations_title">暂无测试邀请</string>
+    <string name="no_test_invitations_subtitle">新的测试邀请会显示在这里</string>
+    <string name="friend_requests_count">好友请求（%1$d）</string>
+    <string name="no_friend_requests_title">暂无好友请求</string>
+    <string name="no_friend_requests_subtitle">新的好友请求会显示在这里</string>
+    <string name="wants_to_be_friends">想和你成为朋友 👋</string>
+    <string name="loading_notifications">通知加载中...</string>
+    <string name="test_invite_from">来自：%1$s</string>
+    <string name="test_invite_mbti">MBTI：%1$s</string>
+
+    <!-- Invite Screen -->
+    <string name="test_invitation_title">🎉 测试邀请</string>
+    <string name="loading_invitation">邀请加载中...</string>
+    <string name="error_loading_invitation">加载邀请出错</string>
+    <string name="take_test_compare_results">去测试并比较结果</string>
+    <string name="accepting_invite_loading">正在接受邀请...</string>
+    <string name="reject_invite">拒绝邀请</string>
+    <string name="invitation_from_label">邀请来自：</string>
+    <string name="test_details_label">📋 测试详情</string>
+    <string name="premium_feature_title">高级功能</string>
+    <string name="premium_compare_description">%1$s 想与你比较“%2$s”的结果。</string>
+    <string name="upgrade_to_premium_label">升级高级版即可：</string>
+    <string name="premium_feature_take_tests">✓ 接受好友的测试</string>
+    <string name="premium_feature_compare_results">✓ 比较你们的结果</string>
+    <string name="premium_feature_unlimited_invites">✓ 无限次发送邀请</string>
+    <string name="upgrade_to_premium_button">升级高级版</string>
+
+    <!-- Friends Screen -->
+    <string name="friends_title">好友</string>
+    <string name="friend_name_placeholder">好友名称</string>
+    <string name="friends_list_count">好友（%1$d）</string>
+    <string name="no_friends_message">还没有好友。可在上方通过 ID 添加。</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">个人资料</string>
+    <string name="profile_header">资料</string>
+    <string name="pro_badge">PRO</string>
+    <string name="your_stats_title">你的数据</string>
+    <string name="test_aced_label">测试满分！</string>
+    <string name="day_streak_label">连续天数</string>
+    <string name="unlock_destiny_title">解锁你的命运！</string>
+    <string name="unlimited_tests_label">无限测试</string>
+    <string name="deep_insights_label">深度洞察</string>
+    <string name="unlock_third_eye_button">解锁第三只眼！</string>
+    <string name="tests_completed_label">完成的测试</string>
+    <string name="get_premium_label">获取高级版</string>
+    <string name="upgrade_button">升级</string>
+    <string name="premium_member_status">高级会员</string>
+    <string name="loading_profile">资料加载中...</string>
+
+    <!-- MBTI Preference Screen -->
+    <string name="mbti_your_personality">你的 MBTI 人格</string>
+    <string name="mbti_recommended">推荐！</string>
+    <string name="mbti_take_full_test">进行完整测试</string>
+    <string name="mbti_test_duration">70 题 • 15–20 分钟</string>
+    <string name="mbti_comprehensive_assessment">全面的人格评估</string>
+    <string name="mbti_know_my_type">我已知道我的类型</string>
+    <string name="mbti_select_from_list">从下方列表选择</string>
+    <string name="mbti_select_your_type">选择你的 MBTI 类型</string>
+    <string name="mbti_start_full_test">开始完整测试</string>
+    <string name="mbti_continue">继续</string>
+
+    <!-- MBTI Types -->
+    <string name="mbti_intj_name">建筑师</string>
+    <string name="mbti_intj_description">富有想象力、善于谋略的思考者</string>
+    <string name="mbti_intp_name">思想家</string>
+    <string name="mbti_intp_description">创新的发明家，对知识永不满足</string>
+    <string name="mbti_entj_name">指挥官</string>
+    <string name="mbti_entj_description">大胆、有想象力且意志坚定的领导者</string>
+    <string name="mbti_entp_name">辩论家</string>
+    <string name="mbti_entp_description">聪明好奇，热爱智力挑战</string>
+    <string name="mbti_infj_name">倡导者</string>
+    <string name="mbti_infj_description">有创造力、有洞察力、独立</string>
+    <string name="mbti_infp_name">调解者</string>
+    <string name="mbti_infp_description">诗意、善良且无私</string>
+    <string name="mbti_enfj_name">主人公</string>
+    <string name="mbti_enfj_description">富有魅力、鼓舞人心的领导者</string>
+    <string name="mbti_enfp_name">竞选者</string>
+    <string name="mbti_enfp_description">热情、富有创造力且爱社交的自由灵魂</string>
+    <string name="mbti_istj_name">后勤者</string>
+    <string name="mbti_istj_description">务实、以事实为重，可靠</string>
+    <string name="mbti_isfj_name">守护者</string>
+    <string name="mbti_isfj_description">温暖、忠诚</string>
+    <string name="mbti_estj_name">执行者</string>
+    <string name="mbti_estj_description">出色的管理者，组织力满点</string>
+    <string name="mbti_esfj_name">顾问</string>
+    <string name="mbti_esfj_description">关怀他人、善社交、很受欢迎</string>
+    <string name="mbti_istp_name">鉴赏家</string>
+    <string name="mbti_istp_description">大胆务实的实践者</string>
+    <string name="mbti_isfp_name">探险家</string>
+    <string name="mbti_isfp_description">灵活迷人的艺术家</string>
+    <string name="mbti_estp_name">企业家</string>
+    <string name="mbti_estp_description">聪明、精力充沛、洞察力强</string>
+    <string name="mbti_esfp_name">表演者</string>
+    <string name="mbti_esfp_description">自发、充满活力、热情</string>
+
+    <!-- Home Screen Additional -->
+    <string name="me">我</string>
+    <string name="unknown">未知</string>
+    <string name="welcome_to_aishou">欢迎使用 Aishou！✨</string>
+    <string name="welcome_back_with_name">欢迎回来，%1$s！👋</string>
+    <string name="welcome_back">欢迎回来！👋</string>
+    <string name="cosmic_personality_discover">一起探索你的宇宙人格！</string>
+    <string name="launch_count_days_active">第 %1$s 次启动 • 活跃 %2$s</string>
+    <string name="launch_count_only">第 %1$s 次启动</string>
+    <string name="connect_with_friends">添加并连接好友</string>
+    <string name="notifications_content_description">通知</string>
+    <string name="settings_content_description">设置</string>
+    <string name="user_match_home">用户匹配</string>
+
+    <!-- Zodiac Selection Screen -->
+    <string name="whats_your_zodiac_sign">你的星座是？</string>
+    <string name="select_zodiac_to_continue">请选择你的星座以继续</string>
+
+    <!-- Zodiac Signs -->
+    <string name="zodiac_aries_dates">3月21日 - 4月19日</string>
+    <string name="zodiac_taurus_dates">4月20日 - 5月20日</string>
+    <string name="zodiac_gemini_dates">5月21日 - 6月20日</string>
+    <string name="zodiac_cancer_dates">6月21日 - 7月22日</string>
+    <string name="zodiac_leo_dates">7月23日 - 8月22日</string>
+    <string name="zodiac_virgo_dates">8月23日 - 9月22日</string>
+    <string name="zodiac_libra_dates">9月23日 - 10月22日</string>
+    <string name="zodiac_scorpio_dates">10月23日 - 11月21日</string>
+    <string name="zodiac_sagittarius_dates">11月22日 - 12月21日</string>
+    <string name="zodiac_capricorn_dates">12月22日 - 1月19日</string>
+    <string name="zodiac_aquarius_dates">1月20日 - 2月18日</string>
+    <string name="zodiac_pisces_dates">2月19日 - 3月20日</string>
+
+    <!-- Error Messages -->
+    <string name="failed_to_load_profile">加载个人资料失败</string>
+    <string name="exception_loading_profile">加载个人资料时出现异常</string>
+    <string name="unexpected_error_loading_profile">加载个人资料时出现意外错误</string>
+    <string name="failed_to_load_friend_requests">加载好友请求失败</string>
+    <string name="failed_to_load_invitation_data">加载邀请数据失败</string>
+    <string name="failed_to_load_test_information">加载测试信息失败</string>
+    <string name="failed_to_load_friends">加载好友列表失败</string>
+    <string name="failed_to_load_test_results">加载测试结果失败</string>
+    <string name="exception_loading_test_results">加载测试结果时出现异常</string>
+
+    <!-- Friends Screen (secondary errors) -->
+    <string name="friend_name_label">好友名称</string>
+    <string name="dismiss">关闭</string>
+    <string name="unknown_error_occurred">发生未知错误</string>
+    <string name="failed_to_send_friend_request">发送好友请求失败</string>
+    <string name="failed_to_remove_friend">移除好友失败</string>
+
+    <!-- Notifications secondary -->
+    <string name="failed_to_accept_friend_request">接受好友请求失败</string>
+    <string name="failed_to_reject_friend_request">拒绝好友请求失败</string>
+
+    <!-- Match Screen -->
+    <string name="error_prefix">错误：%1$s</string>
+    <string name="test_results">测试结果</string>
+    <string name="solo_test_results">测试结果</string>
+    <string name="match_analysis">匹配分析</string>
+    <string name="friend_fallback">好友</string>
+    <string name="match_score">匹配分</string>
+    <string name="vs">VS</string>
+    <string name="your_score">你的分数</string>
+    <string name="share_with_friends">与好友分享</string>
+    <string name="send_to_friend">发送给好友</string>
+    <string name="match_summary">匹配摘要</string>
+    <string name="mbti_compatibility">MBTI 兼容度</string>
+    <string name="strengths">优势</string>
+    <string name="challenges">挑战</string>
+    <string name="zodiac_compatibility">星座兼容度</string>
+    <string name="detailed_explanations">详细说明</string>
+    <string name="detailed_analysis">详细分析</string>
+
+    <!-- Re-Authentication Screen -->
+    <string name="reauth_checking_account">正在检查你的账户</string>
+    <string name="reauth_please_wait">请稍候...</string>
+    <string name="reauth_session_renewing">正在续期会话</string>
+    <string name="reauth_security_renewal">为了安全，我们正在刷新你的账户信息</string>
+    <string name="reauth_connection_problem">连接问题</string>
+    <string name="reauth_check_internet">请检查你的网络连接</string>
+    <string name="reauth_try_again">重试</string>
+    <string name="reauth_contact_support">联系支持</string>
+    <string name="reauth_success">成功！</string>
+    <string name="reauth_account_renewed">你的账户已成功更新</string>
+    <string name="reauth_too_many_attempts">尝试过多，请稍后再试。</string>
+    <string name="reauth_recent_attempt">尝试过于频繁，请稍候。</string>
+    <string name="reauth_unknown_error">发生未知错误</string>
+
+    <!-- Settings Bottom Sheet -->
+    <string name="settings_title">设置</string>
+    <string name="settings_upgrade_to_premium">升级到高级版</string>
+    <string name="settings_change_name">修改名称</string>
+    <string name="settings_can_change_name_once">你只能修改一次名称</string>
+    <string name="settings_already_changed_name">你已经修改过一次名称</string>
+    <string name="settings_contact_us">联系我们</string>
+    <string name="settings_rate_us">为我们评分</string>
+    <string name="settings_privacy_policy">隐私政策</string>
+    <string name="settings_terms_conditions">条款与条件</string>
+    <string name="settings_change_name_dialog_title">修改名称</string>
+    <string name="settings_enter_new_name">输入你的新名称：</string>
+    <string name="settings_name_max_chars_label">名称（最多 13 字符）</string>
+    <string name="settings_character_counter">%1$d/13 字符</string>
+    <string name="settings_name_change_warning">⚠️ 名称只能修改一次！</string>
+    <string name="settings_save_button">保存</string>
+    <string name="settings_cancel_button">取消</string>
+    <string name="settings_email_subject">Aishou 应用反馈</string>
+    <string name="settings_email_body">Hi Aishou，\n\n我想分享关于 Aishou 的一些反馈：\n\n</string>
+
+    <!-- Extra -->
+    <string name="match_great_job">🎉 干得漂亮！把结果分享给好友，看看你们有多合拍。</string>
+    <string name="match_send_your_friend">邀请好友一起做测试并比较兼容度！</string>
+    <string name="match_share_on_instagram">分享到 Instagram</string>
+</resources>

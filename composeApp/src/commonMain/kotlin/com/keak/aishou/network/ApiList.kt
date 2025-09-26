@@ -4,9 +4,6 @@ object ApiList {
     // Platform-specific base URLs - automatically selects correct URL for each platform
     val BASE_URL = PlatformConfig.baseUrl
 
-    // Alternative URLs (comment out PlatformConfig.baseUrl above and uncomment one below if needed):
-    // const val BASE_URL = "http://172.22.1.95:3060"  // Use actual IP for real device testing
-
     const val GET_CHAT_ANALYSIS = "/analyze"
     const val GET_TOKEN = "/auth/token"
     const val REGISTER_USER = "/v1/auth/register"

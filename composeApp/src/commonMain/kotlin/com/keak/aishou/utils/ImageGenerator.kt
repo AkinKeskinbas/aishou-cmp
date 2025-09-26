@@ -1,13 +1,23 @@
 package com.keak.aishou.utils
 
+import aishou.composeapp.generated.resources.Res
+import aishou.composeapp.generated.resources.app_icon
+import aishou.composeapp.generated.resources.cat
+import aishou.composeapp.generated.resources.match_results
+import aishou.composeapp.generated.resources.match_summary
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -16,139 +26,155 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
+import com.keak.aishou.data.api.CompatibilityResult
 import com.keak.aishou.data.api.TestResultResponse
+import com.keak.aishou.screens.quicktestscreen.BrutalHeader
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ShareableMatchResultCard(
     testResult: TestResultResponse,
-    userDisplayName: String
+    userDisplayName: String,
+    compatibilityResult: CompatibilityResult
 ) {
     Box(
         modifier = Modifier
-            .size(400.dp, 600.dp) // Instagram Story dimensions (16:9 aspect ratio)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF8565FF),
-                        Color(0xFF6B46C1)
-                    )
-                )
-            )
+            .width(1080.dp)
+            .height(1920.dp)
+            .background(Color(0xFFC8FBAD)),
+        contentAlignment = Alignment.Center
     ) {
-        Column(
+        NeoBrutalistCardViewWithFlexSize(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(0.dp), // Remove any padding
+            backgroundColor = Color(0xFFC8FBAD)
         ) {
-            // Header
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "🎯",
-                    fontSize = 48.sp
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "My Test Results",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            // Result Card
-            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        ambientColor = Color.Black
-                    )
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .border(
-                        width = 4.dp,
-                        color = Color.Black,
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .padding(24.dp)
+                    .fillMaxSize()
+                    .padding(16.dp), // Internal content padding
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NeoBrutalistCardViewWithFlexSize(
+                    modifier = Modifier.weight(1f).rotate(-2f),
+                    backgroundColor = Color(0xFFFDFEA5),
                 ) {
-                    // User name
                     Text(
-                        text = userDisplayName,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center
+                        text = compatibilityResult.myInfo?.mbtiType.orEmpty() + " - " + compatibilityResult.myInfo?.zodiacSign,
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Black
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Solo result if available
-                    testResult.soloResult?.let { solo ->
-                        Text(
-                            text = "Score: ${solo.totalScore}/100",
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF8565FF),
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = testResult.resultType,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF666666),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    // Compatibility results summary
-                    if (testResult.compatibilityResults.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "💕 ${testResult.compatibilityResults.size} Compatibility Results",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF6B6B),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                }
+                Spacer(Modifier.width(8.dp))
+                NeoBrutalistCardViewWithFlexSize(
+                    modifier = Modifier.weight(1f).rotate(2f),
+                    backgroundColor = Color(0xFFFDFEA5),
+                ) {
+                    Text(
+                        text = compatibilityResult.friendInfo?.mbtiType.orEmpty() + " - " + compatibilityResult.friendInfo?.zodiacSign,
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Black
+                    )
                 }
             }
 
-            // Footer
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "✨ Take your own test ✨",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "AISHOU",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
+                    text = stringResource(Res.string.match_results),
+                    fontSize = 52.sp,
+                    fontWeight = FontWeight.Black
                 )
             }
+            NeoBrutalistCardViewWithFlexSize(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                backgroundColor = Color(0xFFB3CDFF)
+            ) {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = compatibilityResult.score.toString() + "%",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 46.sp
+                    )
+                }
+            }
+
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                BrutalHeader(
+                    modifier = Modifier,
+                    headerText = compatibilityResult.chemistry.orEmpty(),
+                    textSize = 42
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f) // Take half of remaining space instead of all
+                    .background(
+                        Color(0xFFADFF86),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .border(
+                        4.dp,
+                        Color.Black,
+                        RoundedCornerShape(12.dp)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp), // Larger padding
+                    verticalArrangement = Arrangement.spacedBy(16.dp) // Larger spacing
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.cat),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp)
+                        )
+                        Text(
+                            text = stringResource(Res.string.match_summary),
+                            fontSize = 50.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.Black
+                        )
+                    }
+                    Text(
+                        text = compatibilityResult.summary.orEmpty(),
+                        fontSize = 42.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF333333),
+                        lineHeight = 50.sp // Much larger line height for 42sp text
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.app_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(50.dp)
+                )
+                Text(
+                    text = "Aishou App",
+                    fontWeight = FontWeight.Black,
+                    fontSize = 50.sp
+                )
+            }
+        }
         }
     }
 }

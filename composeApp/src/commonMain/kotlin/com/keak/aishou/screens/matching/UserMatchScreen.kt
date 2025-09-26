@@ -63,7 +63,6 @@ import com.keak.aishou.navigation.Router
 import com.keak.aishou.screens.allresults.TestResultViewModel
 import com.keak.aishou.utils.ShareableMatchResultCard
 import com.keak.aishou.utils.StringResources
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -83,7 +82,11 @@ fun UserMatchScreen(
     val inviteLink by viewModel.inviteLink.collectAsStateWithLifecycle()
     val isSharing by viewModel.isSharing.collectAsStateWithLifecycle()
     val resultType = ResultType.fromString(testResult?.resultType.orEmpty())
-    val coroutineScope = rememberCoroutineScope()
+
+    // Reset sharing state when returning to screen
+    LaunchedEffect(Unit) {
+        viewModel.resetSharingState()
+    }
 
     println("UserMatchScreen: resultType-->${testResult?.resultType}")
     println("UserMatchScreen: TEST!-->")
@@ -229,13 +232,12 @@ fun UserMatchScreen(
                                     modifier = Modifier.fillMaxWidth().clickable(role = Role.Button){
                                         result.let { testResultData ->
                                             val userDisplayName = testResultData.myDisplayName
-                                            coroutineScope.launch {
-                                                viewModel.shareToInstagramStory {
-                                                    ShareableMatchResultCard(
-                                                        testResult = testResultData,
-                                                        userDisplayName = userDisplayName
-                                                    )
-                                                }
+                                            viewModel.shareToInstagramStory {
+                                                ShareableMatchResultCard(
+                                                    testResult = testResultData,
+                                                    userDisplayName = userDisplayName,
+                                                    compatibilityResult
+                                                )
                                             }
                                         }
                                     },
@@ -532,7 +534,7 @@ private fun NeobrutalistUserCard(
     modifier: Modifier = Modifier
 ) {
     NeoBrutalistCardViewWithFlexSize(
-        modifier = Modifier.width(150.dp),
+        modifier = modifier,
         backgroundColor = Color(0XFFFECB7F),
     ) {
         Column(

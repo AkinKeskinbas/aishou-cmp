@@ -1,0 +1,374 @@
+<resources>
+    <!-- Paywall -->
+    <string name="weekly_premium_paywall">주간 구독</string>
+    <string name="monthly_premium_paywall">코스믹 VIP</string>
+    <string name="monthly_premium_per_month">월별</string>
+    <string name="monthly_premium_per_week">주별</string>
+    <string name="paywall_go_premium">프리미엄 업그레이드</string>
+    <string name="paywall_weekly_features_daily_horoscope">오늘의 별자리 운세</string>
+    <string name="paywall_weekly_features_daily_love_compatibility">연애 궁합</string>
+    <string name="paywall_weekly_features_daily_personality_insights">성격 인사이트</string>
+    <string name="paywall_popular">인기!</string>
+    <string name="paywall_join_discover">가입하고 나의 운명을 발견하세요!</string>
+    <string name="paywall_cancel_anytime">언제든 해지, 숨겨진 요금 없음</string>
+    <string name="paywall_cancel_paywall">취소</string>
+    <string name="paywall_unlock_your_cosmic_personality">코스믹 퍼스널리티를 해제하세요!</string>
+    <string name="paywall_choose_your_sign">별자리 선택</string>
+    <string name="paywall_restore_purchase_text">구매 복원</string>
+
+    <!-- Home -->
+    <string name="cosmic_match_home">코스믹 매치</string>
+    <string name="mbti_zodiac_home">MBTI × 별자리</string>
+    <string name="your_cosmic_profile_home">내 코스믹 프로필</string>
+    <string name="personality_type_home">성격 유형</string>
+    <string name="zodiac_sign_profile_home">별자리</string>
+    <string name="hey_text_home">안녕, </string>
+    <string name="quick_actions_home">빠른 실행</string>
+    <string name="new_test_home">테스트 탐색</string>
+    <string name="view_all_home">모두 보기</string>
+    <string name="quick_quiz_home">빠른 시작</string>
+
+    <string name="recent_tests_home">최근 테스트</string>
+    <string name="your_stats_home">내 통계</string>
+    <string name="view_all_tests_home">모든 테스트 보기</string>
+    <string name="love_tests_home">연애 테스트</string>
+    <string name="friends_tests_home">친구 테스트</string>
+    <string name="best_matches_home">베스트 매치</string>
+    <string name="avg_score_home">평균 점수</string>
+
+    <!-- AllResults -->
+    <string name="screen_name_all_results">모든 결과</string>
+
+    <!-- ResultScreen -->
+    <string name="match_results">매치 결과!</string>
+    <string name="result_loading_test_results">결과 불러오는 중...</string>
+    <string name="result_error_loading_results">결과 불러오기 오류</string>
+    <string name="result_unknown_error">알 수 없는 오류</string>
+    <string name="result_retry">재시도</string>
+    <string name="result_your_test_results">내 테스트 결과</string>
+    <string name="result_love_matches">연애 매치</string>
+    <string name="result_complete_results">전체 결과</string>
+    <string name="result_test_results">테스트 결과</string>
+    <string name="result_points">포인트</string>
+    <string name="result_personality_breakdown">🧠 성격 분석</string>
+    <string name="result_detailed_breakdown_coming_soon">📊 상세 분석 곧 공개!</string>
+    <string name="result_ai_psychologist_says">AI 심리학자 말:</string>
+    <string name="result_generate_detailed_insights">상세 인사이트 생성</string>
+    <string name="result_premium_user_generate_analysis">프리미엄 이용자는 맞춤형 MBTI 분석을 생성할 수 있어요</string>
+    <string name="result_generating">생성 중...</string>
+    <string name="result_generate_insights">✨ 인사이트 생성</string>
+    <string name="result_love_matches_title">연애 매치</string>
+    <string name="result_friend_number">👤 친구 #%1$d</string>
+    <string name="result_compatibility_analysis_coming_soon">궁합 분석 곧 공개! 💫</string>
+    <string name="result_unlock_ai_insights">AI 인사이트 해제</string>
+    <string name="result_get_personalized_ai_analysis">개인 맞춤 AI 성격 분석 받기!</string>
+    <string name="result_deep_analysis">심층 분석</string>
+    <string name="result_insights">인사이트</string>
+    <string name="result_predictions">예측</string>
+    <string name="result_upgrade_to_premium">프리미엄 업그레이드</string>
+    <string name="result_send_to_friend">친구에게 보내기</string>
+    <string name="result_oops">앗!</string>
+    <string name="result_no_results_yet">아직 결과 없음</string>
+    <string name="result_test_not_completed">아직 이 테스트를 완료하지 않았어요!</string>
+    <string name="result_take_test_to_discover">테스트를 완료하고 성격 인사이트와 궁합을 확인하세요!</string>
+    <string name="result_start_test_now">지금 시작</string>
+    <string name="result_mbti_label">MBTI</string>
+    <string name="result_zodiac_label">별자리</string>
+
+    <!-- QuickTestScreen -->
+    <string name="quick_tests_screen_title">빠른 테스트</string>
+    <string name="quick_tests_get_premium_for_all_tests">모든 테스트는 프리미엄 전용</string>
+    <string name="quick_tests_discover_your_true_self">타협 없이 진짜 나 발견</string>
+    <string name="quick_tests_personality_test">성격 테스트</string>
+    <string name="quick_tests_brutal">하드코어</string>
+    <string name="quick_tests_mbti_match">MBTI 매치</string>
+    <string name="quick_tests_mbti">MBTI</string>
+    <string name="quick_tests_zodiac_match">별자리 매치</string>
+    <string name="quick_tests_zodiac">별자리</string>
+
+    <!-- QuizScreen -->
+    <string name="quiz_screen_title">테스트로 돌아가기</string>
+    <string name="quiz_screen_finish_test">테스트 완료</string>
+
+    <!-- PersonalTest -->
+    <string name="personal_screen_send_to_friend">친구에게 보내기</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_tired_of_fake_friend">가짜 친구 지겹지 않아?</string>
+    <string name="onboarding_real_talk">리얼 토크</string>
+    <string name="onboarding_are_you_bored">가짜 친구 이제 질렸어?</string>
+    <string name="onboarding_yes">응! 이제 그만</string>
+    <string name="onboarding_you_know_the_feelings">필요할 때만 연락하고, 갑자기 잠수 타고, 내 바이브 못 맞추는 친구들 😤</string>
+
+    <!-- Onboarding-Second -->
+    <string name="onboarding_second_solution">해결책</string>
+    <string name="onboarding_find_your_real_tribe">진짜 내 무리 찾기</string>
+    <string name="onboarding_what_if">네 에너지랑 유머를 이해하고 진심으로 챙겨주는 친구를 찾을 수 있다면? ✨</string>
+    <string name="onboarding_want_friends">진짜로 나를 아는 친구 원해? ✨</string>
+    <string name="onboarding_sounds_amazing">응! 완전 좋아</string>
+
+    <!-- Onboarding-Third -->
+    <string name="onboarding_third_title">우리는 이렇게 해요</string>
+    <string name="onboarding_third_subtitle">과학 × 우정 🧬✨</string>
+    <string name="onboarding_third_mbti_title">정확도 97% MBTI</string>
+    <string name="onboarding_third_mbti_description">우리 테스트는 과학적으로 검증됨 (그냥 퀴즈 아님)</string>
+    <string name="onboarding_third_mbti_badge">리얼 과학 ⚡</string>
+    <string name="onboarding_third_zodiac_title">별자리 궁합</string>
+    <string name="onboarding_third_zodiac_description">코스믹 바이브로 완벽한 친구 매치 ✨</string>
+    <string name="onboarding_third_zodiac_badge">코스믹 매치 🌟</string>
+    <string name="onboarding_third_matching_title">스마트 매칭</string>
+    <string name="onboarding_third_matching_description">네 마인드셋·유머·에너지를 공유하는 사람과 연결</string>
+    <string name="onboarding_third_matching_badge">리얼 커넥션 💫</string>
+    <string name="onboarding_third_question">가짜 친구 버릴 준비 됐어? 🚀</string>
+    <string name="onboarding_third_lets_do_this">가자!</string>
+    <string name="onboarding_third_maybe_later">나중에</string>
+
+    <!-- Onboarding-Fourth -->
+    <string name="onboarding_fourth_perfect_title">완벽!</string>
+    <string name="onboarding_fourth_perfect_ready">준비 완료! 🚀</string>
+    <string name="onboarding_fourth_perfect_subtitle">진짜 친구 찾고 가짜는 버릴 시간 ✨</string>
+    <string name="onboarding_fourth_quick_test">빠른 테스트</string>
+    <string name="onboarding_fourth_accurate">정확</string>
+    <string name="onboarding_fourth_free">무료</string>
+    <string name="onboarding_fourth_always">언제든</string>
+    <string name="onboarding_fourth_find_friends">진짜 친구 찾기</string>
+    <string name="onboarding_fourth_take_quiz">친구랑 같이 퀴즈</string>
+    <string name="onboarding_fourth_footer">가짜 친구 끝, 진짜 연결만 💯</string>
+
+    <!-- Instagram Story Share -->
+    <string name="instagram_story_app_title">🎯 AISHOU</string>
+    <string name="instagram_story_points_label">점</string>
+    <string name="instagram_story_key_insight_title">💡 핵심 인사이트</string>
+    <string name="instagram_story_call_to_action">🚀 나랑 같이 해봐!</string>
+    <string name="instagram_story_app_name">AISHOU.APP</string>
+    <string name="instagram_story_insight_perfect">완벽한 성격! 분석적이면서 공감력도 최고.</string>
+    <string name="instagram_story_insight_strong">존재감 강한 타입! 리더십이 돋보여.</string>
+    <string name="instagram_story_insight_balanced">균형 잡힌 성격, 관계에 강해.</string>
+    <string name="instagram_story_insight_creative">창의적이고 사교적인 매력이 있어.</string>
+    <string name="instagram_story_insight_unique">너만의 독특한 잠재력이 기다리고 있어!</string>
+
+    <!-- Thank You Screen -->
+    <string name="thank_you_title">완료해줘서 고마워!</string>
+    <string name="thank_you_message_normal">테스트 결과가 저장되었어요. 언제든 프로필에서 확인할 수 있어요.</string>
+    <string name="thank_you_message_invite">테스트 결과가 저장되었어요. 궁합 결과가 준비되면 알림을 드릴게요!</string>
+    <string name="thank_you_go_home">홈으로 가기</string>
+
+    <!-- Common UI Elements -->
+    <string name="back_arrow">←</string>
+    <string name="retry_button">재시도</string>
+    <string name="dismiss_button">닫기</string>
+    <string name="back_content_description">뒤로</string>
+    <string name="user_fallback_name">사용자 %1$s</string>
+
+    <!-- Notifications Screen -->
+    <string name="notifications_title">🔔 알림</string>
+    <string name="test_invitations_count">테스트 초대 (%1$d)</string>
+    <string name="no_test_invitations_title">테스트 초대 없음</string>
+    <string name="no_test_invitations_subtitle">새 초대가 여기 표시돼요</string>
+    <string name="friend_requests_count">친구 요청 (%1$d)</string>
+    <string name="no_friend_requests_title">친구 요청 없음</string>
+    <string name="no_friend_requests_subtitle">새 친구 요청이 여기 표시돼요</string>
+    <string name="wants_to_be_friends">친구가 되고 싶어 해요 👋</string>
+    <string name="loading_notifications">알림 불러오는 중...</string>
+    <string name="test_invite_from">보낸 사람: %1$s</string>
+    <string name="test_invite_mbti">MBTI: %1$s</string>
+
+    <!-- Invite Screen -->
+    <string name="test_invitation_title">🎉 테스트 초대</string>
+    <string name="loading_invitation">초대 불러오는 중...</string>
+    <string name="error_loading_invitation">초대 불러오기 오류</string>
+    <string name="take_test_compare_results">테스트하고 결과 비교</string>
+    <string name="accepting_invite_loading">초대 수락 중...</string>
+    <string name="reject_invite">초대 거절</string>
+    <string name="invitation_from_label">초대한 사람:</string>
+    <string name="test_details_label">📋 테스트 정보</string>
+    <string name="premium_feature_title">프리미엄 기능</string>
+    <string name="premium_compare_description">%1$s 님이 “%2$s” 결과를 너와 비교하길 원해요.</string>
+    <string name="upgrade_to_premium_label">프리미엄 업그레이드로 가능:</string>
+    <string name="premium_feature_take_tests">✓ 친구가 보낸 테스트 수락</string>
+    <string name="premium_feature_compare_results">✓ 서로 결과 비교</string>
+    <string name="premium_feature_unlimited_invites">✓ 무제한 초대 보내기</string>
+    <string name="upgrade_to_premium_button">프리미엄으로</string>
+
+    <!-- Friends Screen -->
+    <string name="friends_title">친구</string>
+    <string name="friend_name_placeholder">친구 이름</string>
+    <string name="friends_list_count">친구 (%1$d)</string>
+    <string name="no_friends_message">아직 친구가 없어요. 위의 ID로 친구를 추가해 보세요.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">프로필</string>
+    <string name="profile_header">프로필</string>
+    <string name="pro_badge">PRO</string>
+    <string name="your_stats_title">내 통계</string>
+    <string name="test_aced_label">테스트 만점!</string>
+    <string name="day_streak_label">연속 일수</string>
+    <string name="unlock_destiny_title">나의 운명 해제!</string>
+    <string name="unlimited_tests_label">무제한 테스트</string>
+    <string name="deep_insights_label">딥 인사이트</string>
+    <string name="unlock_third_eye_button">써드 아이 해제!</string>
+    <string name="tests_completed_label">완료한 테스트</string>
+    <string name="get_premium_label">프리미엄 받기</string>
+    <string name="upgrade_button">업그레이드</string>
+    <string name="premium_member_status">프리미엄 회원</string>
+    <string name="loading_profile">프로필 불러오는 중...</string>
+
+    <!-- MBTI Preference Screen -->
+    <string name="mbti_your_personality">나의 MBTI 성격</string>
+    <string name="mbti_recommended">추천!</string>
+    <string name="mbti_take_full_test">전체 테스트 진행</string>
+    <string name="mbti_test_duration">70문항 • 15–20분</string>
+    <string name="mbti_comprehensive_assessment">종합 성격 평가</string>
+    <string name="mbti_know_my_type">내 타입을 알아</string>
+    <string name="mbti_select_from_list">아래 목록에서 선택</string>
+    <string name="mbti_select_your_type">MBTI 타입 선택</string>
+    <string name="mbti_start_full_test">전체 테스트 시작</string>
+    <string name="mbti_continue">계속</string>
+
+    <!-- MBTI Types -->
+    <string name="mbti_intj_name">건축가</string>
+    <string name="mbti_intj_description">상상력과 전략적 사고를 갖춘 사색가</string>
+    <string name="mbti_intp_name">사상가</string>
+    <string name="mbti_intp_description">혁신적인 발명가, 지식 갈증이 끝없음</string>
+    <string name="mbti_entj_name">지휘관</string>
+    <string name="mbti_entj_description">대담하고 상상력 넘치며 의지가 강한 리더</string>
+    <string name="mbti_entp_name">변론가</string>
+    <string name="mbti_entp_description">영리하고 호기심 많으며 지적 도전을 사랑함</string>
+    <string name="mbti_infj_name">옹호자</string>
+    <string name="mbti_infj_description">창의적·통찰력 있는 독립형</string>
+    <string name="mbti_infp_name">중재자</string>
+    <string name="mbti_infp_description">시적이고 친절하며 이타적인 사람</string>
+    <string name="mbti_enfj_name">선도자</string>
+    <string name="mbti_enfj_description">카리스마 있고 영감을 주는 리더</string>
+    <string name="mbti_enfp_name">열정가</string>
+    <string name="mbti_enfp_description">열정적·창의적·사교적인 자유 영혼</string>
+    <string name="mbti_istj_name">현실주의자</string>
+    <string name="mbti_istj_description">실용적이고 사실 중심, 신뢰할 만함</string>
+    <string name="mbti_isfj_name">수호자</string>
+    <string name="mbti_isfj_description">따뜻하고 헌신적</string>
+    <string name="mbti_estj_name">경영자</string>
+    <string name="mbti_estj_description">탁월한 관리자, 운영에 능숙</string>
+    <string name="mbti_esfj_name">협력가</string>
+    <string name="mbti_esfj_description">배려심 깊고 사교적이며 인기 많음</string>
+    <string name="mbti_istp_name">장인</string>
+    <string name="mbti_istp_description">대담하고 실용적인 실험가</string>
+    <string name="mbti_isfp_name">모험가</string>
+    <string name="mbti_isfp_description">유연하고 매력적인 아티스트</string>
+    <string name="mbti_estp_name">기업가</string>
+    <string name="mbti_estp_description">영리하고 에너지 넘치며 통찰력 있음</string>
+    <string name="mbti_esfp_name">연예인</string>
+    <string name="mbti_esfp_description">즉흥적이고 역동적이며 열정적</string>
+
+    <!-- Home Screen Additional -->
+    <string name="me">나</string>
+    <string name="unknown">알 수 없음</string>
+    <string name="welcome_to_aishou">Aishou에 오신 걸 환영해요! ✨</string>
+    <string name="welcome_back_with_name">다시 왔네, %1$s! 👋</string>
+    <string name="welcome_back">다시 왔네! 👋</string>
+    <string name="cosmic_personality_discover">코스믹 퍼스널리티를 함께 발견해봐요!</string>
+    <string name="launch_count_days_active">실행 #%1$s • %2$s일 활성</string>
+    <string name="launch_count_only">실행 #%1$s</string>
+    <string name="connect_with_friends">친구와 연결하기</string>
+    <string name="notifications_content_description">알림</string>
+    <string name="settings_content_description">설정</string>
+    <string name="user_match_home">유저 매치</string>
+
+    <!-- Zodiac Selection Screen -->
+    <string name="whats_your_zodiac_sign">너의 별자리는?</string>
+    <string name="select_zodiac_to_continue">계속하려면 별자리를 선택하세요</string>
+
+    <!-- Zodiac Signs -->
+    <string name="zodiac_aries_dates">3월 21일 - 4월 19일</string>
+    <string name="zodiac_taurus_dates">4월 20일 - 5월 20일</string>
+    <string name="zodiac_gemini_dates">5월 21일 - 6월 20일</string>
+    <string name="zodiac_cancer_dates">6월 21일 - 7월 22일</string>
+    <string name="zodiac_leo_dates">7월 23일 - 8월 22일</string>
+    <string name="zodiac_virgo_dates">8월 23일 - 9월 22일</string>
+    <string name="zodiac_libra_dates">9월 23일 - 10월 22일</string>
+    <string name="zodiac_scorpio_dates">10월 23일 - 11월 21일</string>
+    <string name="zodiac_sagittarius_dates">11월 22일 - 12월 21일</string>
+    <string name="zodiac_capricorn_dates">12월 22일 - 1월 19일</string>
+    <string name="zodiac_aquarius_dates">1월 20일 - 2월 18일</string>
+    <string name="zodiac_pisces_dates">2월 19일 - 3월 20일</string>
+
+    <!-- Error Messages -->
+    <string name="failed_to_load_profile">프로필 불러오기 실패</string>
+    <string name="exception_loading_profile">프로필 로딩 중 예외 발생</string>
+    <string name="unexpected_error_loading_profile">프로필 로딩 중 예상치 못한 오류</string>
+    <string name="failed_to_load_friend_requests">친구 요청 불러오기 실패</string>
+    <string name="failed_to_load_invitation_data">초대 데이터 불러오기 실패</string>
+    <string name="failed_to_load_test_information">테스트 정보 불러오기 실패</string>
+    <string name="failed_to_load_friends">친구 목록 불러오기 실패</string>
+    <string name="failed_to_load_test_results">테스트 결과 불러오기 실패</string>
+    <string name="exception_loading_test_results">테스트 결과 로딩 예외</string>
+
+    <!-- Friends Screen (secondary) -->
+    <string name="friend_name_label">친구 이름</string>
+    <string name="dismiss">닫기</string>
+    <string name="unknown_error_occurred">알 수 없는 오류가 발생했습니다</string>
+    <string name="failed_to_send_friend_request">친구 요청 보내기 실패</string>
+    <string name="failed_to_remove_friend">친구 삭제 실패</string>
+
+    <!-- Notifications Screen (secondary) -->
+    <string name="failed_to_accept_friend_request">친구 요청 수락 실패</string>
+    <string name="failed_to_reject_friend_request">친구 요청 거절 실패</string>
+
+    <!-- Match Screen -->
+    <string name="error_prefix">오류: %1$s</string>
+    <string name="test_results">테스트 결과</string>
+    <string name="solo_test_results">테스트 결과</string>
+    <string name="match_analysis">매치 분석</string>
+    <string name="friend_fallback">친구</string>
+    <string name="match_score">매치 점수</string>
+    <string name="vs">VS</string>
+    <string name="your_score">내 점수</string>
+    <string name="share_with_friends">친구와 공유</string>
+    <string name="send_to_friend">친구에게 보내기</string>
+    <string name="match_summary">매치 요약</string>
+    <string name="mbti_compatibility">MBTI 궁합</string>
+    <string name="strengths">강점</string>
+    <string name="challenges">도전 과제</string>
+    <string name="zodiac_compatibility">별자리 궁합</string>
+    <string name="detailed_explanations">상세 설명</string>
+    <string name="detailed_analysis">상세 분석</string>
+
+    <!-- Re-Authentication Screen -->
+    <string name="reauth_checking_account">계정을 확인하는 중</string>
+    <string name="reauth_please_wait">잠시만 기다려주세요...</string>
+    <string name="reauth_session_renewing">세션 갱신 중</string>
+    <string name="reauth_security_renewal">보안을 위해 계정 정보를 새로고침 중입니다</string>
+    <string name="reauth_connection_problem">연결 문제</string>
+    <string name="reauth_check_internet">인터넷 연결을 확인하세요</string>
+    <string name="reauth_try_again">다시 시도</string>
+    <string name="reauth_contact_support">지원팀에 문의</string>
+    <string name="reauth_success">성공!</string>
+    <string name="reauth_account_renewed">계정이 성공적으로 갱신되었어요</string>
+    <string name="reauth_too_many_attempts">시도가 너무 많습니다. 잠시 후 다시 시도하세요.</string>
+    <string name="reauth_recent_attempt">최근 시도가 너무 가까워요. 잠시만 기다려주세요.</string>
+    <string name="reauth_unknown_error">알 수 없는 오류가 발생했습니다</string>
+
+    <!-- Settings Bottom Sheet -->
+    <string name="settings_title">설정</string>
+    <string name="settings_upgrade_to_premium">프리미엄으로 업그레이드</string>
+    <string name="settings_change_name">이름 변경</string>
+    <string name="settings_can_change_name_once">이름은 한 번만 변경할 수 있어요</string>
+    <string name="settings_already_changed_name">이미 한 번 이름을 변경했어요</string>
+    <string name="settings_contact_us">문의하기</string>
+    <string name="settings_rate_us">평가하기</string>
+    <string name="settings_privacy_policy">개인정보 처리방침</string>
+    <string name="settings_terms_conditions">이용약관</string>
+    <string name="settings_change_name_dialog_title">이름 변경</string>
+    <string name="settings_enter_new_name">새 이름을 입력하세요:</string>
+    <string name="settings_name_max_chars_label">이름 (최대 13자)</string>
+    <string name="settings_character_counter">%1$d/13 자</string>
+    <string name="settings_name_change_warning">⚠️ 이름은 한 번만 변경할 수 있어요!</string>
+    <string name="settings_save_button">저장</string>
+    <string name="settings_cancel_button">취소</string>
+    <string name="settings_email_subject">Aishou 앱 피드백</string>
+    <string name="settings_email_body">Hi Aishou,\n\nAishou 앱에 대한 피드백을 공유하고 싶어요:\n\n</string>
+
+    <!-- Extra -->
+    <string name="match_great_job">🎉 잘했어! 결과를 공유해서 친구와 얼마나 잘 맞는지 확인해봐.</string>
+    <string name="match_send_your_friend">친구에게 초대 보내고 궁합을 비교해봐!</string>
+    <string name="match_share_on_instagram">인스타그램에 공유</string>
+</resources>
