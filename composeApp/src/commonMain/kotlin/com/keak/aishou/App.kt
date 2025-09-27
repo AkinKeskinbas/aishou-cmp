@@ -100,7 +100,8 @@ private fun handleDeepLinkNavigation(url: String, router: Router) {
             println("App: Navigating to notifications from friends deeplink")
             router.goToNotifications()
         } else if (normalizedUrl.contains("/invite/")) {
-            val inviteId = extractPathParameter(url, "/invite/")
+            // Handle both old format (aishou://invite/ID) and new format (https://www.aishou.site/invite/index.html?inviteId=ID)
+            val inviteId = extractPathParameter(url, "/invite/") ?: extractUrlParameter(url, "inviteId")
             val senderId = extractUrlParameter(url, "senderId")
             val testId = extractUrlParameter(url, "testId")
             val testTitle = extractUrlParameter(url, "testTitle") ?: "Test"

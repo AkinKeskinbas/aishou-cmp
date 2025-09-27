@@ -9,6 +9,7 @@ import com.keak.aishou.purchase.PremiumChecker
 import com.keak.aishou.utils.Platform
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -29,6 +30,11 @@ class UserRegistrationService(
     private val permissionMutex = Mutex()
     private var permissionRequested = false
     private var permissionJob: Job? = null
+
+    // Registration debouncing and cancellation
+    private val registrationMutex = Mutex()
+    private var registrationJob: Job? = null
+    private var isRegistering = false
 
     suspend fun initialize() {
         initializationMutex.withLock {
@@ -61,67 +67,85 @@ class UserRegistrationService(
     }
 
     private suspend fun registerUser() {
-        try {
-            userSessionManager.handleAppStart()
-
-            val userId = userSessionManager.ensureRevenueCatUserId()
-            if (userId == null) {
-                println("UserRegistration: ❌ Failed to get RevenueCat user ID")
-                println("UserRegistration: Make sure RevenueCat is properly initialized")
+        registrationMutex.withLock {
+            if (isRegistering) {
+                println("UserRegistration: ⏭️ Registration already in progress, skipping...")
                 return
             }
 
-            val currentLanguage = languageManager.currentLanguage.first()
-            val languageCode = currentLanguage?.languageCode ?: "en"
-            val platform = Platform.name.lowercase()
+            // Cancel any existing registration job
+            registrationJob?.cancel()
 
-            val userRegister = UserRegister(
-                revenueCatId = userId,
-                displayName = null,
-                photoUrl = null,
-                lang = languageCode,
-                platform = platform,
-                isAnonymous = true,
-                isPremium = PremiumChecker.isPremium
-            )
+            registrationJob = scope.launch(Dispatchers.IO) {
+                try {
+                    isRegistering = true
+                    println("UserRegistration: 🚀 Starting registration process...")
 
-            println("UserRegistration: Sending registration request...")
-            println("UserRegistration: - RevenueCat ID: $userId")
-            println("UserRegistration: - Language: $languageCode")
-            println("UserRegistration: - Platform: $platform")
+                    userSessionManager.handleAppStart()
 
-            when (val result = apiService.registerUser(userRegister)) {
-                is ApiResult.Success -> {
-                    println("UserRegistration: ✅ User registered successfully!")
-
-                    result.data.data?.let { tokenResponse ->
-                        dataStoreManager.setTokens(tokenResponse.token, tokenResponse.refreshToken)
-                        println("UserRegistration: Tokens stored successfully")
-                        println("UserRegistration: Access token: ${tokenResponse.token}")
-                        println("UserRegistration: Refresh token: ${tokenResponse.refreshToken}")
-                    } ?: println("UserRegistration: ❌ No token data in response!")
-
-                    markUserAsRegistered()
-
-                    scope.launch(Dispatchers.Main) {
-                        finishSetupForReturningUser()
+                    val userId = userSessionManager.ensureRevenueCatUserId()
+                    if (userId == null) {
+                        println("UserRegistration: ❌ Failed to get RevenueCat user ID")
+                        println("UserRegistration: Make sure RevenueCat is properly initialized")
+                        return@launch
                     }
-                }
-                is ApiResult.Error -> {
-                    println("UserRegistration: ❌ Registration failed: ${result.message}")
-                    handleRegistrationFailure(Exception(result.message ?: "Unknown error"))
-                }
-                is ApiResult.Exception -> {
-                    println("UserRegistration: ❌ Registration exception: ${result.exception.message}")
-                    result.exception.printStackTrace()
-                    handleRegistrationFailure(result.exception)
+
+                    val currentLanguage = languageManager.currentLanguage.first()
+                    val languageCode = currentLanguage?.languageCode ?: "en"
+                    val platform = Platform.name.lowercase()
+
+                    val userRegister = UserRegister(
+                        revenueCatId = userId,
+                        displayName = null,
+                        photoUrl = null,
+                        lang = languageCode,
+                        platform = platform,
+                        isAnonymous = true,
+                        isPremium = PremiumChecker.isPremium
+                    )
+
+                    println("UserRegistration: Sending registration request...")
+                    println("UserRegistration: - RevenueCat ID: $userId")
+                    println("UserRegistration: - Language: $languageCode")
+                    println("UserRegistration: - Platform: $platform")
+
+                    when (val result = apiService.registerUser(userRegister)) {
+                        is ApiResult.Success -> {
+                            println("UserRegistration: ✅ User registered successfully!")
+
+                            result.data.data?.let { tokenResponse ->
+                                dataStoreManager.setTokens(tokenResponse.token, tokenResponse.refreshToken)
+                                println("UserRegistration: Tokens stored successfully")
+                                println("UserRegistration: Access token: ${tokenResponse.token}")
+                                println("UserRegistration: Refresh token: ${tokenResponse.refreshToken}")
+                            } ?: println("UserRegistration: ❌ No token data in response!")
+
+                            markUserAsRegistered()
+
+                            withContext(Dispatchers.Main) {
+                                finishSetupForReturningUser()
+                            }
+                        }
+                        is ApiResult.Error -> {
+                            println("UserRegistration: ❌ Registration failed: ${result.message}")
+                            handleRegistrationFailure(Exception(result.message ?: "Unknown error"))
+                        }
+                        is ApiResult.Exception -> {
+                            println("UserRegistration: ❌ Registration exception: ${result.exception.message}")
+                            result.exception.printStackTrace()
+                            handleRegistrationFailure(result.exception)
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    println("UserRegistration: ❌ Exception during registration: ${e.message}")
+                    e.printStackTrace()
+                    handleRegistrationFailure(e)
+                } finally {
+                    isRegistering = false
+                    println("UserRegistration: 🏁 Registration process completed")
                 }
             }
-
-        } catch (e: Exception) {
-            println("UserRegistration: ❌ Exception during registration: ${e.message}")
-            e.printStackTrace()
-            handleRegistrationFailure(e)
         }
     }
 
@@ -185,12 +209,30 @@ class UserRegistrationService(
 
     suspend fun forceReregister() {
         println("UserRegistration: Force re-registration requested")
+
+        // Cancel any existing registration and reset state
+        registrationMutex.withLock {
+            registrationJob?.cancel()
+            isRegistering = false
+        }
+
         registerUser()
     }
 
     suspend fun isUserAuthenticated(): Boolean {
         val isFirstTime = userSessionManager.isUserFirstTime()
         val hasUserId = userSessionManager.getUserId() != null
-        return !isFirstTime && hasUserId
+        val hasAccessToken = !dataStoreManager.accessToken.first().isNullOrBlank()
+        return !isFirstTime && hasUserId && hasAccessToken
+    }
+
+    fun isRegistrationInProgress(): Boolean {
+        return isRegistering
+    }
+
+    fun cancelRegistration() {
+        registrationJob?.cancel()
+        isRegistering = false
+        println("UserRegistration: Registration cancelled by user")
     }
 }

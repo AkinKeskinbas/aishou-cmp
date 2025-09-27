@@ -142,6 +142,10 @@ class RouterImpl(
         navigateArg(Routes.ThankYou.passFromInvite(isFromInvite))
     }
 
+    override fun goToMBTIResult() {
+        navigate(Routes.MBTIResult)
+    }
+
     private fun navigate(
         routes: Routes,
         removeFromHistory: Boolean = false,

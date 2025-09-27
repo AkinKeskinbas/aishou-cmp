@@ -2,10 +2,14 @@ package com.keak.aishou.screens.matching
 
 import aishou.composeapp.generated.resources.Res
 import aishou.composeapp.generated.resources.cat
+import aishou.composeapp.generated.resources.crown
+import aishou.composeapp.generated.resources.crown_premium
 import aishou.composeapp.generated.resources.instagram
 import aishou.composeapp.generated.resources.match_great_job
 import aishou.composeapp.generated.resources.match_send_your_friend
 import aishou.composeapp.generated.resources.match_share_on_instagram
+import aishou.composeapp.generated.resources.premium_insight_button
+import aishou.composeapp.generated.resources.premium_insight_message
 import aishou.composeapp.generated.resources.unicorn
 import aishou.composeapp.generated.resources.unicorn_fish
 import androidx.compose.animation.core.CubicBezierEasing
@@ -44,9 +48,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -171,7 +177,8 @@ fun UserMatchScreen(
                         ResultType.SOLO -> {
                             item {
                                 NeobrutalistSoloScoreCard(
-                                    soloResult = result.soloResult
+                                    soloResult = result.soloResult,
+                                    router = router
                                 )
                             }
 
@@ -599,7 +606,8 @@ private fun NeobrutalistUserCard(
 @Composable
 private fun NeobrutalistSoloScoreCard(
     soloResult: com.keak.aishou.data.api.SoloResult?,
-    isBoth: Boolean = false
+    isBoth: Boolean = false,
+    router: Router? = null
 ) {
     val score = soloResult?.totalScore
     NeoBrutalistCardViewWithFlexSize(
@@ -634,23 +642,90 @@ private fun NeobrutalistSoloScoreCard(
 
             Spacer(modifier = Modifier.height(8.dp))
             if (isBoth.not()) {
-                // Achievement message
+                // Score Description or Achievement message
+                val displayText = soloResult?.scoreDescription
+                    ?: stringResource(Res.string.match_great_job)
+                Text(
+                    text = displayText,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF333333),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 20.sp
+                )
+//                NeoBrutalistCardViewWithFlexSize(
+//                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+//                    backgroundColor = Color(0xFFFDFE99),
+//                    cornerRadius = 12.dp
+//                ) {
+//                    Column(
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ) {
+//                        Text(
+//                            text = displayText,
+//                            fontSize = 14.sp,
+//                            fontWeight = FontWeight.Medium,
+//                            color = Color(0xFF333333),
+//                            textAlign = TextAlign.Center,
+//                            lineHeight = 20.sp
+//                        )
+//                    }
+//                }
+            }
+            // Premium insight button
+            if (router != null) {
+                Spacer(modifier = Modifier.height(8.dp))
                 NeoBrutalistCardViewWithFlexSize(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    backgroundColor = Color(0xFFFDFE99),
-                    cornerRadius = 12.dp
+                    modifier = Modifier.rotate(2f).fillMaxWidth().clickable(role = Role.Button) {
+                        router.goToPaywall()
+                    },
+                    backgroundColor = Color(0xFFFDC400),
+                    cornerRadius = 8.dp
                 ) {
-                    Text(
-                        text = stringResource(Res.string.match_great_job),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF333333),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 20.sp
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
+                    ) {
+//                        Text(
+//                            text = stringResource(Res.string.premium_insight_button),
+//                            fontSize = 12.sp,
+//                            fontWeight = FontWeight.Bold,
+//                            color = Color.White,
+//                            textAlign = TextAlign.Center
+//                        )
+//                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Image(
+                                painter = painterResource(Res.drawable.crown),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(Color.Black),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(Res.string.premium_insight_message),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 12.sp
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Image(
+                                painter = painterResource(Res.drawable.crown),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(Color.Black),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                    }
                 }
             }
-
         }
     }
 

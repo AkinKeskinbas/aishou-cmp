@@ -39,6 +39,7 @@ import com.keak.aishou.screens.invite.InviteScreen
 import com.keak.aishou.screens.matching.UserMatchScreen
 import com.keak.aishou.screens.profile.ProfileScreen
 import com.keak.aishou.screens.thankyou.ThankYouScreen
+import com.keak.aishou.screens.results.MBTIResultScreen
 import com.keak.aishou.data.models.UserMatch
 import com.keak.aishou.data.models.UserInfo
 import org.koin.compose.viewmodel.koinViewModel
@@ -347,5 +348,21 @@ fun NavGraphBuilder.mainRoute(
             router = router,
             isFromInvite = isFromInvite
         )
+    }
+
+    composable(route = Routes.MBTIResult.route) {
+        // Get the personality result from the PersonalityDataManager
+        val personalityDataManager: PersonalityDataManager = koinInject()
+        val personalityResult = personalityDataManager.getLatestPersonalityResult()
+
+        personalityResult?.let { result ->
+            MBTIResultScreen(
+                personalityResult = result,
+                router = router
+            )
+        } ?: run {
+            // If no personality result found, go to home
+            router.goToHome()
+        }
     }
 }

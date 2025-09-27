@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +47,12 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -232,26 +239,32 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
             )
             Spacer(Modifier.height(16.dp))
         }
-        items(testResultList) { recentTestsData ->
-            println("RecentTestData-->TestType-->${recentTestsData.testType}")
-            RecentTestCard(
-                testerName = recentTestsData.testerName,
-                friendName = recentTestsData.friendInfo?.displayName ?: "",
-                friendMbti = recentTestsData.friendInfo?.mbtiType ?: "",
-                testerMbti = recentTestsData.testerMbti,
-                testResult = recentTestsData.testResult,
-                testerType = recentTestsData.testerType,
-                bgColor = recentTestsData.resultBg,
-                testType = if (recentTestsData.testType == QuizType.Compat) "match" else "solo",
-                clickAction = {
-                    if (recentTestsData.testType == QuizType.Compat) {
-                        router.goToUserMatchWithFriend(
-                            recentTestsData.testID,
-                            recentTestsData.friendInfo?.userId.orEmpty()
-                        )
-                    } else {
-                        router.goToUserMatch(recentTestsData.testID)
-                    }
+        if (isLoadingProfile) {
+            items(3) { // Show 3 loading placeholders
+                NeoBrutalistLoadingCard()
+                Spacer(Modifier.height(8.dp))
+            }
+        } else {
+            items(testResultList) { recentTestsData ->
+                println("RecentTestData-->TestType-->${recentTestsData.testType}")
+                RecentTestCard(
+                    testerName = recentTestsData.testerName,
+                    friendName = recentTestsData.friendInfo?.displayName ?: "",
+                    friendMbti = recentTestsData.friendInfo?.mbtiType ?: "",
+                    testerMbti = recentTestsData.testerMbti,
+                    testResult = recentTestsData.testResult,
+                    testerType = recentTestsData.testerType,
+                    bgColor = recentTestsData.resultBg,
+                    testType = if (recentTestsData.testType == QuizType.Compat) "match" else "solo",
+                    clickAction = {
+                        if (recentTestsData.testType == QuizType.Compat) {
+                            router.goToUserMatchWithFriend(
+                                recentTestsData.testID,
+                                recentTestsData.friendInfo?.userId.orEmpty()
+                            )
+                        } else {
+                            router.goToUserMatch(recentTestsData.testID)
+                        }
 
 //                    if (recentTestsData.testType == QuizType.Single){
 //                        router.goToTestResultScreen(recentTestsData.testID)
@@ -259,9 +272,10 @@ fun HomeScreen(router: Router, vm: HomeViewModel = koinViewModel()) {
 //                        router.goToTestResultScreen(recentTestsData.testID)
 //                    }
 
-                }
-            )
-            Spacer(Modifier.height(8.dp))
+                    }
+                )
+                Spacer(Modifier.height(8.dp))
+            }
         }
         item {
             NeoBrutalistCardViewWithFlexSize(
@@ -737,6 +751,127 @@ private fun HomeHeader(
                             onSettingsClick()
                         }
                         .padding(2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NeoBrutalistLoadingCard() {
+    val infiniteTransition = rememberInfiniteTransition(label = "loading")
+
+    NeoBrutalistCardViewWithFlexSize(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        backgroundColor = Color.White
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Animated loading circle with neobrutalist style
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .shadow(
+                        elevation = 6.dp,
+                        shape = RoundedCornerShape(12.dp),
+                        ambientColor = Color.Black
+                    )
+                    .background(
+                        color = Color(0xFF66BB6A),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .border(
+                        width = 3.dp,
+                        color = Color.Black,
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(30.dp),
+                    color = Color.White,
+                    strokeWidth = 3.dp
+                )
+            }
+
+            Spacer(Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                // Loading placeholder for text
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.6f)
+                        .height(16.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .background(
+                            color = Color(0xFFE0E0E0),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = Color.Black,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(14.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .background(
+                            color = Color(0xFFF0F0F0),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = Color.Black,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                )
+            }
+
+            // Loading score placeholder
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        ambientColor = Color.Black
+                    )
+                    .background(
+                        color = Color(0xFFFFA726),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .border(
+                        width = 3.dp,
+                        color = Color.Black,
+                        shape = RoundedCornerShape(10.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "...",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White
                 )
             }
         }

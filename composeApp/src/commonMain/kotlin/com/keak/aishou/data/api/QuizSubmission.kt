@@ -40,6 +40,8 @@ data class Submission(
     val totalScore: Int? = null,
     @SerialName("personalizedInsights")
     val personalizedInsights: String? = null,
+    @SerialName("scoreDescription")
+    val scoreDescription: String? = null,
     @SerialName("completedAt")
     val completedAt: Long = Clock.System.now().toEpochMilliseconds()
 )

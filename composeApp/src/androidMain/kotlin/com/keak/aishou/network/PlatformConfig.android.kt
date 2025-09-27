@@ -18,7 +18,7 @@ actual object PlatformConfig {
         } ?: false
 
         val selectedUrl = if (isDebug) {
-            "http://10.0.2.2:3060" // Debug: Local development server for Android emulator
+            "http://172.22.1.83:3060" // Debug: Local development server for Android emulator
         } else {
             "https://api.aishou.site" // Release: Production API
         }

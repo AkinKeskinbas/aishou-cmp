@@ -29,6 +29,12 @@ class OneSignalService(
     private val logMutex = Mutex()
     private var scheduledRetryJob: Job? = null
 
+    // Push registration debouncing
+    private val pushRegistrationMutex = Mutex()
+    private var pushRegistrationJob: Job? = null
+    private var isPushRegistrationInProgress = false
+    private var lastRegisteredOneSignalId: String? = null
+
     /**
      * Initialize OneSignal (without user tracking - that requires token)
      */
@@ -282,76 +288,97 @@ class OneSignalService(
     }
 
     /**
-     * Register OneSignal ID with backend
+     * Register OneSignal ID with backend (with debouncing)
      */
     private suspend fun registerOneSignalIdWithBackend(oneSignalId: String) {
-        try {
-            println("OneSignal: Registering OneSignal ID with backend...")
-
-            // Check if this ID is already registered
-            val storedOneSignalId = dataStoreManager.oneSignalId.first()
-            if (storedOneSignalId == oneSignalId) {
-                println("OneSignal: ✅ OneSignal ID already registered and unchanged: $oneSignalId")
+        pushRegistrationMutex.withLock {
+            if (isPushRegistrationInProgress) {
+                println("OneSignal: ⏭️ Push registration already in progress, skipping...")
                 return
             }
 
-            // Check if user has valid authentication token
-            val accessToken = dataStoreManager.accessToken.first()
-            if (accessToken.isNullOrBlank()) {
-                println("OneSignal: ❌ No access token found - user may not be registered/authenticated")
-                println("OneSignal: Skipping OneSignal registration until user is authenticated")
+            if (lastRegisteredOneSignalId == oneSignalId) {
+                println("OneSignal: ✅ OneSignal ID already processed recently: $oneSignalId")
                 return
-            } else {
-                println("OneSignal: ✅ Access token found, proceeding with OneSignal registration")
             }
 
-            // Get current locale and timezone - simplified for cross-platform compatibility
-            val locale = "en_US" // Default locale for now
-            val timezone = "UTC" // Default timezone for now
+            // Cancel any existing registration job
+            pushRegistrationJob?.cancel()
 
-            // Create push registration request
-            val pushReq = PushReq(
-                playerId = oneSignalId,
-                platform = getPlatform().lowercase(),
-                locale = locale,
-                timezone = timezone
-            )
+            pushRegistrationJob = scope.launch(Dispatchers.Default) {
+                try {
+                    isPushRegistrationInProgress = true
+                    println("OneSignal: 🚀 Starting push registration for ID: $oneSignalId")
 
-            println("OneSignal: Sending push registration request...")
-            println("OneSignal: - Player ID: $oneSignalId")
-            println("OneSignal: - Platform: ${getPlatform().lowercase()}")
-            println("OneSignal: - Locale: $locale")
-            println("OneSignal: - Timezone: $timezone")
-
-            // Send request to backend
-            val result = withContext(Dispatchers.Default) {
-                apiService.registerPush(pushReq)
-            }
-
-            when (result) {
-                is ApiResult.Success -> {
-                    println("OneSignal: ✅ Successfully registered OneSignal ID with backend")
-
-                    // Store the OneSignal ID to avoid duplicate registrations
-                    dataStoreManager.setOneSignalId(oneSignalId)
-                    println("OneSignal: OneSignal ID stored locally")
-                }
-                is ApiResult.Error -> {
-                    println("OneSignal: ❌ Failed to register OneSignal ID: ${result.message}")
-                    if (result.code == 401) {
-                        println("OneSignal: ❌ 401 Unauthorized - Access token may be invalid or expired")
-                        println("OneSignal: This usually means user registration failed or token wasn't saved properly")
+                    // Check if this ID is already registered
+                    val storedOneSignalId = dataStoreManager.oneSignalId.first()
+                    if (storedOneSignalId == oneSignalId) {
+                        println("OneSignal: ✅ OneSignal ID already registered and unchanged: $oneSignalId")
+                        lastRegisteredOneSignalId = oneSignalId
+                        return@launch
                     }
-                }
-                is ApiResult.Exception -> {
-                    println("OneSignal: ❌ Exception registering OneSignal ID: ${result.exception.message}")
-                    result.exception.printStackTrace()
+
+                    // Check if user has valid authentication token
+                    val accessToken = dataStoreManager.accessToken.first()
+                    if (accessToken.isNullOrBlank()) {
+                        println("OneSignal: ❌ No access token found - user may not be registered/authenticated")
+                        println("OneSignal: Skipping OneSignal registration until user is authenticated")
+                        return@launch
+                    } else {
+                        println("OneSignal: ✅ Access token found, proceeding with OneSignal registration")
+                    }
+
+                    // Get current locale and timezone - simplified for cross-platform compatibility
+                    val locale = "en_US" // Default locale for now
+                    val timezone = "UTC" // Default timezone for now
+
+                    // Create push registration request
+                    val pushReq = PushReq(
+                        playerId = oneSignalId,
+                        platform = getPlatform().lowercase(),
+                        locale = locale,
+                        timezone = timezone
+                    )
+
+                    println("OneSignal: Sending push registration request...")
+                    println("OneSignal: - Player ID: $oneSignalId")
+                    println("OneSignal: - Platform: ${getPlatform().lowercase()}")
+                    println("OneSignal: - Locale: $locale")
+                    println("OneSignal: - Timezone: $timezone")
+
+                    // Send request to backend
+                    val result = apiService.registerPush(pushReq)
+
+                    when (result) {
+                        is ApiResult.Success -> {
+                            println("OneSignal: ✅ Successfully registered OneSignal ID with backend")
+
+                            // Store the OneSignal ID to avoid duplicate registrations
+                            dataStoreManager.setOneSignalId(oneSignalId)
+                            lastRegisteredOneSignalId = oneSignalId
+                            println("OneSignal: OneSignal ID stored locally")
+                        }
+                        is ApiResult.Error -> {
+                            println("OneSignal: ❌ Failed to register OneSignal ID: ${result.message}")
+                            if (result.code == 401) {
+                                println("OneSignal: ❌ 401 Unauthorized - Access token may be invalid or expired")
+                                println("OneSignal: This usually means user registration failed or token wasn't saved properly")
+                            }
+                        }
+                        is ApiResult.Exception -> {
+                            println("OneSignal: ❌ Exception registering OneSignal ID: ${result.exception.message}")
+                            result.exception.printStackTrace()
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    println("OneSignal: ❌ Error registering OneSignal ID with backend: ${e.message}")
+                    e.printStackTrace()
+                } finally {
+                    isPushRegistrationInProgress = false
+                    println("OneSignal: 🏁 Push registration process completed")
                 }
             }
-
-        } catch (e: Exception) {
-            println("OneSignal: ❌ Error registering OneSignal ID with backend: ${e.message}")
-            e.printStackTrace()
         }
     }
 
@@ -382,6 +409,30 @@ class OneSignalService(
         }
     }
 
+
+    /**
+     * Cancel all ongoing operations
+     */
+    fun cancelAllOperations() {
+        println("OneSignal: Cancelling all ongoing operations...")
+
+        scheduledRetryJob?.cancel()
+        scheduledRetryJob = null
+
+        pushRegistrationJob?.cancel()
+        pushRegistrationJob = null
+
+        isPushRegistrationInProgress = false
+
+        println("OneSignal: All operations cancelled")
+    }
+
+    /**
+     * Get push registration status
+     */
+    fun isPushRegistrationInProgress(): Boolean {
+        return isPushRegistrationInProgress
+    }
 
     /**
      * Get current platform

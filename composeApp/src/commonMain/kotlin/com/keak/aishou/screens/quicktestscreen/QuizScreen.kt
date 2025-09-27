@@ -67,14 +67,25 @@ fun QuizScreen(
         }
     }
 
-    // Handle immediate navigation to ThankYou screen
+    // Handle immediate navigation to result screens
     LaunchedEffect(uiState.shouldNavigateToThankYou) {
         if (uiState.shouldNavigateToThankYou) {
             viewModel.onEvent(QuizUiEvent.NavigationHandled)
             if (uiState.isFromInvite) {
                 router.goToThankYou(isFromInvite = true)
             } else {
-                router.goToThankYou(isFromInvite = false)
+                // Check if this is the onboarding MBTI test (quick-quiz)
+                println("QuizScreen: Debug navigation - quizID=$quizID, isMBTITest=${uiState.isMBTITest}, personalityResult=${uiState.personalityResult != null}")
+
+                if ((quizID == null || quizID == "personality") && uiState.isMBTITest && uiState.personalityResult != null) {
+                    // This is the onboarding MBTI test - go to MBTI result screen
+                    println("QuizScreen: Navigating to MBTI Result")
+                    router.goToMBTIResult()
+                } else {
+                    // Other tests go to thank you screen
+                    println("QuizScreen: Navigating to Thank You - conditions not met")
+                    router.goToThankYou(isFromInvite = false)
+                }
             }
         }
     }
@@ -134,13 +145,34 @@ fun QuizScreen(
                 showStripes = true
             )
             Spacer(Modifier.height(16.dp))
-            LazyColumn(
-                modifier = Modifier.background(
-                    Color(0xFFFECB7F)
-                )
-                    .clipToBounds()            // gölgeler/çizimler üstten sızmasın
-                    .zIndex(1f),
-            ) {
+
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    NeoBrutalistCardViewWithFlexSize(
+                        modifier = Modifier.padding(32.dp),
+                        backgroundColor = Color.White,
+                        shadowColor = Color.Black
+                    ) {
+                        Text(
+                            text = "Loading questions...",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(24.dp)
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.background(
+                        Color(0xFFFECB7F)
+                    )
+                        .clipToBounds()            // gölgeler/çizimler üstten sızmasın
+                        .zIndex(1f),
+                ) {
                 items(uiState.questions, key = { it.index }) { question ->
                     NeoBrutalistCardViewWithFlexSize(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -226,9 +258,11 @@ fun QuizScreen(
                                 // Reset state and retry
                                 viewModel.onEvent(QuizUiEvent.ResetSubmissionState)
                             } else {
-                                if (quizID != null) {
+                                if (quizID != null && quizID != "personality") {
+                                    // Regular quiz submission
                                     viewModel.onEvent(QuizUiEvent.SubmitQuiz(quizID, 1))
                                 } else {
+                                    // Quick quiz submission (onboarding MBTI test)
                                     viewModel.onEvent(QuizUiEvent.SubmitQuickQuiz)
                                 }
                             }
@@ -274,6 +308,7 @@ fun QuizScreen(
                     }
                 }
             }
+        }
 
         }
 

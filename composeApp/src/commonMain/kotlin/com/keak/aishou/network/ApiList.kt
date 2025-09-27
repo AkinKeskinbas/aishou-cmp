@@ -8,7 +8,7 @@ object ApiList {
     const val GET_TOKEN = "/auth/token"
     const val REGISTER_USER = "/v1/auth/register"
     const val UPDATE_PERSONALITY = "/v1/personality/update"
-    const val PERSONALITY_QUICK_ASSESS = "/v1/personality/quick-assess"
+    const val PERSONALITY_QUICK_ASSESS = "/v1/personality/quick-quiz"
     const val GET_PERSONALITY_PROFILE = "/v1/personality/profile"
     const val GET_PERSONALITY_QUICK_QUIZ = "/v1/personality/quick-quiz"
     const val GET_TESTS = "/v1/tests"

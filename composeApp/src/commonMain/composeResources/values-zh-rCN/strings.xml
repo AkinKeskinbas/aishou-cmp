@@ -5,7 +5,7 @@
     <string name="monthly_premium_per_month">每月</string>
     <string name="monthly_premium_per_week">每周</string>
     <string name="paywall_go_premium">升级高级版</string>
-    <string name="paywall_weekly_features_daily_horoscope">每日星座运势</string>
+    <string name="unlimited_compatibility_zh_cn">无限次契合度测试</string>
     <string name="paywall_weekly_features_daily_love_compatibility">爱情匹配</string>
     <string name="paywall_weekly_features_daily_personality_insights">性格洞察</string>
     <string name="paywall_popular">最受欢迎！</string>
@@ -17,7 +17,7 @@
     <string name="paywall_restore_purchase_text">恢复购买</string>
 
     <!-- Home -->
-    <string name="cosmic_match_home">宇宙匹配</string>
+    <string name="cosmic_match_home">AISHOU APP</string>
     <string name="mbti_zodiac_home">MBTI × 星座</string>
     <string name="your_cosmic_profile_home">你的宇宙档案</string>
     <string name="personality_type_home">人格类型</string>
@@ -26,7 +26,7 @@
     <string name="quick_actions_home">快速操作</string>
     <string name="new_test_home">浏览测试</string>
     <string name="view_all_home">查看全部</string>
-    <string name="quick_quiz_home">快速开始</string>
+    <string name="quick_quiz_home">快速测试</string>
 
     <string name="recent_tests_home">最近测试</string>
     <string name="your_stats_home">你的数据</string>
@@ -258,6 +258,23 @@
     <string name="mbti_estp_description">聪明、精力充沛、洞察力强</string>
     <string name="mbti_esfp_name">表演者</string>
     <string name="mbti_esfp_description">自发、充满活力、热情</string>
+    <string name="mbti_unique_name">独特的人</string>
+    <string name="mbti_unique_description">拥有特殊品质的独特人格</string>
+
+    <!-- Zodiac Descriptions -->
+    <string name="zodiac_aries_description">大胆、有抱负、随时准备行动</string>
+    <string name="zodiac_taurus_description">可靠、耐心、追求舒适</string>
+    <string name="zodiac_gemini_description">好奇、适应性强、善于沟通</string>
+    <string name="zodiac_cancer_description">温顺、直觉敏锐、情感深厚</string>
+    <string name="zodiac_leo_description">自信、慷慨、天生的领导者</string>
+    <string name="zodiac_virgo_description">善于分析、实用、注重细节</string>
+    <string name="zodiac_libra_description">外交、公正、寻求和谐</string>
+    <string name="zodiac_scorpio_description">充满激情、足智多谋、意志坚定</string>
+    <string name="zodiac_sagittarius_description">爱冒险、乐观、热爱自由</string>
+    <string name="zodiac_capricorn_description">有抱负、自律、目标导向</string>
+    <string name="zodiac_aquarius_description">独立、创新、人道主义</string>
+    <string name="zodiac_pisces_description">富有同情心、艺术性、直觉深刻</string>
+    <string name="zodiac_unknown_description">在各个方面都是独特而特别的</string>
 
     <!-- Home Screen Additional -->
     <string name="me">我</string>
@@ -371,4 +388,14 @@
     <string name="match_great_job">🎉 干得漂亮！把结果分享给好友，看看你们有多合拍。</string>
     <string name="match_send_your_friend">邀请好友一起做测试并比较兼容度！</string>
     <string name="match_share_on_instagram">分享到 Instagram</string>
+
+    <string name="mbti_result_go_home">返回首页</string>
+    <string name="mbti_result_be_premium">升级为会员</string>
+    <string name="mbti_result_personal_insight">💡 个性洞察</string>
+    <string name="mbti_result_based_on_your_response">根据你的回答，我们发现了这些！</string>
+    <string name="mbti_result_your_personality">🎉 你的性格档案</string>
+
+    <!-- Premium Insight Messages -->
+    <string name="premium_insight_button">获取完整洞察</string>
+    <string name="premium_insight_message">解锁更深入的性格分析</string>
 </resources>

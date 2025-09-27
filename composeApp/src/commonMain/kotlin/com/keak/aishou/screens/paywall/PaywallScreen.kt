@@ -13,13 +13,13 @@ import aishou.composeapp.generated.resources.paywall_go_premium
 import aishou.composeapp.generated.resources.paywall_join_discover
 import aishou.composeapp.generated.resources.paywall_restore_purchase_text
 import aishou.composeapp.generated.resources.paywall_unlock_your_cosmic_personality
-import aishou.composeapp.generated.resources.paywall_weekly_features_daily_horoscope
 import aishou.composeapp.generated.resources.paywall_weekly_features_daily_love_compatibility
 import aishou.composeapp.generated.resources.paywall_weekly_features_daily_personality_insights
 import aishou.composeapp.generated.resources.personality_desc
 import aishou.composeapp.generated.resources.smile_star
 import aishou.composeapp.generated.resources.star
 import aishou.composeapp.generated.resources.star_dec
+import aishou.composeapp.generated.resources.unlimited_compatibility
 import aishou.composeapp.generated.resources.weekly_premium_paywall
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -75,7 +75,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-
 @Composable
 fun PaywallScreen(
     router: Router,
@@ -88,7 +87,6 @@ fun PaywallScreen(
 
     val state by repo.state.collectAsState()
 
-    //print("AKN-PAYWALL-->>${s.packages}")
     var start by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         repo.getProducts()
@@ -106,12 +104,12 @@ fun PaywallScreen(
                     .replace("%3F", "?")
                     .replace("%26", "&")
 
-                println("PaywallScreen: Premium upgrade detected, navigating back to: $decodedReturn")
+// Premium upgrade detected, navigating back
 
                 // Navigate back to the original destination
                 router.navigateToRoute(decodedReturn)
             } catch (e: Exception) {
-                println("PaywallScreen: Error navigating to return destination: ${e.message}")
+// Error navigating to return destination
                 // Fallback to going back
                 router.goBack()
             }
@@ -160,16 +158,16 @@ fun PaywallScreen(
             Spacer(Modifier.height(16.dp))
             when (val s = state) {
                 ProductsState.Loading -> {
-                    print("AKN-PAYWALL-->>Loading")
+                    // Loading state
 
                 }
 
                 ProductsState.Empty -> {
-                    print("AKN-PAYWALL-->>Empty")
+                    // Empty state
                 }
 
                 is ProductsState.Error -> {
-                    print("AKN-PAYWALL-->>Error ${s.message}")
+                    // Error state
                 }
 
                 is ProductsState.Loaded -> {
@@ -248,7 +246,7 @@ fun PaywallScreen(
                                 Spacer(Modifier.height(8.dp))
                                 PremiumFeaturesRow(
                                     image = Res.drawable.star_dec,
-                                    text = stringResource(Res.string.paywall_weekly_features_daily_horoscope)
+                                    text = stringResource(Res.string.unlimited_compatibility)
                                 )
                                 Spacer(Modifier.height(8.dp))
                                 PremiumFeaturesRow(
@@ -333,7 +331,7 @@ fun PaywallScreen(
                                 Spacer(Modifier.height(8.dp))
                                 PremiumFeaturesRow(
                                     image = Res.drawable.star_dec,
-                                    text = stringResource(Res.string.paywall_weekly_features_daily_horoscope)
+                                    text = stringResource(Res.string.unlimited_compatibility)
                                 )
                                 Spacer(Modifier.height(8.dp))
                                 PremiumFeaturesRow(
@@ -349,7 +347,6 @@ fun PaywallScreen(
                                 NeoBrutalistCardViewWithFlexSize(
                                     modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
                                         .clickable(role = Role.Button) {
-                                            println("AKN--PAYWALL---> ${s.packages[1].productPackage.identifier}")
                                             presenter.buyProduct(
                                                 product = s.packages[1].productPackage,
                                                 onSuccessEvent = {

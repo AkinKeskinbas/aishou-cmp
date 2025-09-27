@@ -76,6 +76,7 @@ class QuizViewModel(
             is QuizUiEvent.PreviousQuestion -> previousQuestion()
             is QuizUiEvent.SubmitQuiz -> {
                 if (canFinish()) {
+                    println("QuizViewModel: SubmitQuiz event - calling submitQuiz()")
                     submitQuiz(event.testId, event.version)
                 } else {
                     // Show warning if quiz is incomplete
@@ -84,6 +85,7 @@ class QuizViewModel(
             }
             is QuizUiEvent.SubmitQuickQuiz -> {
                 if (canFinish()) {
+                    println("QuizViewModel: SubmitQuickQuiz event - calling submitQuickQuiz()")
                     submitQuickQuiz()
                 } else {
                     // Show warning if quiz is incomplete
@@ -133,7 +135,7 @@ class QuizViewModel(
                             isLoading = false,
                             questions = uniqueQuestions,
                             error = null,
-                            isMBTITest = testId == "personality-full-v1"
+                            isMBTITest = testId == "personality-full-v1" || testId == "personality"
                         )
                         println("QuizViewModel: Successfully loaded ${uniqueQuestions.size} questions")
                     }
@@ -184,7 +186,7 @@ class QuizViewModel(
                             error = null,
                             isMBTITest = true // Quick quiz is always MBTI test
                         )
-                        println("QuizViewModel: Successfully loaded ${uniqueQuestions.size} quick quiz questions")
+                        println("QuizViewModel: Successfully loaded ${uniqueQuestions.size} quick quiz questions - isMBTITest set to true")
                     }
                     is ApiResult.Error -> {
                         val errorMessage = result.message ?: "Unknown error occurred"
@@ -311,13 +313,12 @@ class QuizViewModel(
     }
 
     private fun submitQuickQuiz() {
-        // Immediately trigger navigation to ThankYou screen
+        // Don't navigate immediately for MBTI test - wait for result
         _uiState.value = _uiState.value.copy(
-            shouldNavigateToThankYou = true,
             isSubmitting = true
         )
 
-        println("QuizViewModel: Navigating to ThankYou screen, starting background submission")
+        println("QuizViewModel: Starting MBTI quiz submission - will navigate after result")
 
         // Launch background API submission
         viewModelScope.launch {
@@ -337,19 +338,30 @@ class QuizViewModel(
                 println("QuizViewModel: Quick quiz assessment request created: $assessRequest")
 
                 val result = apiService.personalityQuickAssess(assessRequest)
+                println("QuizViewModel: API call completed, checking result type...")
                 when (result) {
                     is ApiResult.Success -> {
                         val personalityResult = result.data.data
+                        println("QuizViewModel: API Success! personalityResult is ${if (personalityResult != null) "not null" else "null"}")
+
+                        // Store the result in PersonalityDataManager for access from MBTIResultScreen
+                        personalityResult?.let {
+                            personalityDataManager.setLatestPersonalityResult(it)
+                            println("QuizViewModel: PersonalityResult stored - MBTI: ${it.mbtiType}, Zodiac: ${it.zodiacSign}")
+                        }
+
                         _uiState.value = _uiState.value.copy(
                             isSubmitting = false,
                             submissionSuccess = true,
                             isFinished = true,
-                            personalityResult = personalityResult
+                            personalityResult = personalityResult,
+                            shouldNavigateToThankYou = true // Navigate after getting result
                         )
-                        println("QuizViewModel: Background quick quiz submitted successfully. MBTI: ${personalityResult?.mbtiType}")
+                        println("QuizViewModel: Background quick quiz submitted successfully. MBTI: ${personalityResult?.mbtiType} - triggering navigation")
                     }
                     is ApiResult.Error -> {
                         val errorMessage = result.message ?: "Quick quiz submission failed"
+                        println("QuizViewModel: API Error! Code: ${result.code}, Message: $errorMessage")
                         _uiState.value = _uiState.value.copy(
                             isSubmitting = false,
                             submissionError = errorMessage

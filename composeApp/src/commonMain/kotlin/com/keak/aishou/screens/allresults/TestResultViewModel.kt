@@ -247,8 +247,9 @@ class TestResultViewModel(
             val actualTestId = testId ?: _testResult.value?.testId ?: "unknown"
             val actualTestTitle = testTitle ?: "Test" // We'll get this from tests API when needed
 
-            // Create deep link URL - use custom scheme for reliable app opening
-            "aishou://invite/$inviteId?senderId=$actualSenderId&testId=$actualTestId&testTitle=${actualTestTitle.replace(" ", "%20").replace("&", "%26")}"
+            // Create universal link with web fallback - this will work for external sharing
+            // Web page will redirect to app if installed, or show app store links if not
+            "https://www.aishou.site/invite/index.html?inviteId=$inviteId&senderId=$actualSenderId&testId=$actualTestId&testTitle=${actualTestTitle.replace(" ", "%20").replace("&", "%26")}"
         } else {
             null
         }

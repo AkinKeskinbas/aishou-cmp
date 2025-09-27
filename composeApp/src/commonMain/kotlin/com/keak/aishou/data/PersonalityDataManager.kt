@@ -2,6 +2,7 @@ package com.keak.aishou.data
 
 import com.keak.aishou.data.api.PersonalityUpdateRequest
 import com.keak.aishou.data.api.Submission
+import com.keak.aishou.data.api.PersonalityAssessResponse
 import com.keak.aishou.network.AishouApiService
 import com.keak.aishou.network.ApiResult
 import com.keak.aishou.screens.onboarding.MBTIType
@@ -12,6 +13,7 @@ class PersonalityDataManager(
 ) {
     private var collectedZodiac: String? = null
     private var collectedMBTI: String? = null
+    private var latestPersonalityResult: PersonalityAssessResponse? = null
 
     fun setZodiacSign(zodiacSign: ZodiacSign) {
         collectedZodiac = zodiacSign.name
@@ -50,5 +52,19 @@ class PersonalityDataManager(
     fun reset() {
         collectedZodiac = null
         collectedMBTI = null
+        latestPersonalityResult = null
+    }
+
+    // Store the latest personality assessment result
+    fun setLatestPersonalityResult(result: PersonalityAssessResponse) {
+        latestPersonalityResult = result
+        // Also update collected data from the result
+        collectedMBTI = result.mbtiType
+        collectedZodiac = result.zodiacSign
+    }
+
+    // Get the latest personality assessment result
+    fun getLatestPersonalityResult(): PersonalityAssessResponse? {
+        return latestPersonalityResult
     }
 }

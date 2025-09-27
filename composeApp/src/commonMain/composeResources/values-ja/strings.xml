@@ -5,7 +5,7 @@
     <string name="monthly_premium_per_month">月ごと</string>
     <string name="monthly_premium_per_week">週ごと</string>
     <string name="paywall_go_premium">プレミアムへ</string>
-    <string name="paywall_weekly_features_daily_horoscope">毎日ホロスコープ</string>
+    <string name="unlimited_compatibility_ja">無制限の相性チェック</string>
     <string name="paywall_weekly_features_daily_love_compatibility">恋愛相性</string>
     <string name="paywall_weekly_features_daily_personality_insights">性格インサイト</string>
     <string name="paywall_popular">人気！</string>
@@ -18,7 +18,7 @@
 
 
     //Home
-    <string name="cosmic_match_home">COSMIC MATCH</string>
+    <string name="cosmic_match_home">AISHOU APP</string>
     <string name="mbti_zodiac_home">MBTI × 星座</string>
     <string name="your_cosmic_profile_home">マイコズミック</string>
     <string name="personality_type_home">性格タイプ</string>
@@ -27,7 +27,7 @@
     <string name="quick_actions_home">クイックアクション</string>
     <string name="new_test_home">テスト選択</string>
     <string name="view_all_home">すべて見る</string>
-    <string name="quick_quiz_home">クイックスタート</string>
+    <string name="quick_quiz_home">クイックテスト</string>
 
     <string name="recent_tests_home">最近のテスト</string>
     <string name="your_stats_home">マイ成績</string>
@@ -181,6 +181,23 @@
     <string name="mbti_estp_description">賢く、エネルギッシュで洞察力がある</string>
     <string name="mbti_esfp_name">エンターテイナー</string>
     <string name="mbti_esfp_description">自発的でエネルギッシュで熱狂的</string>
+    <string name="mbti_unique_name">ユニークな人</string>
+    <string name="mbti_unique_description">特別な資質を持つユニークな性格</string>
+
+    //Zodiac Descriptions
+    <string name="zodiac_aries_description">大胆で野心的、常に行動する準備ができている</string>
+    <string name="zodiac_taurus_description">信頼でき、忍耐強く、快適さを求める</string>
+    <string name="zodiac_gemini_description">好奇心旺盛で適応力があり、優秀なコミュニケーター</string>
+    <string name="zodiac_cancer_description">育成的で直感的、深く感情的</string>
+    <string name="zodiac_leo_description">自信があり、寛大で、生まれながらのリーダー</string>
+    <string name="zodiac_virgo_description">分析的で実用的、詳細志向</string>
+    <string name="zodiac_libra_description">外交的で公正、調和を求める</string>
+    <string name="zodiac_scorpio_description">情熱的で機知に富み、決断力がある</string>
+    <string name="zodiac_sagittarius_description">冒険的で楽観的、自由を愛する</string>
+    <string name="zodiac_capricorn_description">野心的で規律正しく、目標志向</string>
+    <string name="zodiac_aquarius_description">独立的で革新的、人道主義的</string>
+    <string name="zodiac_pisces_description">思いやりがあり、芸術的で、深く直感的</string>
+    <string name="zodiac_unknown_description">あらゆる面でユニークで特別</string>
 
     //Home Screen Additional
     <string name="me">私</string>
@@ -265,6 +282,16 @@
     <string name="match_great_job">🎉 テストお疲れさま！ 結果を友だちとシェアして相性をチェックしよう！</string>
     <string name="match_send_your_friend">友だちを招待して一緒にテストして相性を比べよう！</string>
     <string name="match_share_on_instagram">Instagramでシェア</string>
+
+    <string name="mbti_result_go_home">ホームへ進む</string>
+    <string name="mbti_result_be_premium">プレミアムになる</string>
+    <string name="mbti_result_personal_insight">💡 パーソナルインサイト</string>
+    <string name="mbti_result_based_on_your_response">あなたの回答をもとに、こんなことが分かりました！</string>
+    <string name="mbti_result_your_personality">🎉 あなたの性格プロフィール</string>
+
+    //Premium Insight Messages
+    <string name="premium_insight_button">完全なインサイトを取得</string>
+    <string name="premium_insight_message">より深い性格分析を解き放ちましょう</string>
 
 
 </resources>

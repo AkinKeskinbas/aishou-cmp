@@ -73,4 +73,5 @@ sealed class Routes(val route: String = "") {
             return "ThankYou?isFromInvite=$isFromInvite"
         }
     }
+    data object MBTIResult : Routes("MBTIResult")
 }

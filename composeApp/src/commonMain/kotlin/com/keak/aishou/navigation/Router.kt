@@ -32,5 +32,6 @@ interface Router {
     fun goToUserMatchWithFriend(testID: String, friendId: String)
     fun goToProfile()
     fun goToThankYou(isFromInvite: Boolean = false)
+    fun goToMBTIResult()
 
 }

@@ -16,6 +16,7 @@ data class SoloResult(
     val submissionId: String? = null,
     val totalScore: Int = 0,
     val personalizedInsights: String? = null,
+    val scoreDescription: String? = null,
     val scoreVector: List<Int> = emptyList(),
     val completedAt: Long? = null
 )

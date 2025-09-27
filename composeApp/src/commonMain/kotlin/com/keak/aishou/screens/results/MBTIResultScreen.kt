@@ -1,5 +1,12 @@
 package com.keak.aishou.screens.results
 
+import aishou.composeapp.generated.resources.Res
+import aishou.composeapp.generated.resources.mbti_result_based_on_your_response
+import aishou.composeapp.generated.resources.mbti_result_be_premium
+import aishou.composeapp.generated.resources.mbti_result_go_home
+import aishou.composeapp.generated.resources.mbti_result_personal_insight
+import aishou.composeapp.generated.resources.mbti_your_personality
+import aishou.composeapp.generated.resources.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.keak.aishou.components.NeoBrutalistCardViewWithFlexSize
 import com.keak.aishou.data.api.PersonalityAssessResponse
 import com.keak.aishou.navigation.Router
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MBTIResultScreen(
@@ -34,7 +42,7 @@ fun MBTIResultScreen(
 
         // Celebration Title
         Text(
-            text = "🎉 Your Personality Profile",
+            text = stringResource(Res.string.mbti_your_personality),
             fontSize = 28.sp,
             fontWeight = FontWeight.Black,
             color = Color.Black,
@@ -44,7 +52,7 @@ fun MBTIResultScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Based on your responses, here's what we discovered about you!",
+            text = stringResource(Res.string.mbti_result_based_on_your_response),
             fontSize = 16.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center
@@ -157,7 +165,7 @@ fun MBTIResultScreen(
             ) {
                 Column {
                     Text(
-                        text = "💡 Personal Insights",
+                        text = stringResource(Res.string.mbti_result_personal_insight),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -198,7 +206,7 @@ fun MBTIResultScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = "Continue to Home",
+                        text = stringResource(Res.string.mbti_result_go_home),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -218,11 +226,11 @@ fun MBTIResultScreen(
                 contentAlignment = Alignment.Center
             ) {
                 TextButton(
-                    onClick = { router.goToAllResultScreen() },
+                    onClick = { router.goToPaywall() },
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = "View All My Results",
+                        text = stringResource(Res.string.mbti_result_be_premium),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -235,47 +243,49 @@ fun MBTIResultScreen(
     }
 }
 
+@Composable
 private fun getMBTITypeName(mbtiType: String): String {
     return when (mbtiType.uppercase()) {
-        "INTJ" -> "The Architect"
-        "INTP" -> "The Thinker"
-        "ENTJ" -> "The Commander"
-        "ENTP" -> "The Debater"
-        "INFJ" -> "The Advocate"
-        "INFP" -> "The Mediator"
-        "ENFJ" -> "The Protagonist"
-        "ENFP" -> "The Campaigner"
-        "ISTJ" -> "The Logistician"
-        "ISFJ" -> "The Protector"
-        "ESTJ" -> "The Executive"
-        "ESFJ" -> "The Consul"
-        "ISTP" -> "The Virtuoso"
-        "ISFP" -> "The Adventurer"
-        "ESTP" -> "The Entrepreneur"
-        "ESFP" -> "The Entertainer"
-        else -> "The Unique One"
+        "INTJ" -> stringResource(Res.string.mbti_intj_name)
+        "INTP" -> stringResource(Res.string.mbti_intp_name)
+        "ENTJ" -> stringResource(Res.string.mbti_entj_name)
+        "ENTP" -> stringResource(Res.string.mbti_entp_name)
+        "INFJ" -> stringResource(Res.string.mbti_infj_name)
+        "INFP" -> stringResource(Res.string.mbti_infp_name)
+        "ENFJ" -> stringResource(Res.string.mbti_enfj_name)
+        "ENFP" -> stringResource(Res.string.mbti_enfp_name)
+        "ISTJ" -> stringResource(Res.string.mbti_istj_name)
+        "ISFJ" -> stringResource(Res.string.mbti_isfj_name)
+        "ESTJ" -> stringResource(Res.string.mbti_estj_name)
+        "ESFJ" -> stringResource(Res.string.mbti_esfj_name)
+        "ISTP" -> stringResource(Res.string.mbti_istp_name)
+        "ISFP" -> stringResource(Res.string.mbti_isfp_name)
+        "ESTP" -> stringResource(Res.string.mbti_estp_name)
+        "ESFP" -> stringResource(Res.string.mbti_esfp_name)
+        else -> stringResource(Res.string.mbti_unique_name)
     }
 }
 
+@Composable
 private fun getMBTIDescription(mbtiType: String): String {
     return when (mbtiType.uppercase()) {
-        "INTJ" -> "Imaginative and strategic thinkers, with a plan for everything"
-        "INTP" -> "Innovative inventors with an unquenchable thirst for knowledge"
-        "ENTJ" -> "Bold, imaginative and strong-willed leaders"
-        "ENTP" -> "Smart and curious thinkers who love intellectual challenges"
-        "INFJ" -> "Creative and insightful, inspired and independent"
-        "INFP" -> "Poetic, kind and altruistic people, always eager to help"
-        "ENFJ" -> "Charismatic and inspiring leaders, able to mesmerize listeners"
-        "ENFP" -> "Enthusiastic, creative and sociable free spirits"
-        "ISTJ" -> "Practical and fact-minded, reliable and responsible"
-        "ISFJ" -> "Warm-hearted and dedicated, always ready to protect loved ones"
-        "ESTJ" -> "Excellent administrators, unsurpassed at managing things"
-        "ESFJ" -> "Extraordinarily caring, social and popular people"
-        "ISTP" -> "Bold and practical experimenters, masters of all kinds of tools"
-        "ISFP" -> "Flexible and charming artists, always ready to explore possibilities"
-        "ESTP" -> "Smart, energetic and very perceptive people"
-        "ESFP" -> "Spontaneous, energetic and enthusiastic people"
-        else -> "A unique personality with special qualities"
+        "INTJ" -> stringResource(Res.string.mbti_intj_description)
+        "INTP" -> stringResource(Res.string.mbti_intp_description)
+        "ENTJ" -> stringResource(Res.string.mbti_entj_description)
+        "ENTP" -> stringResource(Res.string.mbti_entp_description)
+        "INFJ" -> stringResource(Res.string.mbti_infj_description)
+        "INFP" -> stringResource(Res.string.mbti_infp_description)
+        "ENFJ" -> stringResource(Res.string.mbti_enfj_description)
+        "ENFP" -> stringResource(Res.string.mbti_enfp_description)
+        "ISTJ" -> stringResource(Res.string.mbti_istj_description)
+        "ISFJ" -> stringResource(Res.string.mbti_isfj_description)
+        "ESTJ" -> stringResource(Res.string.mbti_estj_description)
+        "ESFJ" -> stringResource(Res.string.mbti_esfj_description)
+        "ISTP" -> stringResource(Res.string.mbti_istp_description)
+        "ISFP" -> stringResource(Res.string.mbti_isfp_description)
+        "ESTP" -> stringResource(Res.string.mbti_estp_description)
+        "ESFP" -> stringResource(Res.string.mbti_esfp_description)
+        else -> stringResource(Res.string.mbti_unique_description)
     }
 }
 
@@ -297,20 +307,21 @@ private fun getZodiacEmoji(zodiacSign: String): String {
     }
 }
 
+@Composable
 private fun getZodiacDescription(zodiacSign: String): String {
     return when (zodiacSign.lowercase()) {
-        "aries" -> "Bold, ambitious, and always ready for action"
-        "taurus" -> "Reliable, patient, and devoted to comfort"
-        "gemini" -> "Curious, adaptable, and great communicators"
-        "cancer" -> "Nurturing, intuitive, and deeply emotional"
-        "leo" -> "Confident, generous, and natural-born leaders"
-        "virgo" -> "Analytical, practical, and detail-oriented"
-        "libra" -> "Diplomatic, fair-minded, and harmony-seeking"
-        "scorpio" -> "Passionate, resourceful, and determined"
-        "sagittarius" -> "Adventurous, optimistic, and freedom-loving"
-        "capricorn" -> "Ambitious, disciplined, and goal-oriented"
-        "aquarius" -> "Independent, innovative, and humanitarian"
-        "pisces" -> "Compassionate, artistic, and deeply intuitive"
-        else -> "Unique and special in every way"
+        "aries" -> stringResource(Res.string.zodiac_aries_description)
+        "taurus" -> stringResource(Res.string.zodiac_taurus_description)
+        "gemini" -> stringResource(Res.string.zodiac_gemini_description)
+        "cancer" -> stringResource(Res.string.zodiac_cancer_description)
+        "leo" -> stringResource(Res.string.zodiac_leo_description)
+        "virgo" -> stringResource(Res.string.zodiac_virgo_description)
+        "libra" -> stringResource(Res.string.zodiac_libra_description)
+        "scorpio" -> stringResource(Res.string.zodiac_scorpio_description)
+        "sagittarius" -> stringResource(Res.string.zodiac_sagittarius_description)
+        "capricorn" -> stringResource(Res.string.zodiac_capricorn_description)
+        "aquarius" -> stringResource(Res.string.zodiac_aquarius_description)
+        "pisces" -> stringResource(Res.string.zodiac_pisces_description)
+        else -> stringResource(Res.string.zodiac_unknown_description)
     }
 }

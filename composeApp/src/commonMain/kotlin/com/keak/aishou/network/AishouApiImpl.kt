@@ -47,10 +47,15 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
 class AishouApiImpl(
     private val dataStoreManager: DataStoreManager,
-    private val languageManager: LanguageManager
+    private val languageManager: LanguageManager,
+    private val userSessionManager: com.keak.aishou.data.UserSessionManager
 ) : AishouApiService {
 
     private val client: HttpClient by lazy {
@@ -118,6 +123,30 @@ class AishouApiImpl(
         return if (region != null) "$language-$region" else language
     }
 
+    /**
+     * Handle 401 unauthorized responses by triggering re-authentication
+     */
+    private fun handleUnauthorizedResponse() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                println("AishouApiImpl: Handling 401 unauthorized - triggering re-authentication")
+                userSessionManager.handleUnauthorizedUser()
+            } catch (e: Exception) {
+                println("AishouApiImpl: Error handling unauthorized user: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Extension function to handle ApiResult errors, especially 401
+     */
+    private suspend fun <T> ApiResult<T>.handleErrors(): ApiResult<T> {
+        if (this is ApiResult.Error && this.code == 401) {
+            handleUnauthorizedResponse()
+        }
+        return this
+    }
+
     override suspend fun getToken(): ApiResult<BaseResponse<TokenResponse>> {
         return handleApi {
             client.get(ApiList.GET_TOKEN) {
@@ -168,8 +197,13 @@ class AishouApiImpl(
 
         val authHeader = getAuthHeader()
         println("AishouApiImpl: Auth header present: ${authHeader != null}")
+        if (authHeader != null) {
+            println("AishouApiImpl: Auth header value: ${authHeader.take(20)}...")
+        } else {
+            println("AishouApiImpl: No auth header - user may not be authenticated")
+        }
 
-        return handleApi {
+        val result = handleApi<BaseResponse<PersonalityAssessResponse>> {
             client.post(ApiList.PERSONALITY_QUICK_ASSESS) {
                 contentType(ContentType.Application.Json)
                 setBody(assessRequest)
@@ -178,6 +212,7 @@ class AishouApiImpl(
                 }
             }
         }
+        return result.handleErrors()
     }
 
     override suspend fun getPersonalityQuickQuiz(): ApiResult<BaseResponse<List<QuizQuestion>>> {
@@ -229,7 +264,7 @@ class AishouApiImpl(
             }
         }
 
-        return result
+        return result.handleErrors()
     }
 
     override suspend fun updateProfile(profileUpdate: ProfileUpdateRequest): ApiResult<BaseResponse<Unit>> {

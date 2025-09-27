@@ -5,7 +5,7 @@
     <string name="monthly_premium_per_month">per month</string>
     <string name="monthly_premium_per_week">per week</string>
     <string name="paywall_go_premium">GO PREMIUM</string>
-    <string name="paywall_weekly_features_daily_horoscope">Daily Horoscope</string>
+    <string name="unlimited_compatibility">Unlimited Compatibility</string>
     <string name="paywall_weekly_features_daily_love_compatibility">Love Compatibility</string>
     <string name="paywall_weekly_features_daily_personality_insights">Personality Insights</string>
     <string name="paywall_popular">Popular!</string>
@@ -18,8 +18,8 @@
 
 
     //Home
-    <string name="cosmic_match_home">COSMIC MATCH</string>
-    <string name="mbti_zodiac_home">MBTI x ZODIAC</string>
+    <string name="cosmic_match_home">AISHOU APP</string>
+    <string name="mbti_zodiac_home">MBTI Compatibility</string>
     <string name="your_cosmic_profile_home">YOUR COSMIC PROFILE</string>
     <string name="personality_type_home">PERSONALITY TYPE</string>
     <string name="zodiac_sign_profile_home">ZODIAC SIGN</string>
@@ -27,7 +27,7 @@
     <string name="quick_actions_home">QUICK ACTIONS</string>
     <string name="new_test_home">Browse Tests</string>
     <string name="view_all_home">View All</string>
-    <string name="quick_quiz_home">Quick Start</string>
+    <string name="quick_quiz_home">Quick Test</string>
 
     <string name="recent_tests_home">RECENT TESTS</string>
     <string name="your_stats_home">YOUR STATS</string>
@@ -263,6 +263,23 @@
     <string name="mbti_estp_description">Smart, energetic and perceptive</string>
     <string name="mbti_esfp_name">Entertainer</string>
     <string name="mbti_esfp_description">Spontaneous, energetic and enthusiastic</string>
+    <string name="mbti_unique_name">The Unique One</string>
+    <string name="mbti_unique_description">A unique personality with special qualities</string>
+
+    //Zodiac Descriptions
+    <string name="zodiac_aries_description">Bold, ambitious, and always ready for action</string>
+    <string name="zodiac_taurus_description">Reliable, patient, and devoted to comfort</string>
+    <string name="zodiac_gemini_description">Curious, adaptable, and great communicators</string>
+    <string name="zodiac_cancer_description">Nurturing, intuitive, and deeply emotional</string>
+    <string name="zodiac_leo_description">Confident, generous, and natural-born leaders</string>
+    <string name="zodiac_virgo_description">Analytical, practical, and detail-oriented</string>
+    <string name="zodiac_libra_description">Diplomatic, fair-minded, and harmony-seeking</string>
+    <string name="zodiac_scorpio_description">Passionate, resourceful, and determined</string>
+    <string name="zodiac_sagittarius_description">Adventurous, optimistic, and freedom-loving</string>
+    <string name="zodiac_capricorn_description">Ambitious, disciplined, and goal-oriented</string>
+    <string name="zodiac_aquarius_description">Independent, innovative, and humanitarian</string>
+    <string name="zodiac_pisces_description">Compassionate, artistic, and deeply intuitive</string>
+    <string name="zodiac_unknown_description">Unique and special in every way</string>
 
     //Home Screen Additional
     <string name="me">Me</string>
@@ -376,6 +393,17 @@
     <string name="match_great_job">🎉 Great job completing this test! Share your results with friends to see how compatible you are.</string>
     <string name="match_send_your_friend">Invite your friends to take this test and compare your compatibility!</string>
     <string name="match_share_on_instagram">Share On Instagram</string>
+
+    //MBTI-Result
+    <string name="mbti_result_go_home">Continue to Home</string>
+    <string name="mbti_result_be_premium">Be Premium</string>
+    <string name="mbti_result_personal_insight">💡 Personal Insights</string>
+    <string name="mbti_result_based_on_your_response">Based on your responses, here's what we discovered about you!</string>
+    <string name="mbti_result_your_personality">🎉 Your Personality Profile</string>
+
+    //Premium Insight Messages
+    <string name="premium_insight_button">Get Full Insights</string>
+    <string name="premium_insight_message">UNLOCK deeper personality analysis</string>
 
 
 

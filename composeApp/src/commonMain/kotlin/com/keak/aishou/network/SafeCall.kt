@@ -56,13 +56,40 @@ suspend inline fun <reified T : Any> handleApi(request: suspend () -> HttpRespon
             ApiResult.Success(body)
         } else {
             println("SafeCall: Error response - Status: ${response.status.value}, Description: ${response.status.description}")
+
+            // Handle unauthorized (401) responses specially
+            if (response.status == HttpStatusCode.Unauthorized) {
+                println("SafeCall: 401 Unauthorized - triggering re-authentication")
+                // Note: We'll need to inject UserSessionManager to handle this properly
+                // For now, just return the error and let callers handle it
+            }
+
             ApiResult.Error(response.status.value, response.status.description)
         }
     } catch (e: CancellationException) {
+        println("SafeCall: Request was cancelled")
         throw e // Coroutine'in iptal edilmesi durumu
     } catch (e: Throwable) {
         println("SafeCall: Exception occurred: ${e.message}")
-        e.printStackTrace()
-        ApiResult.Exception(e)
+
+        // Check if it's a connection or timeout related exception
+        when {
+            e.message?.contains("cancelled", ignoreCase = true) == true -> {
+                println("SafeCall: Request was cancelled during execution")
+                return ApiResult.Error(-1, "The operation couldn't be completed")
+            }
+            e.message?.contains("timeout", ignoreCase = true) == true -> {
+                println("SafeCall: Request timeout")
+                return ApiResult.Error(-2, "Request timeout")
+            }
+            e.message?.contains("connection", ignoreCase = true) == true -> {
+                println("SafeCall: Connection error")
+                return ApiResult.Error(-3, "Connection error")
+            }
+            else -> {
+                e.printStackTrace()
+                ApiResult.Exception(e)
+            }
+        }
     }
 }

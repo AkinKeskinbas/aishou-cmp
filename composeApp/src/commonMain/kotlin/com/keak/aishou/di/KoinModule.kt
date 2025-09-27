@@ -63,7 +63,7 @@ val dataModules = module {
     // Personality Data Manager
     single { PersonalityDataManager(get()) }
 
-    single<AishouApiService> { AishouApiImpl(get(), get()) }
+    single<AishouApiService> { AishouApiImpl(get(), get(), get()) }
     single<PremiumRepository> { RevenueCatPremiumRepository() }
     single { PremiumPresenter(repo = get(), scope = get()) }
     single<ProductsRepository> { RevenueCatProductsRepository() }
